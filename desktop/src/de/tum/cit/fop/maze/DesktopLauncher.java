@@ -1,5 +1,6 @@
 package de.tum.cit.fop.maze;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
@@ -32,5 +33,6 @@ public class DesktopLauncher {
 
 		// Launch the game
 		new Lwjgl3Application(new MazeRunnerGame(new DesktopFileChooser()), config);
+
 	}
 }
