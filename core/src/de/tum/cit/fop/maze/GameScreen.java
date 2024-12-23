@@ -1,6 +1,5 @@
 package de.tum.cit.fop.maze;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -12,7 +11,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
@@ -31,6 +33,9 @@ public class GameScreen implements Screen {
     private float characterY;
     private float characterSpeed = 200f; // Base speed of character movement (pixels per second)
     private static final float SPEED_MULTIPLIER = 2.5f; // Speed multiplier when Shift is pressed
+
+    private List<Enemy> enemies; // 用于存储敌人的列表
+    private float detectionRange = 300f; // 检测范围
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -60,8 +65,6 @@ public class GameScreen implements Screen {
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
-
-
         // Load the tiled map
         TmxMapLoader loader = new TmxMapLoader();
         tiledMap = loader.load("input.tmx");
@@ -70,6 +73,8 @@ public class GameScreen implements Screen {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
         mapBounds = new Rectangle(0, 0, layer.getWidth() * layer.getTileWidth(), layer.getHeight() * layer.getTileHeight());
 
+        // 初始化敌人列表
+        enemies = new ArrayList<>();
     }
 
     private void initializeCharacterPosition() {
@@ -82,6 +87,18 @@ public class GameScreen implements Screen {
             // Fallback if no character object is found
             characterX = camera.viewportWidth / 2;
             characterY = camera.viewportHeight / 2;
+        }
+    }
+
+    private void initializeEnemies() {
+        // 遍历地图中的敌人对象
+        for (int i = 1; i <= 5; i++) {
+            String objectName = "object" + i;
+            RectangleMapObject enemyObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get(objectName);
+            if (enemyObject != null) {
+                Rectangle rect = enemyObject.getRectangle();
+                enemies.add(new Enemy(rect.x, rect.y, 100f,i));
+            }
         }
     }
 
@@ -105,6 +122,9 @@ public class GameScreen implements Screen {
             // 更新角色移动
             updateCharacterMovement(delta);
 
+            // 更新敌人逻辑
+            updateEnemies(delta);
+
             // 更新相机位置
             camera.position.set(characterX, characterY, 0);
             camera.update();
@@ -112,8 +132,6 @@ public class GameScreen implements Screen {
             // 渲染地图
             mapRenderer.setView(camera);
             mapRenderer.render();
-
-
         }
 
         // 更新 sinusInput 动画
@@ -164,6 +182,78 @@ public class GameScreen implements Screen {
                     game.getSpriteBatch().draw(game.getCharacterIdleRightAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
                     break;
             }
+
+            // 绘制敌人
+            for (Enemy enemy : enemies) {switch (enemy.getType()) {
+                case 1:  // 敌人类型 1
+                    switch (currentDirection) {
+                        case RIGHT:
+                            game.getSpriteBatch().draw(game.getEnemy1RightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case LEFT:
+                            game.getSpriteBatch().draw(game.getEnemy1LeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case UP:
+                            game.getSpriteBatch().draw(game.getEnemy1UpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case DOWN:
+                            game.getSpriteBatch().draw(game.getEnemy1DownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_RIGHT:
+                            game.getSpriteBatch().draw(game.getEnemy1IdleRightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_LEFT:
+                            game.getSpriteBatch().draw(game.getEnemy1IdleLeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_UP:
+                            game.getSpriteBatch().draw(game.getEnemy1IdleUpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_DOWN:
+                            game.getSpriteBatch().draw(game.getEnemy1IdleDownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                    }
+                    break;
+                case 2:  // 敌人类型 2
+                    switch (currentDirection) {
+                        case RIGHT:
+                            game.getSpriteBatch().draw(game.getEnemy2RightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case LEFT:
+                            game.getSpriteBatch().draw(game.getEnemy2LeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case UP:
+                            game.getSpriteBatch().draw(game.getEnemy2UpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case DOWN:
+                            game.getSpriteBatch().draw(game.getEnemy2DownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_RIGHT:
+                            game.getSpriteBatch().draw(game.getEnemy2IdleRightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_LEFT:
+                            game.getSpriteBatch().draw(game.getEnemy2IdleLeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_UP:
+                            game.getSpriteBatch().draw(game.getEnemy2IdleUpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                        case IDLE_DOWN:
+                            game.getSpriteBatch().draw(game.getEnemy2IdleDownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
+                            break;
+                    }
+                    break;
+                // 对于敌人 3、4、5 也做类似的处理
+                case 3:  // 敌人类型 3
+                    // 处理敌人 3 的动画
+                    break;
+                case 4:  // 敌人类型 4
+                    // 处理敌人 4 的动画
+                    break;
+                case 5:  // 敌人类型 5
+                    // 处理敌人 5 的动画
+                    break;
+            }
+
+            }
         }
 
         game.getSpriteBatch().end();
@@ -171,12 +261,10 @@ public class GameScreen implements Screen {
 
     private void startGame() {
         isGameStarted = true;
-        // Reinitialize character position
-        characterX = camera.viewportWidth / 2;
-        characterY = camera.viewportHeight / 2;
-        currentDirection = Direction.IDLE_DOWN;
-
+        // 初始化角色位置
         initializeCharacterPosition();
+        // 初始化敌人位置
+        initializeEnemies();
     }
 
     private void updateCharacterMovement(float delta) {
@@ -233,6 +321,18 @@ public class GameScreen implements Screen {
         characterY = Math.max(0, Math.min(characterY, camera.viewportHeight - 128));
     }
 
+    private void updateEnemies(float delta) {
+        for (Enemy enemy : enemies) {
+            float distance = Vector2.dst(characterX, characterY, enemy.getX(), enemy.getY());
+            if (distance <= detectionRange) {
+                // 朝角色移动
+                Vector2 direction = new Vector2(characterX - enemy.getX(), characterY - enemy.getY()).nor();
+                enemy.setX(enemy.getX() + direction.x * enemy.getSpeed() * delta);
+                enemy.setY(enemy.getY() + direction.y * enemy.getSpeed() * delta);
+            }
+        }
+    }
+
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
@@ -259,5 +359,46 @@ public class GameScreen implements Screen {
     public void dispose() {
         mapRenderer.dispose();
         tiledMap.dispose();
+    }
+
+    /**
+     * 敌人类，用于存储敌人的位置和速度。
+     */
+    private static class Enemy {
+        private float x;
+        private float y;
+        private final float speed;
+        private final int type;
+
+        public Enemy(float x, float y, float speed, int type) {
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+            this.type = type;
+        }
+
+        public float getX() {
+            return x;
+        }
+
+        public void setX(float x) {
+            this.x = x;
+        }
+
+        public float getY() {
+            return y;
+        }
+
+        public void setY(float y) {
+            this.y = y;
+        }
+
+        public float getSpeed() {
+            return speed;
+        }
+
+        public int getType() {
+            return type;
+        }
     }
 }
