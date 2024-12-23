@@ -26,11 +26,12 @@ public class MazeRunnerGame extends Game {
     // UI Skin
     private Skin skin;
 
-    // Character animation downwards
+    // Character move
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterUpAnimation;
     private Animation<TextureRegion> characterRightAnimation;
     private Animation<TextureRegion> characterLeftAnimation;
+    //idle
     private Animation<TextureRegion> characterIdleUpAnimation;
     private Animation<TextureRegion> characterIdleDownAnimation;
     private Animation<TextureRegion> characterIdleLeftAnimation;
@@ -54,6 +55,12 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterAttackUpAnimation;
     private Animation<TextureRegion> characterAttackRightAnimation;
     private Animation<TextureRegion> characterAttackLeftAnimation;
+    //Enemy1 move
+    private Animation<TextureRegion> e1DownAnimation;
+    private Animation<TextureRegion> e1LeftAnimation;
+    private Animation<TextureRegion> e1RightAnimation;
+    private Animation<TextureRegion> e1UpAnimation;
+
 
 
 
@@ -74,7 +81,8 @@ public class MazeRunnerGame extends Game {
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
+        this.loadCharacterAnimation();// Load character animation
+        this.loadEnemyAnimation();
 
         // Play some background music
         // Background sound
@@ -151,6 +159,7 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> attackLeftFrames = new Array<>(TextureRegion.class);
 
         // Add all frames to the animation
+//walk
         //walkdown
         for (int col = 0; col < animationFrames; col++) {
             walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
@@ -177,7 +186,7 @@ public class MazeRunnerGame extends Game {
         }
 
         characterUpAnimation = new Animation<>(0.1f, walkUpFrames);
-
+//idle
         //idle_down
 
         walkIdleDownFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 0, frameWidth, frameHeight));
@@ -262,19 +271,19 @@ public class MazeRunnerGame extends Game {
 
         characterHoldLeftAnimation= new Animation<>(0.1f, holdLeftFrames);
         //hold_idle_down
-        holdIdleDownFrames.add(new TextureRegion(walkSheet, 144 + 0 * frameWidth, 0* frameHeight, frameWidth, frameHeight));
+        holdIdleDownFrames.add(new TextureRegion(walkSheet, 136 + 0 * frameWidth, 0* frameHeight, frameWidth, frameHeight));
 
         characterHoldIdleDownAnimation= new Animation<>(0.1f, holdIdleDownFrames);
         //hold_idle_right
-        holdIdleRightFrames.add(new TextureRegion(walkSheet, 144 + 0 * frameWidth, 1* frameHeight, frameWidth, frameHeight));
+        holdIdleRightFrames.add(new TextureRegion(walkSheet, 136 + 0 * frameWidth, 1* frameHeight, frameWidth, frameHeight));
 
         characterHoldIdleRightAnimation= new Animation<>(0.1f, holdIdleRightFrames);
         //hold_idle_up
-        holdIdleUpFrames.add(new TextureRegion(walkSheet, 144 + 0 * frameWidth, 2* frameHeight, frameWidth, frameHeight));
+        holdIdleUpFrames.add(new TextureRegion(walkSheet, 136 + 0 * frameWidth, 2* frameHeight, frameWidth, frameHeight));
 
         characterHoldIdleUpAnimation= new Animation<>(0.1f, holdIdleUpFrames);
         //hold_idle_left
-        holdIdleLeftFrames.add(new TextureRegion(walkSheet, 144 + 0 * frameWidth, 3* frameHeight, frameWidth, frameHeight));
+        holdIdleLeftFrames.add(new TextureRegion(walkSheet, 136 + 0 * frameWidth, 3* frameHeight, frameWidth, frameHeight));
 
         characterHoldIdleLeftAnimation= new Animation<>(0.1f, holdIdleLeftFrames);
 
@@ -307,6 +316,54 @@ public class MazeRunnerGame extends Game {
         characterAttackLeftAnimation = new Animation<>(0.1f,attackLeftFrames);
 
     }
+
+    void loadEnemyAnimation() {
+
+        Texture eSheet = new Texture(Gdx.files.internal("mobs.png"));
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+        int animationFrames = 3;
+//frames
+        //e1
+        Array<TextureRegion> e1downFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> e1leftFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> e1rightFrames = new Array<>(TextureRegion.class);
+        Array<TextureRegion> e1upFrames = new Array<>(TextureRegion.class);
+
+        //e1down
+        for (int col = 0; col < animationFrames; col++) {
+            e1downFrames.add(new TextureRegion(eSheet, 144+ col * frameWidth, 0*frameHeight,frameWidth, frameHeight));
+        }
+
+        e1DownAnimation = new Animation<>(0.1f, e1downFrames);
+
+        //e1left
+        for (int col = 0; col < animationFrames; col++) {
+            e1leftFrames.add(new TextureRegion(eSheet, 144 + col * frameWidth, 1 *frameHeight, frameWidth, frameHeight));
+        }
+
+        e1LeftAnimation = new Animation<>(0.1f, e1leftFrames);
+
+        //e1right
+        for (int col = 0; col < animationFrames; col++) {
+            e1rightFrames.add(new TextureRegion(eSheet, 144 + col * frameWidth, 2 *frameHeight, frameWidth, frameHeight));
+        }
+
+        e1RightAnimation = new Animation<>(0.1f, e1rightFrames);
+
+        //e1up
+        for (int col = 0; col < animationFrames; col++) {
+            e1upFrames.add(new TextureRegion(eSheet, 144 + col * frameWidth, 3 *frameHeight, frameWidth, frameHeight));
+        }
+
+        e1UpAnimation = new Animation<>(0.1f, e1upFrames);
+
+
+    }
+
+
+
 
 
 
@@ -423,6 +480,22 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getCharacterAttackLeftAnimation() {
         return characterAttackLeftAnimation;
+    }
+
+    public Animation<TextureRegion> getE1DownAnimation() {
+        return e1DownAnimation;
+    }
+
+    public Animation<TextureRegion> getE1LeftAnimation() {
+        return e1LeftAnimation;
+    }
+
+    public Animation<TextureRegion> getE1RightAnimation() {
+        return e1RightAnimation;
+    }
+
+    public Animation<TextureRegion> getE1UpAnimation() {
+        return e1UpAnimation;
     }
 
     public SpriteBatch getSpriteBatch() {

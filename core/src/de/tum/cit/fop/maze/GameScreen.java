@@ -25,6 +25,8 @@ public class GameScreen implements Screen {
     private float sinusInput = 0f;
     private float characterX;
     private float characterY;
+    private float EnemyX;
+    private float EnemyY;
     private float characterSpeed = 200f;
     private static final float SPEED_MULTIPLIER = 2.5f;
 
@@ -35,9 +37,16 @@ public class GameScreen implements Screen {
     private enum Direction {
         UP, DOWN, LEFT, RIGHT, IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
     }
+    private enum EnemyDirection{
+        UP, DOWN, LEFT, RIGHT, IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
+    }
+
+
 
     private Direction currentDirection = Direction.IDLE_DOWN;
+    private EnemyDirection currentEnemyDirection=EnemyDirection.DOWN;
     private boolean isGameStarted = false;
+    private boolean isPaused = false;
     private Array<Rectangle> collisionRectangles;
 
     private boolean isAttacking = false;
@@ -84,6 +93,17 @@ public class GameScreen implements Screen {
             characterY = camera.viewportHeight / 2;
         }
     }
+    private void initializeEnemyPosition() {
+        RectangleMapObject enemyObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("object1");
+        if (enemyObject != null) {
+            Rectangle rect = enemyObject.getRectangle();
+            EnemyX = rect.x;
+            EnemyY = rect.y;
+        } else {
+            EnemyX = camera.viewportWidth / 2;
+            EnemyY = camera.viewportHeight / 2;
+        }
+    }
 
     @Override
     public void render(float delta) {
@@ -103,6 +123,19 @@ public class GameScreen implements Screen {
             camera.update();
             mapRenderer.setView(camera);
             mapRenderer.render();
+
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            isPaused = !isPaused;
+        }
+
+        if (isPaused) {
+            ScreenUtils.clear(0, 0, 0, 1);
+            game.getSpriteBatch().setProjectionMatrix(camera.combined);
+            game.getSpriteBatch().begin();
+            font.draw(game.getSpriteBatch(), "Game Paused. Press 'P' to resume.", camera.position.x - 100, camera.position.y);
+            game.getSpriteBatch().end();
+            return;
         }
 
         sinusInput += delta;
@@ -124,18 +157,23 @@ public class GameScreen implements Screen {
             );
         } else {
             renderCharacter();
+            renderEnemy();
         }
 
         game.getSpriteBatch().end();
     }
 
+
     private void startGame() {
         isGameStarted = true;
         characterX = camera.viewportWidth / 2;
         characterY = camera.viewportHeight / 2;
+        EnemyX = camera.viewportWidth / 2;
+        EnemyY = camera.viewportHeight / 2;
         currentDirection = Direction.IDLE_DOWN;
 
         initializeCharacterPosition();
+        initializeEnemyPosition();
     }
 
     private void updateGameState(float delta) {
@@ -158,6 +196,8 @@ public class GameScreen implements Screen {
     }
 
     private void handleInput(float delta) {
+        if (isPaused) return;
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
             isPickingUp = true;
             pickUpTimer = 0f;
@@ -174,7 +214,15 @@ public class GameScreen implements Screen {
             attackTimer = 0f;
             return;
         }
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            isHolding = false;
+            switch (currentDirection) {
+                case UP: currentDirection = Direction.IDLE_UP; break;
+                case DOWN: currentDirection = Direction.IDLE_DOWN; break;
+                case LEFT: currentDirection = Direction.IDLE_LEFT; break;
+                case RIGHT: currentDirection = Direction.IDLE_RIGHT; break;
+            }
+        }
         float adjustedSpeed = characterSpeed;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
             adjustedSpeed *= SPEED_MULTIPLIER;
@@ -274,14 +322,14 @@ public class GameScreen implements Screen {
 
     private void renderHoldAnimation() {
         switch (currentDirection) {
-            case UP -> game.getSpriteBatch().draw(game.getCharacterHoldUpAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case DOWN -> game.getSpriteBatch().draw(game.getCharacterHoldDownAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case LEFT -> game.getSpriteBatch().draw(game.getCharacterHoldLeftAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case RIGHT -> game.getSpriteBatch().draw(game.getCharacterHoldRightAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case IDLE_UP -> game.getSpriteBatch().draw(game.getCharacterHoldIdleUpAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case IDLE_DOWN -> game.getSpriteBatch().draw(game.getCharacterHoldIdleDownAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case IDLE_LEFT -> game.getSpriteBatch().draw(game.getCharacterHoldIdleLeftAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
-            case IDLE_RIGHT -> game.getSpriteBatch().draw(game.getCharacterHoldIdleRightAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
+            case UP -> game.getSpriteBatch().draw(game.getCharacterHoldUpAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case DOWN -> game.getSpriteBatch().draw(game.getCharacterHoldDownAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case LEFT -> game.getSpriteBatch().draw(game.getCharacterHoldLeftAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case RIGHT -> game.getSpriteBatch().draw(game.getCharacterHoldRightAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case IDLE_UP -> game.getSpriteBatch().draw(game.getCharacterHoldIdleUpAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case IDLE_DOWN -> game.getSpriteBatch().draw(game.getCharacterHoldIdleDownAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case IDLE_LEFT -> game.getSpriteBatch().draw(game.getCharacterHoldIdleLeftAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
+            case IDLE_RIGHT -> game.getSpriteBatch().draw(game.getCharacterHoldIdleRightAnimation().getKeyFrame(sinusInput, false), characterX, characterY, 64, 128);
         }
     }
 
@@ -306,6 +354,15 @@ public class GameScreen implements Screen {
             case IDLE_RIGHT -> game.getSpriteBatch().draw(game.getCharacterIdleRightAnimation().getKeyFrame(sinusInput, true), characterX, characterY, 64, 128);
         }
     }
+    private void renderEnemy() {
+        switch (currentEnemyDirection) {
+            case UP -> game.getSpriteBatch().draw(game.getE1UpAnimation().getKeyFrame(sinusInput, true), EnemyX, EnemyY, 64, 64);
+            case DOWN -> game.getSpriteBatch().draw(game.getE1DownAnimation().getKeyFrame(sinusInput, true), EnemyX, EnemyY, 64, 64);
+            case LEFT -> game.getSpriteBatch().draw(game.getE1LeftAnimation().getKeyFrame(sinusInput, true), EnemyX, EnemyY, 64, 64);
+            case RIGHT -> game.getSpriteBatch().draw(game.getE1RightAnimation().getKeyFrame(sinusInput, true), EnemyX, EnemyY, 64, 64);
+        }
+    }
+
 
     @Override
     public void resize(int width, int height) {
