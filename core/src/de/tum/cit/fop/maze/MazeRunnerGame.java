@@ -105,6 +105,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
         this.loadCharacterAnimation(); // Load character animation
+        this.loadEnemyAnimation();
 
         // Play some background music
         // Background sound
@@ -286,12 +287,13 @@ public class MazeRunnerGame extends Game {
         }
 
         enemy1DownAnimation = new Animation<>(0.1f, enemy1DownFrames);
+
         //walkright
         for (int col = 0; col < animationFrames; col++) {
             enemy1RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
         }
 
-        enemy1RightAnimation = new Animation<>(0.1f, enemy1LeftFrames);
+        enemy1RightAnimation = new Animation<>(0.1f, enemy1RightFrames);
 
         //walkleft
         for (int col = 0; col < animationFrames; col++) {
@@ -316,7 +318,6 @@ public class MazeRunnerGame extends Game {
         //idle_up
 
         enemy1IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
-
 
         enemy1IdleUpAnimation = new Animation<>(0.1f, enemy1IdleUpFrames);
 
