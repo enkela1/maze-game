@@ -26,18 +26,40 @@ public class MazeRunnerGame extends Game {
     // UI Skin
     private Skin skin;
 
-    // Character animation downwards
+
+    // Movement
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterUpAnimation;
     private Animation<TextureRegion> characterRightAnimation;
     private Animation<TextureRegion> characterLeftAnimation;
+    // Idle
     private Animation<TextureRegion> characterIdleUpAnimation;
     private Animation<TextureRegion> characterIdleDownAnimation;
     private Animation<TextureRegion> characterIdleLeftAnimation;
     private Animation<TextureRegion> characterIdleRightAnimation;
+    // Pick Up
+    private Animation<TextureRegion> characterPickupDownAnimation;
+    private Animation<TextureRegion> characterPickupUpAnimation;
+    private Animation<TextureRegion> characterPickupRightAnimation;
+    private Animation<TextureRegion> characterPickupLeftAnimation;
+    // Hold
+    private Animation<TextureRegion> characterHoldDownAnimation;
+    private Animation<TextureRegion> characterHoldUpAnimation;
+    private Animation<TextureRegion> characterHoldRightAnimation;
+    private Animation<TextureRegion> characterHoldLeftAnimation;
+    private Animation<TextureRegion> characterHoldIdleUpAnimation;
+    private Animation<TextureRegion> characterHoldIdleDownAnimation;
+    private Animation<TextureRegion> characterHoldIdleLeftAnimation;
+    private Animation<TextureRegion> characterHoldIdleRightAnimation;
+    // Attack
+    private Animation<TextureRegion> characterAttackDownAnimation;
+    private Animation<TextureRegion> characterAttackUpAnimation;
+    private Animation<TextureRegion> characterAttackRightAnimation;
+    private Animation<TextureRegion> characterAttackLeftAnimation;
 
 
-    //Enemy1 animation downloads
+    // Enemy Animations
+
     private Animation<TextureRegion> enemy1DownAnimation;
     private Animation<TextureRegion> enemy1UpAnimation;
     private Animation<TextureRegion> enemy1RightAnimation;
@@ -47,7 +69,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy1IdleLeftAnimation;
     private Animation<TextureRegion> enemy1IdleRightAnimation;
 
-    //Enemy2 animation downloads
     private Animation<TextureRegion> enemy2DownAnimation;
     private Animation<TextureRegion> enemy2UpAnimation;
     private Animation<TextureRegion> enemy2RightAnimation;
@@ -57,7 +78,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy2IdleLeftAnimation;
     private Animation<TextureRegion> enemy2IdleRightAnimation;
 
-    //Enemy3 animation downloads
     private Animation<TextureRegion> enemy3DownAnimation;
     private Animation<TextureRegion> enemy3UpAnimation;
     private Animation<TextureRegion> enemy3RightAnimation;
@@ -67,7 +87,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy3IdleLeftAnimation;
     private Animation<TextureRegion> enemy3IdleRightAnimation;
 
-    //Enemy4 animation downloads
     private Animation<TextureRegion> enemy4DownAnimation;
     private Animation<TextureRegion> enemy4UpAnimation;
     private Animation<TextureRegion> enemy4RightAnimation;
@@ -77,7 +96,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy4IdleLeftAnimation;
     private Animation<TextureRegion> enemy4IdleRightAnimation;
 
-    //Enemy5 animation downloads
     private Animation<TextureRegion> enemy5DownAnimation;
     private Animation<TextureRegion> enemy5UpAnimation;
     private Animation<TextureRegion> enemy5RightAnimation;
@@ -86,7 +104,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy5IdleDownAnimation;
     private Animation<TextureRegion> enemy5IdleLeftAnimation;
     private Animation<TextureRegion> enemy5IdleRightAnimation;
-
 
     /**
      * Constructor for MazeRunnerGame.
@@ -104,11 +121,12 @@ public class MazeRunnerGame extends Game {
     public void create() {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
-        this.loadCharacterAnimation(); // Load character animation
+
+        // Load all animations
+        this.loadCharacterAnimation();
         this.loadEnemyAnimation();
 
         // Play some background music
-        // Background sound
         Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
@@ -120,9 +138,9 @@ public class MazeRunnerGame extends Game {
      * Switches to the menu screen.
      */
     public void goToMenu() {
-        this.setScreen(new MenuScreen(this)); // Set the current screen to MenuScreen
+        this.setScreen(new MenuScreen(this));
         if (gameScreen != null) {
-            gameScreen.dispose(); // Dispose the game screen if it exists
+            gameScreen.dispose();
             gameScreen = null;
         }
     }
@@ -131,16 +149,16 @@ public class MazeRunnerGame extends Game {
      * Switches to the game screen.
      */
     public void goToGame() {
-        this.setScreen(new GameScreen(this)); // Set the current screen to GameScreen
+        this.setScreen(new GameScreen(this));
         if (menuScreen != null) {
-            menuScreen.dispose(); // Dispose the menu screen if it exists
+            menuScreen.dispose();
             menuScreen = null;
         }
     }
 
-
     /**
-     * Loads the character animation from the character.png file.
+     * Loads the character animation from the character.png file,
+     * including move/idle/pickup/hold/attack frames.
      */
     private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
@@ -149,75 +167,214 @@ public class MazeRunnerGame extends Game {
         int frameHeight = 32;
         int animationFrames = 4;
 
-        // libGDX internal Array instead of ArrayList because of performance
-        Array<TextureRegion> walkFrames = new Array<>(TextureRegion.class);
+        int attackFrameWidth = 32;
+        int attackFrameHeight = 32;
 
-        Array<TextureRegion> walkRightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkIdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkIdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkIdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> walkIdleRightFrames = new Array<>(TextureRegion.class);
+        // Movement
+        Array<TextureRegion> walkDownFrames  = new Array<>();
+        Array<TextureRegion> walkRightFrames = new Array<>();
+        Array<TextureRegion> walkLeftFrames  = new Array<>();
+        Array<TextureRegion> walkUpFrames    = new Array<>();
 
-        // Add all frames to the animation
-        //walkdown
+        // Idle
+        Array<TextureRegion> idleDownFrames  = new Array<>();
+        Array<TextureRegion> idleUpFrames    = new Array<>();
+        Array<TextureRegion> idleLeftFrames  = new Array<>();
+        Array<TextureRegion> idleRightFrames = new Array<>();
+
+        // Pickup
+        Array<TextureRegion> pickupDownFrames  = new Array<>();
+        Array<TextureRegion> pickupUpFrames    = new Array<>();
+        Array<TextureRegion> pickupRightFrames = new Array<>();
+        Array<TextureRegion> pickupLeftFrames  = new Array<>();
+
+        // Hold
+        Array<TextureRegion> holdDownFrames     = new Array<>();
+        Array<TextureRegion> holdRightFrames    = new Array<>();
+        Array<TextureRegion> holdLeftFrames     = new Array<>();
+        Array<TextureRegion> holdUpFrames       = new Array<>();
+        Array<TextureRegion> holdIdleDownFrames = new Array<>();
+        Array<TextureRegion> holdIdleUpFrames   = new Array<>();
+        Array<TextureRegion> holdIdleLeftFrames = new Array<>();
+        Array<TextureRegion> holdIdleRightFrames= new Array<>();
+
+        // Attack
+        Array<TextureRegion> attackDownFrames  = new Array<>();
+        Array<TextureRegion> attackUpFrames    = new Array<>();
+        Array<TextureRegion> attackRightFrames = new Array<>();
+        Array<TextureRegion> attackLeftFrames  = new Array<>();
+
+
+        // Movement Animations
+
+        // walk down
         for (int col = 0; col < animationFrames; col++) {
-            walkFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
+            walkDownFrames.add(new TextureRegion(walkSheet, col * frameWidth, 0, frameWidth, frameHeight));
         }
+        characterDownAnimation = new Animation<>(0.1f, walkDownFrames);
 
-        characterDownAnimation = new Animation<>(0.1f, walkFrames);
-        //walkright
+        // walk right
         for (int col = 0; col < animationFrames; col++) {
-            walkRightFrames.add(new TextureRegion(walkSheet, col * 1 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+            walkRightFrames.add(new TextureRegion(walkSheet, col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
         }
-
         characterRightAnimation = new Animation<>(0.1f, walkRightFrames);
 
-        //walkleft
+        // walk left
         for (int col = 0; col < animationFrames; col++) {
-            walkLeftFrames.add(new TextureRegion(walkSheet, col * 1 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+            walkLeftFrames.add(new TextureRegion(walkSheet, col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
         }
-
         characterLeftAnimation = new Animation<>(0.1f, walkLeftFrames);
 
-        //walkup
+        // walk up
         for (int col = 0; col < animationFrames; col++) {
-            walkUpFrames.add(new TextureRegion(walkSheet, col * 1 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+            walkUpFrames.add(new TextureRegion(walkSheet, col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
         }
-
         characterUpAnimation = new Animation<>(0.1f, walkUpFrames);
 
-        //idle_down
+        // -------------------------
+        // Idle Animations
+        // -------------------------
+        // idle down
+        idleDownFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        characterIdleDownAnimation = new Animation<>(0.1f, idleDownFrames);
 
-        walkIdleDownFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        // idle up
+        idleUpFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        characterIdleUpAnimation = new Animation<>(0.1f, idleUpFrames);
 
-        characterIdleDownAnimation = new Animation<>(0.1f, walkIdleDownFrames);
+        // idle left
+        idleLeftFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        characterIdleLeftAnimation = new Animation<>(0.1f, idleLeftFrames);
 
-        //idle_up
-
-        walkIdleUpFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
-
-
-        characterIdleUpAnimation = new Animation<>(0.1f, walkIdleUpFrames);
-
-        //idle_left
-
-        walkIdleLeftFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
-
-
-        characterIdleLeftAnimation = new Animation<>(0.1f, walkIdleLeftFrames);
-
-        //idle_right
-
-        walkIdleRightFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        // idle right
+        idleRightFrames.add(new TextureRegion(walkSheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        characterIdleRightAnimation = new Animation<>(0.1f, idleRightFrames);
 
 
-        characterIdleRightAnimation = new Animation<>(0.1f, walkIdleRightFrames);
+        // Pickup Animations
+
+        // pickup down
+        for (int col = 0; col < 3; col++) {
+            pickupDownFrames.add(new TextureRegion(walkSheet, 80 + col * frameWidth, 0, frameWidth, frameHeight));
+        }
+        characterPickupDownAnimation = new Animation<>(0.1f, pickupDownFrames);
+
+        // pickup right
+        for (int col = 0; col < 3; col++) {
+            pickupRightFrames.add(new TextureRegion(walkSheet, 80 + col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        }
+        characterPickupRightAnimation = new Animation<>(0.1f, pickupRightFrames);
+
+        // pickup up
+        for (int col = 0; col < 3; col++) {
+            pickupUpFrames.add(new TextureRegion(walkSheet, 80 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        }
+        characterPickupUpAnimation = new Animation<>(0.1f, pickupUpFrames);
+
+        // pickup left
+        for (int col = 0; col < 3; col++) {
+            pickupLeftFrames.add(new TextureRegion(walkSheet, 80 + col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        }
+        characterPickupLeftAnimation = new Animation<>(0.1f, pickupLeftFrames);
 
 
+        // Hold Animations
+
+        // hold down
+        for (int col = 0; col < animationFrames; col++) {
+            holdDownFrames.add(new TextureRegion(walkSheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
+        }
+        characterHoldDownAnimation = new Animation<>(0.1f, holdDownFrames);
+
+        // hold right
+        for (int col = 0; col < animationFrames; col++) {
+            holdRightFrames.add(new TextureRegion(walkSheet, 144 + col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        }
+        characterHoldRightAnimation = new Animation<>(0.1f, holdRightFrames);
+
+        // hold up
+        for (int col = 0; col < animationFrames; col++) {
+            holdUpFrames.add(new TextureRegion(walkSheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        }
+        characterHoldUpAnimation = new Animation<>(0.1f, holdUpFrames);
+
+        // hold left
+        for (int col = 0; col < animationFrames; col++) {
+            holdLeftFrames.add(new TextureRegion(walkSheet, 144 + col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        }
+        characterHoldLeftAnimation = new Animation<>(0.1f, holdLeftFrames);
+
+        // hold idle down
+        holdIdleDownFrames.add(new TextureRegion(walkSheet, 136, 0, frameWidth, frameHeight));
+        characterHoldIdleDownAnimation = new Animation<>(0.1f, holdIdleDownFrames);
+
+        // hold idle right
+        holdIdleRightFrames.add(new TextureRegion(walkSheet, 136, 1 * frameHeight, frameWidth, frameHeight));
+        characterHoldIdleRightAnimation = new Animation<>(0.1f, holdIdleRightFrames);
+
+        // hold idle up
+        holdIdleUpFrames.add(new TextureRegion(walkSheet, 136, 2 * frameHeight, frameWidth, frameHeight));
+        characterHoldIdleUpAnimation = new Animation<>(0.1f, holdIdleUpFrames);
+
+        // hold idle left
+        holdIdleLeftFrames.add(new TextureRegion(walkSheet, 136, 3 * frameHeight, frameWidth, frameHeight));
+        characterHoldIdleLeftAnimation = new Animation<>(0.1f, holdIdleLeftFrames);
+
+
+        // Attack Animations
+
+        // attack down
+        for (int col = 0; col < animationFrames; col++) {
+            attackDownFrames.add(new TextureRegion(
+                    walkSheet,
+                    col * attackFrameWidth,
+                    4 * attackFrameHeight,
+                    attackFrameWidth,
+                    attackFrameHeight
+            ));
+        }
+        characterAttackDownAnimation = new Animation<>(0.1f, attackDownFrames);
+
+        // attack up
+        for (int col = 0; col < animationFrames; col++) {
+            attackUpFrames.add(new TextureRegion(
+                    walkSheet,
+                    col * attackFrameWidth,
+                    5 * attackFrameHeight,
+                    attackFrameWidth,
+                    attackFrameHeight
+            ));
+        }
+        characterAttackUpAnimation = new Animation<>(0.1f, attackUpFrames);
+
+        // attack right
+        for (int col = 0; col < animationFrames; col++) {
+            attackRightFrames.add(new TextureRegion(
+                    walkSheet,
+                    col * attackFrameWidth,
+                    6 * attackFrameHeight,
+                    attackFrameWidth,
+                    attackFrameHeight
+            ));
+        }
+        characterAttackRightAnimation = new Animation<>(0.1f, attackRightFrames);
+
+        // attack left
+        for (int col = 0; col < animationFrames; col++) {
+            attackLeftFrames.add(new TextureRegion(
+                    walkSheet,
+                    col * attackFrameWidth,
+                    7 * attackFrameHeight,
+                    attackFrameWidth,
+                    attackFrameHeight
+            ));
+        }
+        characterAttackLeftAnimation = new Animation<>(0.1f, attackLeftFrames);
     }
 
+    /**
+     * Loads enemy animations (enemy1... enemy5) from mobs.png.
+     */
     private void loadEnemyAnimation() {
         Texture enemySheet = new Texture(Gdx.files.internal("mobs.png"));
 
@@ -225,549 +382,478 @@ public class MazeRunnerGame extends Game {
         int frameHeight = 16;
         int animationFrames = 3;
 
-        //walk
-        Array<TextureRegion> enemy1DownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1RightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1LeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1UpFrames = new Array<>(TextureRegion.class);
-        //idle
-        Array<TextureRegion> enemy1IdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1IdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1IdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy1IdleRightFrames = new Array<>(TextureRegion.class);
+        // -------------------------
+        // Enemy1
+        // -------------------------
+        Array<TextureRegion> e1DownFrames  = new Array<>();
+        Array<TextureRegion> e1RightFrames = new Array<>();
+        Array<TextureRegion> e1LeftFrames  = new Array<>();
+        Array<TextureRegion> e1UpFrames    = new Array<>();
+        Array<TextureRegion> e1IdleDownFrames  = new Array<>();
+        Array<TextureRegion> e1IdleUpFrames    = new Array<>();
+        Array<TextureRegion> e1IdleLeftFrames  = new Array<>();
+        Array<TextureRegion> e1IdleRightFrames = new Array<>();
 
-        //walk
-        Array<TextureRegion> enemy2DownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2RightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2LeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2UpFrames = new Array<>(TextureRegion.class);
-        //idle
-        Array<TextureRegion> enemy2IdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2IdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2IdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy2IdleRightFrames = new Array<>(TextureRegion.class);
-
-        //walk
-        Array<TextureRegion> enemy3DownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3RightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3LeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3UpFrames = new Array<>(TextureRegion.class);
-        //idle
-        Array<TextureRegion> enemy3IdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3IdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3IdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy3IdleRightFrames = new Array<>(TextureRegion.class);
-
-        //walk
-        Array<TextureRegion> enemy4DownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4RightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4LeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4UpFrames = new Array<>(TextureRegion.class);
-        //idle
-        Array<TextureRegion> enemy4IdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4IdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4IdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy4IdleRightFrames = new Array<>(TextureRegion.class);
-
-        //walk
-        Array<TextureRegion> enemy5DownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5RightFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5LeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5UpFrames = new Array<>(TextureRegion.class);
-        //idle
-        Array<TextureRegion> enemy5IdleDownFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5IdleUpFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5IdleLeftFrames = new Array<>(TextureRegion.class);
-        Array<TextureRegion> enemy5IdleRightFrames = new Array<>(TextureRegion.class);
-
-        //1
-        //walkdown
+        // walk down
         for (int col = 0; col < animationFrames; col++) {
-            enemy1DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
+            e1DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
         }
+        enemy1DownAnimation = new Animation<>(0.1f, e1DownFrames);
 
-        enemy1DownAnimation = new Animation<>(0.1f, enemy1DownFrames);
-
-        //walkright
+        // walk right
         for (int col = 0; col < animationFrames; col++) {
-            enemy1RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+            e1RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
         }
+        enemy1RightAnimation = new Animation<>(0.1f, e1RightFrames);
 
-        enemy1RightAnimation = new Animation<>(0.1f, enemy1RightFrames);
-
-        //walkleft
+        // walk left
         for (int col = 0; col < animationFrames; col++) {
-            enemy1LeftFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+            e1LeftFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
         }
+        enemy1LeftAnimation = new Animation<>(0.1f, e1LeftFrames);
 
-        enemy1LeftAnimation = new Animation<>(0.1f, enemy1LeftFrames);
-
-        //walkup
+        // walk up
         for (int col = 0; col < animationFrames; col++) {
-            enemy1UpFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+            e1UpFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
         }
+        enemy1UpAnimation = new Animation<>(0.1f, e1UpFrames);
 
-        enemy1UpAnimation = new Animation<>(0.1f, enemy1UpFrames);
+        // idle_down
+        e1IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        enemy1IdleDownAnimation = new Animation<>(0.1f, e1IdleDownFrames);
 
-        //idle_down
+        // idle_up
+        e1IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        enemy1IdleUpAnimation = new Animation<>(0.1f, e1IdleUpFrames);
 
-        enemy1IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        // idle_left
+        e1IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        enemy1IdleLeftAnimation = new Animation<>(0.1f, e1IdleLeftFrames);
 
-        enemy1IdleDownAnimation = new Animation<>(0.1f, enemy1IdleDownFrames);
-
-        //idle_up
-
-        enemy1IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
-
-        enemy1IdleUpAnimation = new Animation<>(0.1f, enemy1IdleUpFrames);
-
-        //idle_left
-
-        enemy1IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy1IdleLeftAnimation = new Animation<>(0.1f, enemy1IdleLeftFrames);
-
-        //idle_right
-
-        enemy1IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        // idle_right
+        e1IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        enemy1IdleRightAnimation = new Animation<>(0.1f, e1IdleRightFrames);
 
 
-        enemy1IdleRightAnimation = new Animation<>(0.1f, enemy1IdleRightFrames);
+        // Enemy2
 
-        //2
-        //walkdown
+        Array<TextureRegion> e2DownFrames  = new Array<>();
+        Array<TextureRegion> e2RightFrames = new Array<>();
+        Array<TextureRegion> e2LeftFrames  = new Array<>();
+        Array<TextureRegion> e2UpFrames    = new Array<>();
+        Array<TextureRegion> e2IdleDownFrames  = new Array<>();
+        Array<TextureRegion> e2IdleUpFrames    = new Array<>();
+        Array<TextureRegion> e2IdleLeftFrames  = new Array<>();
+        Array<TextureRegion> e2IdleRightFrames = new Array<>();
+
+        // walk down
         for (int col = 0; col < animationFrames; col++) {
-            enemy2DownFrames.add(new TextureRegion(enemySheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+            e2DownFrames.add(new TextureRegion(enemySheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
         }
+        enemy2DownAnimation = new Animation<>(0.1f, e2DownFrames);
 
-        enemy2DownAnimation = new Animation<>(0.1f, enemy2DownFrames);
-        //walkright
+        // walk right
         for (int col = 0; col < animationFrames; col++) {
-            enemy2RightFrames.add(new TextureRegion(enemySheet, col * frameWidth, 6 * frameHeight, frameWidth, frameHeight));
+            e2RightFrames.add(new TextureRegion(enemySheet, col * frameWidth, 6 * frameHeight, frameWidth, frameHeight));
         }
+        enemy2RightAnimation = new Animation<>(0.1f, e2RightFrames);
 
-        enemy2RightAnimation = new Animation<>(0.1f, enemy2RightFrames);
-
-        //walkleft
+        // walk left
         for (int col = 0; col < animationFrames; col++) {
-            enemy2LeftFrames.add(new TextureRegion(enemySheet, col * 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+            e2LeftFrames.add(new TextureRegion(enemySheet, col * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
         }
+        enemy2LeftAnimation = new Animation<>(0.1f, e2LeftFrames);
 
-        enemy2LeftAnimation = new Animation<>(0.1f, enemy2LeftFrames);
-
-        //walkup
+        // walk up
         for (int col = 0; col < animationFrames; col++) {
-            enemy2UpFrames.add(new TextureRegion(enemySheet, col * 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
+            e2UpFrames.add(new TextureRegion(enemySheet, col * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
         }
+        enemy2UpAnimation = new Animation<>(0.1f, e2UpFrames);
 
-        enemy2UpAnimation = new Animation<>(0.1f, enemy2UpFrames);
+        // idle_down
+        e2IdleDownFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+        enemy2IdleDownAnimation = new Animation<>(0.1f, e2IdleDownFrames);
 
-        //idle_down
+        // idle_up
+        e2IdleUpFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
+        enemy2IdleUpAnimation = new Animation<>(0.1f, e2IdleUpFrames);
 
-        enemy2IdleDownFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+        // idle_left
+        e2IdleLeftFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        enemy2IdleLeftAnimation = new Animation<>(0.1f, e2IdleLeftFrames);
 
-        enemy2IdleDownAnimation = new Animation<>(0.1f, enemy2IdleDownFrames);
+        // idle_right
+        e2IdleRightFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        enemy2IdleRightAnimation = new Animation<>(0.1f, e2IdleRightFrames);
 
-        //idle_up
-
-        enemy2IdleUpFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy2IdleUpAnimation = new Animation<>(0.1f, enemy2IdleUpFrames);
-
-        //idle_left
-
-        enemy2IdleLeftFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy2IdleLeftAnimation = new Animation<>(0.1f, enemy2IdleLeftFrames);
-
-        //idle_right
-
-        enemy2IdleRightFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        // -------------------------
+        // Enemy3
+        // -------------------------
+        Array<TextureRegion> e3DownFrames  = new Array<>();
+        Array<TextureRegion> e3RightFrames = new Array<>();
+        Array<TextureRegion> e3LeftFrames  = new Array<>();
+        Array<TextureRegion> e3UpFrames    = new Array<>();
+        Array<TextureRegion> e3IdleDownFrames  = new Array<>();
+        Array<TextureRegion> e3IdleUpFrames    = new Array<>();
+        Array<TextureRegion> e3IdleLeftFrames  = new Array<>();
+        Array<TextureRegion> e3IdleRightFrames = new Array<>();
 
 
-        enemy2IdleRightAnimation = new Animation<>(0.1f, enemy2IdleRightFrames);
-
-        //3
-        //walkdown
         for (int col = 0; col < animationFrames; col++) {
-            enemy3DownFrames.add(new TextureRegion(enemySheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+            e3DownFrames.add(new TextureRegion(enemySheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
         }
+        enemy3DownAnimation = new Animation<>(0.1f, e3DownFrames);
 
-        enemy3DownAnimation = new Animation<>(0.1f, enemy3DownFrames);
-        //walkright
         for (int col = 0; col < animationFrames; col++) {
-            enemy3RightFrames.add(new TextureRegion(enemySheet, col * frameWidth, 6 * frameHeight, frameWidth, frameHeight));
+            e3RightFrames.add(new TextureRegion(enemySheet, col * frameWidth, 6 * frameHeight, frameWidth, frameHeight));
         }
+        enemy3RightAnimation = new Animation<>(0.1f, e3RightFrames);
 
-        enemy3RightAnimation = new Animation<>(0.1f, enemy3RightFrames);
-
-        //walkleft
         for (int col = 0; col < animationFrames; col++) {
-            enemy3LeftFrames.add(new TextureRegion(enemySheet, col * 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+            e3LeftFrames.add(new TextureRegion(enemySheet, col * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
         }
+        enemy3LeftAnimation = new Animation<>(0.1f, e3LeftFrames);
 
-        enemy3LeftAnimation = new Animation<>(0.1f, enemy3LeftFrames);
-
-        //walkup
         for (int col = 0; col < animationFrames; col++) {
-            enemy3UpFrames.add(new TextureRegion(enemySheet, col * 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
+            e3UpFrames.add(new TextureRegion(enemySheet, col * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
         }
+        enemy3UpAnimation = new Animation<>(0.1f, e3UpFrames);
 
-        enemy3UpAnimation = new Animation<>(0.1f, enemy3UpFrames);
+        e3IdleDownFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+        enemy3IdleDownAnimation = new Animation<>(0.1f, e3IdleDownFrames);
 
-        //idle_down
+        e3IdleUpFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
+        enemy3IdleUpAnimation = new Animation<>(0.1f, e3IdleUpFrames);
 
-        enemy3IdleDownFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+        e3IdleLeftFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        enemy3IdleLeftAnimation = new Animation<>(0.1f, e3IdleLeftFrames);
 
-        enemy3IdleDownAnimation = new Animation<>(0.1f, enemy3IdleDownFrames);
-
-        //idle_up
-
-        enemy3IdleUpFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 7 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy3IdleUpAnimation = new Animation<>(0.1f, enemy3IdleUpFrames);
-
-        //idle_left
-
-        enemy3IdleLeftFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        e3IdleRightFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        enemy3IdleRightAnimation = new Animation<>(0.1f, e3IdleRightFrames);
 
 
-        enemy3IdleLeftAnimation = new Animation<>(0.1f, enemy3IdleLeftFrames);
+        // Enemy4
 
-        //idle_right
+        Array<TextureRegion> e4DownFrames  = new Array<>();
+        Array<TextureRegion> e4RightFrames = new Array<>();
+        Array<TextureRegion> e4LeftFrames  = new Array<>();
+        Array<TextureRegion> e4UpFrames    = new Array<>();
+        Array<TextureRegion> e4IdleDownFrames  = new Array<>();
+        Array<TextureRegion> e4IdleUpFrames    = new Array<>();
+        Array<TextureRegion> e4IdleLeftFrames  = new Array<>();
+        Array<TextureRegion> e4IdleRightFrames = new Array<>();
 
-        enemy3IdleRightFrames.add(new TextureRegion(enemySheet, 1 * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy3IdleRightAnimation = new Animation<>(0.1f, enemy3IdleRightFrames);
-
-        //4
-        //walkdown
         for (int col = 0; col < animationFrames; col++) {
-            enemy4DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
+            e4DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
         }
+        enemy4DownAnimation = new Animation<>(0.1f, e4DownFrames);
 
-        enemy4DownAnimation = new Animation<>(0.1f, enemy4DownFrames);
-        //walkright
         for (int col = 0; col < animationFrames; col++) {
-            enemy4RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+            e4RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
         }
+        enemy4RightAnimation = new Animation<>(0.1f, e4RightFrames);
 
-        enemy4RightAnimation = new Animation<>(0.1f, enemy4LeftFrames);
-
-        //walkleft
         for (int col = 0; col < animationFrames; col++) {
-            enemy4LeftFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+            e4LeftFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
         }
+        enemy4LeftAnimation = new Animation<>(0.1f, e4LeftFrames);
 
-        enemy4LeftAnimation = new Animation<>(0.1f, enemy4LeftFrames);
-
-        //walkup
         for (int col = 0; col < animationFrames; col++) {
-            enemy4UpFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+            e4UpFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
         }
+        enemy4UpAnimation = new Animation<>(0.1f, e4UpFrames);
 
-        enemy4UpAnimation = new Animation<>(0.1f, enemy4UpFrames);
+        e4IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        enemy4IdleDownAnimation = new Animation<>(0.1f, e4IdleDownFrames);
 
-        //idle_down
+        e4IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        enemy4IdleUpAnimation = new Animation<>(0.1f, e4IdleUpFrames);
 
-        enemy4IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        e4IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        enemy4IdleLeftAnimation = new Animation<>(0.1f, e4IdleLeftFrames);
 
-        enemy4IdleDownAnimation = new Animation<>(0.1f, enemy4IdleDownFrames);
+        e4IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        enemy4IdleRightAnimation = new Animation<>(0.1f, e4IdleRightFrames);
 
-        //idle_up
+        // -------------------------
+        // Enemy5
+        // -------------------------
+        Array<TextureRegion> e5DownFrames  = new Array<>();
+        Array<TextureRegion> e5RightFrames = new Array<>();
+        Array<TextureRegion> e5LeftFrames  = new Array<>();
+        Array<TextureRegion> e5UpFrames    = new Array<>();
+        Array<TextureRegion> e5IdleDownFrames  = new Array<>();
+        Array<TextureRegion> e5IdleUpFrames    = new Array<>();
+        Array<TextureRegion> e5IdleLeftFrames  = new Array<>();
+        Array<TextureRegion> e5IdleRightFrames = new Array<>();
 
-        enemy4IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy4IdleUpAnimation = new Animation<>(0.1f, enemy4IdleUpFrames);
-
-        //idle_left
-
-        enemy4IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy4IdleLeftAnimation = new Animation<>(0.1f, enemy4IdleLeftFrames);
-
-        //idle_right
-
-        enemy4IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy4IdleRightAnimation = new Animation<>(0.1f, enemy4IdleRightFrames);
-
-        //5
-        //walkdown
         for (int col = 0; col < animationFrames; col++) {
-            enemy5DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
+            e5DownFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 0, frameWidth, frameHeight));
         }
+        enemy5DownAnimation = new Animation<>(0.1f, e5DownFrames);
 
-        enemy5DownAnimation = new Animation<>(0.1f, enemy5DownFrames);
-        //walkright
         for (int col = 0; col < animationFrames; col++) {
-            enemy5RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+            e5RightFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
         }
+        enemy5RightAnimation = new Animation<>(0.1f, e5RightFrames);
 
-        enemy5RightAnimation = new Animation<>(0.1f, enemy5LeftFrames);
-
-        //walkleft
         for (int col = 0; col < animationFrames; col++) {
-            enemy5LeftFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+            e5LeftFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
         }
+        enemy5LeftAnimation = new Animation<>(0.1f, e5LeftFrames);
 
-        enemy5LeftAnimation = new Animation<>(0.1f, enemy5LeftFrames);
-
-        //walkup
         for (int col = 0; col < animationFrames; col++) {
-            enemy5UpFrames.add(new TextureRegion(enemySheet, 144 + col * 1 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+            e5UpFrames.add(new TextureRegion(enemySheet, 144 + col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
         }
+        enemy5UpAnimation = new Animation<>(0.1f, e5UpFrames);
 
-        enemy5UpAnimation = new Animation<>(0.1f, enemy5UpFrames);
+        e5IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        enemy5IdleDownAnimation = new Animation<>(0.1f, e5IdleDownFrames);
 
-        //idle_down
+        e5IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+        enemy5IdleUpAnimation = new Animation<>(0.1f, e5IdleUpFrames);
 
-        enemy5IdleDownFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 0, frameWidth, frameHeight));
+        e5IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
+        enemy5IdleLeftAnimation = new Animation<>(0.1f, e5IdleLeftFrames);
 
-        enemy5IdleDownAnimation = new Animation<>(0.1f, enemy5IdleDownFrames);
-
-        //idle_up
-
-        enemy5IdleUpFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy5IdleUpAnimation = new Animation<>(0.1f, enemy5IdleUpFrames);
-
-        //idle_left
-
-        enemy5IdleLeftFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 1 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy5IdleLeftAnimation = new Animation<>(0.1f, enemy5IdleLeftFrames);
-
-        //idle_right
-
-        enemy5IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
-
-
-        enemy5IdleRightAnimation = new Animation<>(0.1f, enemy5IdleRightFrames);
-
+        e5IdleRightFrames.add(new TextureRegion(enemySheet, 2 * frameWidth, 2 * frameHeight, frameWidth, frameHeight));
+        enemy5IdleRightAnimation = new Animation<>(0.1f, e5IdleRightFrames);
     }
-
 
     /**
      * Cleans up resources when the game is disposed.
      */
     @Override
     public void dispose() {
-        getScreen().hide(); // Hide the current screen
-        getScreen().dispose(); // Dispose the current screen
-        spriteBatch.dispose(); // Dispose the spriteBatch
-        skin.dispose(); // Dispose the skin
+        getScreen().hide();
+        getScreen().dispose();
+        spriteBatch.dispose();
+        skin.dispose();
     }
 
+    // ------------------------------------------------
     // Getter methods
+    // ------------------------------------------------
     public Skin getSkin() {
         return skin;
-    }
-
-    public Animation<TextureRegion> getCharacterDownAnimation() {
-        return characterDownAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterRightAnimation() {
-        return characterRightAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterUpAnimation() {
-        return characterUpAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterLeftAnimation() {
-        return characterLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterIdleUpAnimation() {
-        return characterIdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterIdleDownAnimation() {
-        return characterIdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterIdleLeftAnimation() {
-        return characterIdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getCharacterIdleRightAnimation() {
-        return characterIdleRightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1DownAnimation() {
-        return enemy1DownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1UpAnimation() {
-        return enemy1UpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1RightAnimation() {
-        return enemy1RightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1LeftAnimation() {
-        return enemy1LeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1IdleUpAnimation() {
-        return enemy1IdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1IdleDownAnimation() {
-        return enemy1IdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1IdleLeftAnimation() {
-        return enemy1IdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy1IdleRightAnimation() {
-        return enemy1IdleRightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2DownAnimation() {
-        return enemy2DownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2UpAnimation() {
-        return enemy2UpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2RightAnimation() {
-        return enemy2RightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2LeftAnimation() {
-        return enemy2LeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2IdleUpAnimation() {
-        return enemy2IdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2IdleDownAnimation() {
-        return enemy2IdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2IdleLeftAnimation() {
-        return enemy2IdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy2IdleRightAnimation() {
-        return enemy2IdleRightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3DownAnimation() {
-        return enemy3DownAnimation;
-    }
-
-    public Animation<TextureRegion> getEney3UpAnimation() {
-        return enemy3UpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3RightAnimation() {
-        return enemy3RightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3LeftAnimation() {
-        return enemy3LeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3IdleUpAnimation() {
-        return enemy3IdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3IdleDownAnimation() {
-        return enemy3IdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3IdleLeftAnimation() {
-        return enemy3IdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy3IdleRightAnimation() {
-        return enemy3IdleRightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4DownAnimation() {
-        return enemy4DownAnimation;
-    }
-
-    public Animation<TextureRegion> getEney4UpAnimation() {
-        return enemy4UpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4RightAnimation() {
-        return enemy4RightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4LeftAnimation() {
-        return enemy4LeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4IdleUpAnimation() {
-        return enemy4IdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4IdleDownAnimation() {
-        return enemy4IdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4IdleLeftAnimation() {
-        return enemy4IdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy4IdleRightAnimation() {
-        return enemy4IdleRightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5DownAnimation() {
-        return enemy5DownAnimation;
-    }
-
-    public Animation<TextureRegion> getEney5UpAnimation() {
-        return enemy5UpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5RightAnimation() {
-        return enemy5RightAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5LeftAnimation() {
-        return enemy5LeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5IdleUpAnimation() {
-        return enemy5IdleUpAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5IdleDownAnimation() {
-        return enemy5IdleDownAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5IdleLeftAnimation() {
-        return enemy5IdleLeftAnimation;
-    }
-
-    public Animation<TextureRegion> getEnemy5IdleRightAnimation() {
-        return enemy5IdleRightAnimation;
     }
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
     }
-}
 
+    // Movement
+    public Animation<TextureRegion> getCharacterDownAnimation() {
+        return characterDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterRightAnimation() {
+        return characterRightAnimation;
+    }
+    public Animation<TextureRegion> getCharacterUpAnimation() {
+        return characterUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterLeftAnimation() {
+        return characterLeftAnimation;
+    }
+
+    // Idle
+    public Animation<TextureRegion> getCharacterIdleUpAnimation() {
+        return characterIdleUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterIdleDownAnimation() {
+        return characterIdleDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterIdleLeftAnimation() {
+        return characterIdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getCharacterIdleRightAnimation() {
+        return characterIdleRightAnimation;
+    }
+
+    // Pickup
+    public Animation<TextureRegion> getCharacterPickupDownAnimation() {
+        return characterPickupDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterPickupUpAnimation() {
+        return characterPickupUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterPickupRightAnimation() {
+        return characterPickupRightAnimation;
+    }
+    public Animation<TextureRegion> getCharacterPickupLeftAnimation() {
+        return characterPickupLeftAnimation;
+    }
+
+    // Hold
+    public Animation<TextureRegion> getCharacterHoldDownAnimation() {
+        return characterHoldDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldUpAnimation() {
+        return characterHoldUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldRightAnimation() {
+        return characterHoldRightAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldLeftAnimation() {
+        return characterHoldLeftAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldIdleUpAnimation() {
+        return characterHoldIdleUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldIdleDownAnimation() {
+        return characterHoldIdleDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldIdleLeftAnimation() {
+        return characterHoldIdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getCharacterHoldIdleRightAnimation() {
+        return characterHoldIdleRightAnimation;
+    }
+
+    // Attack
+    public Animation<TextureRegion> getCharacterAttackDownAnimation() {
+        return characterAttackDownAnimation;
+    }
+    public Animation<TextureRegion> getCharacterAttackUpAnimation() {
+        return characterAttackUpAnimation;
+    }
+    public Animation<TextureRegion> getCharacterAttackRightAnimation() {
+        return characterAttackRightAnimation;
+    }
+    public Animation<TextureRegion> getCharacterAttackLeftAnimation() {
+        return characterAttackLeftAnimation;
+    }
+
+    // Enemy1
+    public Animation<TextureRegion> getEnemy1DownAnimation() {
+        return enemy1DownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1UpAnimation() {
+        return enemy1UpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1RightAnimation() {
+        return enemy1RightAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1LeftAnimation() {
+        return enemy1LeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1IdleUpAnimation() {
+        return enemy1IdleUpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1IdleDownAnimation() {
+        return enemy1IdleDownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1IdleLeftAnimation() {
+        return enemy1IdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy1IdleRightAnimation() {
+        return enemy1IdleRightAnimation;
+    }
+
+    // Enemy2
+    public Animation<TextureRegion> getEnemy2DownAnimation() {
+        return enemy2DownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2UpAnimation() {
+        return enemy2UpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2RightAnimation() {
+        return enemy2RightAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2LeftAnimation() {
+        return enemy2LeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2IdleUpAnimation() {
+        return enemy2IdleUpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2IdleDownAnimation() {
+        return enemy2IdleDownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2IdleLeftAnimation() {
+        return enemy2IdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy2IdleRightAnimation() {
+        return enemy2IdleRightAnimation;
+    }
+
+    // Enemy3
+    public Animation<TextureRegion> getEnemy3DownAnimation() {
+        return enemy3DownAnimation;
+    }
+
+    public Animation<TextureRegion> getEnemy3UpAnimation() {
+        return enemy3UpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3RightAnimation() {
+        return enemy3RightAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3LeftAnimation() {
+        return enemy3LeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3IdleUpAnimation() {
+        return enemy3IdleUpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3IdleDownAnimation() {
+        return enemy3IdleDownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3IdleLeftAnimation() {
+        return enemy3IdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy3IdleRightAnimation() {
+        return enemy3IdleRightAnimation;
+    }
+
+    // Enemy4
+
+    public Animation<TextureRegion> getEnemy4DownAnimation() {
+        return enemy4DownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4UpAnimation() {
+        return enemy4UpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4RightAnimation() {
+        return enemy4RightAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4LeftAnimation() {
+        return enemy4LeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4IdleUpAnimation() {
+        return enemy4IdleUpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4IdleDownAnimation() {
+        return enemy4IdleDownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4IdleLeftAnimation() {
+        return enemy4IdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy4IdleRightAnimation() {
+        return enemy4IdleRightAnimation;
+    }
+
+    // Enemy5
+  
+    public Animation<TextureRegion> getEnemy5DownAnimation() {
+        return enemy5DownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5UpAnimation() {
+        return enemy5UpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5RightAnimation() {
+        return enemy5RightAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5LeftAnimation() {
+        return enemy5LeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5IdleUpAnimation() {
+        return enemy5IdleUpAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5IdleDownAnimation() {
+        return enemy5IdleDownAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5IdleLeftAnimation() {
+        return enemy5IdleLeftAnimation;
+    }
+    public Animation<TextureRegion> getEnemy5IdleRightAnimation() {
+        return enemy5IdleRightAnimation;
+    }
+}

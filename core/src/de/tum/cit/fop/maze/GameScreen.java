@@ -11,8 +11,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +39,11 @@ public class GameScreen implements Screen {
 
     // Define the bounding box for the character's feet
     private static final float FOOT_BOX_OFFSET_X = 16f; // offset from characterX's left edge
-    private static final float FOOT_BOX_OFFSET_Y = 21f;  // offset from characterY's bottom edge
+    private static final float FOOT_BOX_OFFSET_Y = 21f; // offset from characterY's bottom edge
     private static final float FOOT_BOX_WIDTH    = 32f; // box width for collision
     private static final float FOOT_BOX_HEIGHT   = 18f; // box height for collision
 
+    // Enemies
     private List<Enemy> enemies; // 用于存储敌人的列表
     private float detectionRange = 300f; // 检测范围
 
@@ -50,11 +53,30 @@ public class GameScreen implements Screen {
 
     // Directions for animations
     private enum Direction {
-        UP, DOWN, LEFT, RIGHT, IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
+        UP, DOWN, LEFT, RIGHT,
+        IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
     }
 
     private Direction currentDirection = Direction.IDLE_DOWN; // Default direction
-    private boolean isGameStarted = false; // Flag to track if the game has started
+
+    // Flag to track if the game has started
+    private boolean isGameStarted = false;
+
+
+    private boolean isPaused = false;
+    private boolean isAttacking = false;
+    private boolean isPickingUp = false;
+    private boolean isHolding = false;
+
+    private float attackTimer = 0f;
+    private static final float ATTACK_DURATION = 0.5f;
+
+    private float pickUpTimer = 0f;
+    private static final float PICKUP_DURATION = 1f;
+
+
+
+    private Array<Rectangle> collisionRectangles;
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -77,36 +99,70 @@ public class GameScreen implements Screen {
         tiledMap = loader.load("input.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
+        // Get boundaries from first layer
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
-        mapBounds = new Rectangle(0, 0, layer.getWidth() * layer.getTileWidth(), layer.getHeight() * layer.getTileHeight());
+        mapBounds = new Rectangle(
+                0,
+                0,
+                layer.getWidth() * layer.getTileWidth(),
+                layer.getHeight() * layer.getTileHeight()
+        );
 
-        // 初始化敌人列表
+        // Initialize the enemies list
         enemies = new ArrayList<>();
+
+        // rectangle based collisions if needed:
+
+        // collisionRectangles = new Array<>();
+        // MapObjects objects = tiledMap.getLayers().get("layer").getObjects();
+        // for (RectangleMapObject rectangleObject : objects.getByType(RectangleMapObject.class)) {
+        //     collisionRectangles.add(rectangleObject.getRectangle());
+        // }
+
+        collisionRectangles = new Array<>();
     }
 
+    /**
+     * Called when the player presses ENTER to start the game.
+     */
+    private void startGame() {
+        isGameStarted = true;
+        // Initialize character position
+        initializeCharacterPosition();
+        // Initialize enemy positions
+        initializeEnemies();
+    }
 
+    /**
+     * Initializes character position from the "Objects" layer in the Tiled map.
+     */
     private void initializeCharacterPosition() {
-        RectangleMapObject characterObject = (RectangleMapObject)
-                tiledMap.getLayers().get("Objects").getObjects().get("character");
+        RectangleMapObject characterObject =
+                (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
         if (characterObject != null) {
-            Rectangle rect = characterObject.getRectangle();
-            characterX = 0;  // Start at the left corner (X-coordinate)
-            characterY = mapBounds.height - 128;  // Start at the top corner (Y-coordinate)
+
+            // Rectangle rect = characterObject.getRectangle();
             // characterX = rect.x;
             // characterY = rect.y;
+
+            characterX = 0;               // Start at the left corner (X-coordinate)
+            characterY = mapBounds.height - 128;  // Start near the top corner
         } else {
             // Fallback if no character object is found
-            characterX = camera.viewportWidth  / 2;
+            characterX = camera.viewportWidth / 2;
             characterY = camera.viewportHeight / 2;
         }
     }
 
-
+    /**
+     * Initializes enemies from the "Objects" layer in the Tiled map.
+     * For each "objectX" name, we create an Enemy with type X.
+     */
     private void initializeEnemies() {
-        // 遍历地图中的敌人对象
         for (int i = 1; i <= 5; i++) {
             String objectName = "object" + i;
-            RectangleMapObject enemyObject = (RectangleMapObject)  tiledMap.getLayers().get("Objects").getObjects().get(objectName);
+            RectangleMapObject enemyObject = (RectangleMapObject)
+                    tiledMap.getLayers().get("Objects").getObjects().get(objectName);
             if (enemyObject != null) {
                 Rectangle rect = enemyObject.getRectangle();
                 enemies.add(new Enemy(rect.x, rect.y, 100f, i));
@@ -116,196 +172,152 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // 检查是否按下 ESC 键返回菜单
+        // Check if ESC is pressed => go to menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
         }
 
-        // 检查是否按下 ENTER 键开始游戏
+        // Check if ENTER is pressed => start game
         if (!isGameStarted && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startGame();
         }
 
-        // 清屏
+        // Check if 'P' is pressed => pause toggle
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            isPaused = !isPaused;
+        }
+
+        // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // 如果游戏已开始，更新地图和角色
-        if (isGameStarted) {
-            // 更新角色移动
-            updateCharacterMovement(delta);
-
-            // 更新敌人逻辑
-            updateEnemies(delta);
-
-            // 更新相机位置
+        // If the game has started and is not paused, update logic
+        if (isGameStarted && !isPaused) {
+            updateGameState(delta);
+            // Update camera position
             camera.position.set(characterX, characterY, 0);
             camera.update();
-
-            // 渲染地图
+            // Render map
+            mapRenderer.setView(camera);
+            mapRenderer.render();
+        } else if (isGameStarted) {
+            // Game is started but paused, so we skip updates but still might want to show something
+            camera.update();
             mapRenderer.setView(camera);
             mapRenderer.render();
         }
 
-        // 更新 sinusInput 动画
+        // Update sinusInput for the wiggly text
         sinusInput += delta;
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
         float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
 
-        // 使用 SpriteBatch 绘制文字和角色动画
+        // Use SpriteBatch for drawing text, character, enemies, etc.
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin();
 
         if (!isGameStarted) {
-            // 游戏未开始时显示初始说明
+            // If game not started, show instructions
             font.draw(game.getSpriteBatch(), "Press ENTER to start", textX, textY);
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY - 100);
+            // Draw a fun animation for the character (e.g. idleDown)
             game.getSpriteBatch().draw(
                     game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                     textX - 96, textY - 64,
                     64, 128
             );
         } else {
-            switch (currentDirection) {
-                case UP:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterUpAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case DOWN:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case LEFT:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterLeftAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case RIGHT:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterRightAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case IDLE_UP:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterIdleUpAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case IDLE_DOWN:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterIdleDownAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case IDLE_LEFT:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterIdleLeftAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
-                case IDLE_RIGHT:
-                    game.getSpriteBatch().draw(
-                            game.getCharacterIdleRightAnimation().getKeyFrame(sinusInput, true),
-                            characterX, characterY, 64, 128
-                    );
-                    break;
+            // If game is started, render character and enemies
+            if (isPaused) {
+                // Show "Game Paused" message if paused
+                font.draw(
+                        game.getSpriteBatch(),
+                        "Game Paused. Press 'P' to resume.",
+                        camera.position.x - 100,
+                        camera.position.y
+                );
             }
 
-            // 绘制敌人
-            for (Enemy enemy : enemies) {switch (enemy.getType()) {
-                case 1:  // 敌人类型 1
-                    switch (currentDirection) {
-                        case RIGHT:
-                            game.getSpriteBatch().draw(game.getEnemy1RightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case LEFT:
-                            game.getSpriteBatch().draw(game.getEnemy1LeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case UP:
-                            game.getSpriteBatch().draw(game.getEnemy1UpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case DOWN:
-                            game.getSpriteBatch().draw(game.getEnemy1DownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_RIGHT:
-                            game.getSpriteBatch().draw(game.getEnemy1IdleRightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_LEFT:
-                            game.getSpriteBatch().draw(game.getEnemy1IdleLeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_UP:
-                            game.getSpriteBatch().draw(game.getEnemy1IdleUpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_DOWN:
-                            game.getSpriteBatch().draw(game.getEnemy1IdleDownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                    }
-                    break;
-                case 2:  // 敌人类型 2
-                    switch (currentDirection) {
-                        case RIGHT:
-                            game.getSpriteBatch().draw(game.getEnemy2RightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case LEFT:
-                            game.getSpriteBatch().draw(game.getEnemy2LeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case UP:
-                            game.getSpriteBatch().draw(game.getEnemy2UpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case DOWN:
-                            game.getSpriteBatch().draw(game.getEnemy2DownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_RIGHT:
-                            game.getSpriteBatch().draw(game.getEnemy2IdleRightAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_LEFT:
-                            game.getSpriteBatch().draw(game.getEnemy2IdleLeftAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_UP:
-                            game.getSpriteBatch().draw(game.getEnemy2IdleUpAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                        case IDLE_DOWN:
-                            game.getSpriteBatch().draw(game.getEnemy2IdleDownAnimation().getKeyFrame(sinusInput, true), enemy.getX(), enemy.getY(), 64, 128);
-                            break;
-                    }
-                    break;
-                // 对于敌人 3、4、5 也做类似的处理
-                case 3:  // 敌人类型 3
-                    // 处理敌人 3 的动画
-                    break;
-                case 4:  // 敌人类型 4
-                    // 处理敌人 4 的动画
-                    break;
-                case 5:  // 敌人类型 5
-                    // 处理敌人 5 的动画
-                    break;
-            }
+            // 1) Render character (with pickup/attack logic)
+            renderCharacter();
 
+            // 2) Render enemies
+            for (Enemy enemy : enemies) {
+                renderEnemy(enemy);
             }
         }
 
         game.getSpriteBatch().end();
     }
 
-    private void startGame() {
-        isGameStarted = true;
-        // 初始化角色位置
-        initializeCharacterPosition();
-        // 初始化敌人位置
-        initializeEnemies();
+    /**
+     * Update the overall game logic (movement, attacking, pickups, enemies, etc.).
+     */
+    private void updateGameState(float delta) {
+        // If currently picking up or attacking, advance timers
+        if (isPickingUp) {
+            pickUpTimer += delta;
+            if (pickUpTimer >= PICKUP_DURATION) {
+                isPickingUp = false;
+                isHolding = true;
+                pickUpTimer = 0f;
+            }
+        } else if (isAttacking) {
+            attackTimer += delta;
+            if (attackTimer >= ATTACK_DURATION) {
+                isAttacking = false;
+                attackTimer = 0f;
+            }
+        } else {
+            // Otherwise, handle normal movement input or toggles
+            handleInput(delta);
+        }
+
+        // Update enemies logic
+        updateEnemies(delta);
     }
 
     /**
-     * Updates the character movement with bounding-box collision checks.
+     * Handle player input for movement, attacking (J), picking up (F), holding (G), dropping (H).
      */
-    private void updateCharacterMovement(float delta) {
-        float oldX = characterX;
-        float oldY = characterY;
+    private void handleInput(float delta) {
+        if (isPaused) return;
+
+        // Key F => start picking up
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+            isPickingUp = true;
+            pickUpTimer = 0f;
+            return;
+        }
+        // Key G => forcibly go to 'holding' state
+        if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+            isHolding = true;
+            return;
+        }
+        // Key J => start attacking
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+            isAttacking = true;
+            attackTimer = 0f;
+            return;
+        }
+        // Key H => put down (stop holding)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            isHolding = false;
+            // Force direction to idle
+            switch (currentDirection) {
+                case UP:
+                    currentDirection = Direction.IDLE_UP; break;
+                case DOWN:
+                    currentDirection = Direction.IDLE_DOWN; break;
+                case LEFT:
+                    currentDirection = Direction.IDLE_LEFT; break;
+                case RIGHT:
+                    currentDirection = Direction.IDLE_RIGHT; break;
+                default:
+                    break;
+            }
+            return;
+        }
+
 
         float adjustedSpeed = characterSpeed;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
@@ -313,9 +325,12 @@ public class GameScreen implements Screen {
             adjustedSpeed *= SPEED_MULTIPLIER;
         }
 
+        // We do partial movement checks + collisions
         boolean moved = false;
+        float oldX = characterX;
+        float oldY = characterY;
 
-        // 1) Move vertically first (W/S)
+        // Move vertically (W/S)
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             characterY += adjustedSpeed * delta;
             currentDirection = Direction.UP;
@@ -332,7 +347,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        // 2) Move horizontally next (A/D)
+        // Move horizontally (A/D)
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             characterX -= adjustedSpeed * delta;
             currentDirection = Direction.LEFT;
@@ -349,67 +364,394 @@ public class GameScreen implements Screen {
             }
         }
 
-        // If no key is pressed, switch to an idle direction
+        // If no movement, switch to idle direction
         if (!moved) {
-            switch (currentDirection) {
-                case UP:
-                    currentDirection = Direction.IDLE_UP;
-                    break;
-                case DOWN:
-                    currentDirection = Direction.IDLE_DOWN;
-                    break;
-                case LEFT:
-                    currentDirection = Direction.IDLE_LEFT;
-                    break;
-                case RIGHT:
-                    currentDirection = Direction.IDLE_RIGHT;
-                    break;
-                default:
-                    break;
+            // If holding something, we might keep the movement direction or revert to idle
+            if (isHolding) {
+
+                // switch to idle if no movement
+                switch (currentDirection) {
+                    case UP:
+                        currentDirection = Direction.IDLE_UP;   break;
+                    case DOWN:
+                        currentDirection = Direction.IDLE_DOWN; break;
+                    case LEFT:
+                        currentDirection = Direction.IDLE_LEFT; break;
+                    case RIGHT:
+                        currentDirection = Direction.IDLE_RIGHT;break;
+                    default:
+                        break;
+                }
+            } else {
+                // Not holding => go idle
+                switch (currentDirection) {
+                    case UP:
+                        currentDirection = Direction.IDLE_UP;   break;
+                    case DOWN:
+                        currentDirection = Direction.IDLE_DOWN; break;
+                    case LEFT:
+                        currentDirection = Direction.IDLE_LEFT; break;
+                    case RIGHT:
+                        currentDirection = Direction.IDLE_RIGHT;break;
+                    default:
+                        break;
+                }
             }
         }
-        // Prevent character from going out of bounds
-//        characterX = Math.max(0, Math.min(characterX, camera.viewportWidth - 64));
-//        characterY = Math.max(0, Math.min(characterY, camera.viewportHeight - 128));
-
-
     }
 
     /**
-     * Returns true if the character's foot bounding box at (x, y) is blocked by any tile.
+     * Renders the character, taking into account picking up, holding, and attacking animations.
+     */
+    private void renderCharacter() {
+        if (isPickingUp) {
+            renderPickUpAnimation();
+        } else if (isHolding) {
+            renderHoldAnimation();
+        } else if (isAttacking) {
+            renderAttackAnimation();
+        } else {
+            renderMovementOrIdle();
+        }
+    }
+
+    /**
+     * Renders a single enemy, using your existing approach (enemy1, enemy2, etc.).
+     */
+    private void renderEnemy(Enemy enemy) {
+        // Switch on the enemy type and draw accordingly.
+        switch (enemy.getType()) {
+            case 1:
+                // Animations for enemy1
+                switch (currentDirection) {
+                    case RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1RightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1LeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1UpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1DownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1IdleRightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1IdleLeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1IdleUpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy1IdleDownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                }
+                break;
+
+            case 2:
+                // Animations for enemy2
+                switch (currentDirection) {
+                    case RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2RightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2LeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2UpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2DownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2IdleRightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2IdleLeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2IdleUpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                    case IDLE_DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy2IdleDownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 128
+                        );
+                        break;
+                }
+                break;
+
+            case 3:
+
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+        }
+    }
+
+    /**
+     * Renders the "picking up" animation.
+     */
+    private void renderPickUpAnimation() {
+        switch (currentDirection) {
+            case UP, IDLE_UP -> game.getSpriteBatch().draw(
+                    game.getCharacterPickupUpAnimation().getKeyFrame(pickUpTimer, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case DOWN, IDLE_DOWN -> game.getSpriteBatch().draw(
+                    game.getCharacterPickupDownAnimation().getKeyFrame(pickUpTimer, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case LEFT, IDLE_LEFT -> game.getSpriteBatch().draw(
+                    game.getCharacterPickupLeftAnimation().getKeyFrame(pickUpTimer, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case RIGHT, IDLE_RIGHT -> game.getSpriteBatch().draw(
+                    game.getCharacterPickupRightAnimation().getKeyFrame(pickUpTimer, false),
+                    characterX, characterY,
+                    64, 128
+            );
+        }
+    }
+
+    /**
+     * Renders the "holding" animation.
+     */
+    private void renderHoldAnimation() {
+        switch (currentDirection) {
+            case UP -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldUpAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case DOWN -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldDownAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case LEFT -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldLeftAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case RIGHT -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldRightAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case IDLE_UP -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldIdleUpAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case IDLE_DOWN -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldIdleDownAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case IDLE_LEFT -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldIdleLeftAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+            case IDLE_RIGHT -> game.getSpriteBatch().draw(
+                    game.getCharacterHoldIdleRightAnimation().getKeyFrame(sinusInput, false),
+                    characterX, characterY,
+                    64, 128
+            );
+        }
+    }
+
+    /**
+     * Renders the "attacking" animation.
+     */
+    private void renderAttackAnimation() {
+        switch (currentDirection) {
+            case UP, IDLE_UP -> game.getSpriteBatch().draw(
+                    game.getCharacterAttackUpAnimation().getKeyFrame(attackTimer, true),
+                    characterX - 32, characterY,
+                    128, 128
+            );
+            case DOWN, IDLE_DOWN -> game.getSpriteBatch().draw(
+                    game.getCharacterAttackDownAnimation().getKeyFrame(attackTimer, true),
+                    characterX - 32, characterY,
+                    128, 128
+            );
+            case LEFT, IDLE_LEFT -> game.getSpriteBatch().draw(
+                    game.getCharacterAttackLeftAnimation().getKeyFrame(attackTimer, true),
+                    characterX - 32, characterY,
+                    128, 128
+            );
+            case RIGHT, IDLE_RIGHT -> game.getSpriteBatch().draw(
+                    game.getCharacterAttackRightAnimation().getKeyFrame(attackTimer, true),
+                    characterX - 32, characterY,
+                    128, 128
+            );
+        }
+    }
+
+    /**
+     * Renders the normal walking or idle animation (no pickup/attack/hold).
+     */
+    private void renderMovementOrIdle() {
+        switch (currentDirection) {
+            case UP ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterUpAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case DOWN ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case LEFT ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterLeftAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case RIGHT ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterRightAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case IDLE_UP ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterIdleUpAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case IDLE_DOWN ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterIdleDownAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case IDLE_LEFT ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterIdleLeftAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+            case IDLE_RIGHT ->
+                    game.getSpriteBatch().draw(
+                            game.getCharacterIdleRightAnimation().getKeyFrame(sinusInput, true),
+                            characterX, characterY,
+                            64, 128
+                    );
+        }
+    }
+
+    /**
+     * Updates enemies so that if within detectionRange, they move toward the character.
+     */
+    private void updateEnemies(float delta) {
+        for (Enemy enemy : enemies) {
+            float distance = Vector2.dst(characterX, characterY, enemy.getX(), enemy.getY());
+            if (distance <= detectionRange) {
+                // Move toward the character
+                Vector2 direction = new Vector2(characterX - enemy.getX(), characterY - enemy.getY()).nor();
+                enemy.setX(enemy.getX() + direction.x * enemy.getSpeed() * delta);
+                enemy.setY(enemy.getY() + direction.y * enemy.getSpeed() * delta);
+            }
+        }
+    }
+
+    /**
+     * Returns true if the character's foot bounding box at (x, y) is blocked by any tile with "blocked" property.
      */
     private boolean isBoxBlocked(float x, float y) {
-        // Calculate the foot box's corners
         float footBoxX = x + FOOT_BOX_OFFSET_X;
         float footBoxY = y + FOOT_BOX_OFFSET_Y;
 
-        // Check each corner:
-        // bottom-left
-        if (isTileBlocked(footBoxX, footBoxY)) {
-            return true;
-        }
-        // bottom-right
-        if (isTileBlocked(footBoxX + FOOT_BOX_WIDTH, footBoxY)) {
-            return true;
-        }
-        // top-left
-        if (isTileBlocked(footBoxX, footBoxY + FOOT_BOX_HEIGHT)) {
-            return true;
-        }
-        // top-right
-        if (isTileBlocked(footBoxX + FOOT_BOX_WIDTH, footBoxY + FOOT_BOX_HEIGHT)) {
-            return true;
-        }
+        // Check each corner
+        if (isTileBlocked(footBoxX, footBoxY)) return true;
+        if (isTileBlocked(footBoxX + FOOT_BOX_WIDTH, footBoxY)) return true;
+        if (isTileBlocked(footBoxX, footBoxY + FOOT_BOX_HEIGHT)) return true;
+        if (isTileBlocked(footBoxX + FOOT_BOX_WIDTH, footBoxY + FOOT_BOX_HEIGHT)) return true;
 
         return false;
     }
 
     /**
-     * Checks a single point (world coordinates) to see if it's on a 'blocked' tile.
+     * Checks a single point (in world coordinates) to see if it's on a 'blocked' tile.
      */
     private boolean isTileBlocked(float worldX, float worldY) {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
-        float tileWidth  = layer.getTileWidth();
+        float tileWidth = layer.getTileWidth();
         float tileHeight = layer.getTileHeight();
 
         // Convert world coords -> tile coords
@@ -435,19 +777,6 @@ public class GameScreen implements Screen {
 
         return false;
     }
-
-
-        private void updateEnemies(float delta) {
-            for (Enemy enemy : enemies) {
-                float distance = Vector2.dst(characterX, characterY, enemy.getX(), enemy.getY());
-                if (distance <= detectionRange) {
-                    // 朝角色移动
-                    Vector2 direction = new Vector2(characterX - enemy.getX(), characterY - enemy.getY()).nor();
-                    enemy.setX(enemy.getX() + direction.x * enemy.getSpeed() * delta);
-                    enemy.setY(enemy.getY() + direction.y * enemy.getSpeed() * delta);
-                }
-            }
-        }
 
     @Override
     public void resize(int width, int height) {
