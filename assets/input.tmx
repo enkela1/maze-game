@@ -1,48 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16">
- <tileset firstgid="1" name="down" tilewidth="16" tileheight="16">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="7">
+ <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
   <image source="down.png" width="128" height="240"/>
  </tileset>
- <tileset firstgid="121" name="left" tilewidth="16" tileheight="16">
+ <tileset firstgid="121" name="left" tilewidth="16" tileheight="16" tilecount="120" columns="15">
   <image source="left.png" width="240" height="128"/>
  </tileset>
- <tileset firstgid="241" name="right" tilewidth="16" tileheight="16">
+ <tileset firstgid="241" name="right" tilewidth="16" tileheight="16" tilecount="120" columns="15">
   <image source="right.png" width="240" height="128"/>
  </tileset>
- <tileset firstgid="361" name="up" tilewidth="16" tileheight="16">
+ <tileset firstgid="361" name="up" tilewidth="16" tileheight="16" tilecount="120" columns="8">
   <image source="up.png" width="128" height="240"/>
+  <tile id="0"/>
+  <tile id="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="2"/>
+  <tile id="3"/>
+  <tile id="4"/>
+  <tile id="5"/>
+  <tile id="6"/>
+  <tile id="7"/>
+  <tile id="1">
+   <properties>
+    <property name="blocked" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="9"/>
+  <tile id="10"/>
+  <tile id="11"/>
+  <tile id="12"/>
+  <tile id="13"/>
+  <tile id="14"/>
+  <tile id="15"/>
+  <tile id="16"/>
+  <tile id="17"/>
+  <tile id="18"/>
+  <tile id="19"/>
+  <tile id="20"/>
+  <tile id="21"/>
+  <tile id="22"/>
+  <tile id="23"/>
+  <tile id="24"/>
+  <tile id="25"/>
+  <tile id="26"/>
+  <tile id="27"/>
+  <tile id="28"/>
+  <tile id="29"/>
+  <tile id="30"/>
+  <tile id="31"/>
+  <tile id="32"/>
+  <tile id="33"/>
+  <tile id="34"/>
+  <tile id="35"/>
+  <tile id="36"/>
+  <tile id="37"/>
+  <tile id="38"/>
+  <tile id="39"/>
+  <tile id="40"/>
+  <tile id="41"/>
+  <tile id="42"/>
+  <tile id="43"/>
+  <tile id="44"/>
+  <tile id="45"/>
+  <tile id="46"/>
+  <tile id="47"/>
+  <tile id="48"/>
+  <tile id="49"/>
+  <tile id="50"/>
+  <tile id="51"/>
+  <tile id="52"/>
+  <tile id="53"/>
+  <tile id="54"/>
+  <tile id="55"/>
+  <tile id="56"/>
+  <tile id="57"/>
+  <tile id="58"/>
+  <tile id="59"/>
+  <tile id="60"/>
+  <tile id="61"/>
+  <tile id="62"/>
+  <tile id="63"/>
+  <tile id="64"/>
+  <tile id="65"/>
+  <tile id="66"/>
+  <tile id="67"/>
+  <tile id="68"/>
+  <tile id="69"/>
+  <tile id="70"/>
+  <tile id="71"/>
+  <tile id="72"/>
+  <tile id="73"/>
+  <tile id="74"/>
+  <tile id="75"/>
+  <tile id="76"/>
+  <tile id="77"/>
+  <tile id="78"/>
+  <tile id="79"/>
+  <tile id="80"/>
+  <tile id="81"/>
+  <tile id="82"/>
+  <tile id="83"/>
+  <tile id="84"/>
+  <tile id="85"/>
+  <tile id="86"/>
+  <tile id="87"/>
+  <tile id="88"/>
+  <tile id="89"/>
+  <tile id="90"/>
+  <tile id="91"/>
+  <tile id="92"/>
+  <tile id="93"/>
+  <tile id="94"/>
+  <tile id="95"/>
+  <tile id="96"/>
+  <tile id="97"/>
+  <tile id="98"/>
+  <tile id="99"/>
+  <tile id="100"/>
+  <tile id="101"/>
+  <tile id="102"/>
+  <tile id="103"/>
+  <tile id="104"/>
+  <tile id="105"/>
+  <tile id="106"/>
+  <tile id="107"/>
+  <tile id="108"/>
+  <tile id="109"/>
+  <tile id="110"/>
+  <tile id="111"/>
+  <tile id="112"/>
+  <tile id="113"/>
+  <tile id="114"/>
+  <tile id="115"/>
+  <tile id="116"/>
+  <tile id="117"/>
+  <tile id="118"/>
+  <tile id="119"/>
  </tileset>
- <layer name="layer" width="60" height="60">
+ <layer id="1" name="layer" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJztzzERgAAMALEiFwdoQCZG4LDxzRABOY+Zc5FnZu4l3vEt823zbfNt823zbfNt823zbfNt823zbfNt823zbfNt823zbfNt823zbfNt823zbfNt823zbfNt2/i9Fvm/H1j1uEs=
+   eJzt2DsWgzAMRFGzZEoq+qw6bYoUWB59jF6hhoONrjPYnFzHGFez+gxtzczr1UPks/DixZvnXe0Br87rcR7hjc/YTnl+i9fjWw1vHa9H3x5riLeON7Lw9vZGFd4878753ckbmSe8Gu/MGI/1xIs3y+tRCm/l81a53t57ZjWvZb4Vb8W1feq9/9SbvRHZrZTnbK8qE3hrelVjVvbniHMKb4xX0Zu6d+UYvPW8Hu+V0ns29J6B2cz2Wn6Hnb2W+/HOzW2t7l7FvhjhVY3r6v299vR/D4vXmj+8e3i75RlvjtfybuGt4/UsvHi7ejvVF6ukWpw=
   </data>
  </layer>
- <objectgroup name="Objects">
+ <layer id="3" name="Tile Layer 2" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+  </data>
+ </layer>
+ <objectgroup id="2" name="Objects">
   <properties>
    <property name="Key" value="100"/>
   </properties>
-  <object name="character" x="439" y="617" width="56" height="46"/>
-  <object name="object1" x="616" y="466" width="63" height="50">
+  <object id="1" name="character" x="439" y="617" width="56" height="46"/>
+  <object id="2" name="object1" x="616" y="466" width="63" height="50">
    <properties>
     <property name="Key" value="50"/>
    </properties>
   </object>
-  <object name="object2" x="300" y="296" width="58" height="41">
+  <object id="3" name="object2" x="300" y="296" width="58" height="41">
    <properties>
     <property name="Key" value="50"/>
    </properties>
   </object>
-  <object name="object3" x="701" y="206" width="48" height="40">
+  <object id="4" name="object3" x="701" y="206" width="48" height="40">
    <properties>
     <property name="Key" value="50"/>
    </properties>
   </object>
-  <object name="object4" x="162" y="747" width="52" height="46">
+  <object id="5" name="object4" x="162" y="747" width="52" height="46">
    <properties>
     <property name="Key" value="50"/>
    </properties>
   </object>
-  <object name="object5" x="725" y="759" width="48" height="40">
+  <object id="6" name="object5" x="725" y="759" width="48" height="40">
    <properties>
     <property name="Key" value="50"/>
    </properties>
