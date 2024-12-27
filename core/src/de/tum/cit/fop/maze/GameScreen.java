@@ -37,7 +37,7 @@ public class GameScreen implements Screen {
 
     // Define the bounding box for the character's feet
     private static final float FOOT_BOX_OFFSET_X = 16f; // offset from characterX's left edge
-    private static final float FOOT_BOX_OFFSET_Y = 16f;  // offset from characterY's bottom edge
+    private static final float FOOT_BOX_OFFSET_Y = 21f;  // offset from characterY's bottom edge
     private static final float FOOT_BOX_WIDTH    = 32f; // box width for collision
     private static final float FOOT_BOX_HEIGHT   = 18f; // box height for collision
 
