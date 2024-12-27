@@ -428,56 +428,56 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy1RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                 }
@@ -490,56 +490,56 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy2RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 128
+                                64, 64
                         );
                         break;
                 }

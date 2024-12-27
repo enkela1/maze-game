@@ -305,19 +305,19 @@ public class MazeRunnerGame extends Game {
         characterHoldLeftAnimation = new Animation<>(0.1f, holdLeftFrames);
 
         // hold idle down
-        holdIdleDownFrames.add(new TextureRegion(walkSheet, 136, 0, frameWidth, frameHeight));
+        holdIdleDownFrames.add(new TextureRegion(walkSheet, 144, 0, frameWidth, frameHeight));
         characterHoldIdleDownAnimation = new Animation<>(0.1f, holdIdleDownFrames);
 
         // hold idle right
-        holdIdleRightFrames.add(new TextureRegion(walkSheet, 136, 1 * frameHeight, frameWidth, frameHeight));
+        holdIdleRightFrames.add(new TextureRegion(walkSheet, 144, 1 * frameHeight, frameWidth, frameHeight));
         characterHoldIdleRightAnimation = new Animation<>(0.1f, holdIdleRightFrames);
 
         // hold idle up
-        holdIdleUpFrames.add(new TextureRegion(walkSheet, 136, 2 * frameHeight, frameWidth, frameHeight));
+        holdIdleUpFrames.add(new TextureRegion(walkSheet, 144, 2 * frameHeight, frameWidth, frameHeight));
         characterHoldIdleUpAnimation = new Animation<>(0.1f, holdIdleUpFrames);
 
         // hold idle left
-        holdIdleLeftFrames.add(new TextureRegion(walkSheet, 136, 3 * frameHeight, frameWidth, frameHeight));
+        holdIdleLeftFrames.add(new TextureRegion(walkSheet, 144, 3 * frameHeight, frameWidth, frameHeight));
         characterHoldIdleLeftAnimation = new Animation<>(0.1f, holdIdleLeftFrames);
 
 
