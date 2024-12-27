@@ -1,0 +1,51 @@
+{
+    "activeFile": "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 2
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/basictiles.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 2
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 707.5,
+                "y": 198.5
+            }
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx#down": {
+            "scaleInDock": 2
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx#left": {
+            "scaleInDock": 1
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx#right": {
+            "scaleInDock": 1
+        },
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx#up": {
+            "scaleInDock": 2
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets",
+    "last.imagePath": "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets",
+    "openFiles": [
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx"
+    ],
+    "project": "untitled.tiled-project",
+    "recentFiles": [
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/input.tmx",
+        "C:/Users/User/IdeaProjects/fophn2425projectfop-amazeingdevelopers/assets/basictiles.tsx"
+    ],
+    "tileset.lastUsedFilter": "All Files (*)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
