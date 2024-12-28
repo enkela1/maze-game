@@ -105,6 +105,10 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> enemy5IdleLeftAnimation;
     private Animation<TextureRegion> enemy5IdleRightAnimation;
 
+    private Animation<TextureRegion> heartAnimation;
+    private Animation<TextureRegion> coinAnimation;
+    private Animation<TextureRegion> fireAnimation;
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -160,7 +164,42 @@ public class MazeRunnerGame extends Game {
      * Loads the character animation from the character.png file,
      * including move/idle/pickup/hold/attack frames.
      */
-    private void loadCharacterAnimation() {
+    private void loadObjectsAnimation() {
+        Texture oSheet = new Texture(Gdx.files.internal("Objects.png"));
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+        int col = 4;
+
+
+        Array<TextureRegion> heartFrames = new Array<>();
+        Array<TextureRegion> coinFrames = new Array<>();
+        Array<TextureRegion> fireFrames = new Array<>();
+
+
+//heart
+        heartFrames.add(new TextureRegion(oSheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+
+        heartAnimation = new Animation<>(0.1f, heartFrames);
+
+//coin
+        coinFrames.add(new TextureRegion(oSheet, col * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+
+        coinAnimation = new Animation<>(0.1f, coinFrames);
+
+//fire
+        fireFrames.add(new TextureRegion(oSheet, 48 + 7 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+
+        fireAnimation = new Animation<>(0.1f, fireFrames);
+
+
+    }
+
+
+
+
+
+        private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
 
         int frameWidth = 16;
@@ -855,5 +894,17 @@ public class MazeRunnerGame extends Game {
     }
     public Animation<TextureRegion> getEnemy5IdleRightAnimation() {
         return enemy5IdleRightAnimation;
+    }
+
+    public Animation<TextureRegion> getHeartAnimation() {
+        return heartAnimation;
+    }
+
+    public Animation<TextureRegion> getCoinAnimation() {
+        return coinAnimation;
+    }
+
+    public Animation<TextureRegion> getFireAnimation() {
+        return fireAnimation;
     }
 }

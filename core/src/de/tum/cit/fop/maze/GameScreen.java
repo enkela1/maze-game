@@ -3,8 +3,10 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -51,6 +53,8 @@ public class GameScreen implements Screen {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
     private Rectangle mapBounds;
+    private boolean isGameOver = false;
+    private float gameOverTimer = 0;
 
     // Directions for animations
     private enum Direction {
@@ -146,7 +150,15 @@ public class GameScreen implements Screen {
         // Initialize enemy positions
         initializeEnemies();
     }
-
+    public void loadMap(String mapName) {
+        // Load the map using the mapName (e.g., level1, level2, level3)
+        TiledMap map = new TmxMapLoader().load(mapName + ".tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(map); // Initialize the map renderer
+        tiledMap = map;
+    }
+    public void selectMap(String mapName) {
+        loadMap(mapName); // Call the loadMap method to load the selected map
+    }
     /**
      * Initializes character position from the "Objects" layer in the Tiled map.
      */
@@ -191,6 +203,32 @@ public class GameScreen implements Screen {
             game.goToMenu();
         }
 
+//clear the screen
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        //if character is dead=>SHOW GAMEOVER
+        if (isGameOver) {
+            game.getSpriteBatch().begin();
+
+            BitmapFont font = new BitmapFont();
+            font.getData().setScale(6f);
+
+            GlyphLayout layout = new GlyphLayout();
+            layout.setText(font, "Game Over !");
+
+            float textWidth = layout.width;
+            float textHeight = layout.height;
+            float centerX = camera.position.x - (textWidth / 2);
+            float centerY = camera.position.y + (textHeight / 2);
+
+            font.draw(game.getSpriteBatch(), layout, centerX, centerY);
+
+            game.getSpriteBatch().end();
+
+            font.dispose();
+            return;
+        }
         // Check if ENTER is pressed => start game
         if (!isGameStarted && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startGame();
@@ -281,6 +319,7 @@ public class GameScreen implements Screen {
                 redTimer = 0f;
             }
         }
+
 
     }
 
@@ -977,8 +1016,8 @@ public class GameScreen implements Screen {
 
     private void onCharacterDeath() {
         System.out.println("Game Over");
-        isGameStarted = false;
-        game.goToMenu();
+        isGameOver = true;
+        gameOverTimer = 0;
     }
 
     /**
