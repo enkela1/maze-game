@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
+import com.badlogic.gdx.graphics.Color;
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
@@ -78,6 +79,16 @@ public class GameScreen implements Screen {
 
     private Array<Rectangle> collisionRectangles;
 
+    // Character health system
+    private int characterHealth;
+    private static final int MAX_HEALTH = 100;
+    private static final int DAMAGE_AMOUNT = MAX_HEALTH / 20; // 每次碰撞减少1/20生命值
+    private static final int HEAL_AMOUNT = MAX_HEALTH / 2;   // 每次拾取爱心恢复1/2生命值
+
+    private boolean isCharacterRed = false;
+    private float redTimer = 0f;
+    private static final float RED_DURATION = 0.5f; // 角色变红持续时间（秒）
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
@@ -120,6 +131,9 @@ public class GameScreen implements Screen {
         // }
 
         collisionRectangles = new Array<>();
+
+        // Initialize health
+        characterHealth = MAX_HEALTH;
     }
 
     /**
@@ -237,16 +251,37 @@ public class GameScreen implements Screen {
                 );
             }
 
+
+            if (isCharacterRed) {
+                game.getSpriteBatch().setColor(Color.RED);
+            } else {
+                game.getSpriteBatch().setColor(Color.WHITE);
+            }
+
             // 1) Render character (with pickup/attack logic)
             renderCharacter();
+
+            game.getSpriteBatch().setColor(Color.WHITE);
+
 
             // 2) Render enemies
             for (Enemy enemy : enemies) {
                 renderEnemy(enemy);
             }
+
+            font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
         }
 
         game.getSpriteBatch().end();
+
+        if (isCharacterRed) {
+            redTimer += delta;
+            if (redTimer >= RED_DURATION) {
+                isCharacterRed = false;
+                redTimer = 0f;
+            }
+        }
+
     }
 
     /**
@@ -274,6 +309,7 @@ public class GameScreen implements Screen {
 
         // Update enemies logic
         updateEnemies(delta);
+        checkHeartCollision();
     }
 
     /**
@@ -545,12 +581,185 @@ public class GameScreen implements Screen {
                 }
                 break;
 
-            case 3:
+            case 3:switch (currentDirection) {
+                case RIGHT:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3RightAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case LEFT:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3LeftAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case UP:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3UpAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case DOWN:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3DownAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case IDLE_RIGHT:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3IdleRightAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case IDLE_LEFT:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3IdleLeftAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case IDLE_UP:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3IdleUpAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+                case IDLE_DOWN:
+                    game.getSpriteBatch().draw(
+                            game.getEnemy3IdleDownAnimation().getKeyFrame(sinusInput, true),
+                            enemy.getX(), enemy.getY(),
+                            64, 64
+                    );
+                    break;
+            }
 
                 break;
             case 4:
+                switch (currentDirection) {
+                    case RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4RightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4LeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4UpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4DownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4IdleRightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4IdleLeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4IdleUpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy4IdleDownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                }
                 break;
             case 5:
+                switch (currentDirection) {
+                    case RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5RightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5LeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5UpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5DownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_RIGHT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5IdleRightAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_LEFT:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5IdleLeftAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_UP:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5IdleUpAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                    case IDLE_DOWN:
+                        game.getSpriteBatch().draw(
+                                game.getEnemy5IdleDownAnimation().getKeyFrame(sinusInput, true),
+                                enemy.getX(), enemy.getY(),
+                                64, 64
+                        );
+                        break;
+                }
                 break;
         }
     }
@@ -727,7 +936,49 @@ public class GameScreen implements Screen {
                 enemy.setX(enemy.getX() + direction.x * enemy.getSpeed() * delta);
                 enemy.setY(enemy.getY() + direction.y * enemy.getSpeed() * delta);
             }
+
+            Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), 64, 64);
+            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+            if (Intersector.overlaps(enemyBounds, characterBounds)) {
+                reduceHealth(DAMAGE_AMOUNT);
+            }
         }
+    }
+
+    private void checkHeartCollision() {
+        RectangleMapObject heartObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("heart");
+        if (heartObject != null) {
+            Rectangle heartBounds = heartObject.getRectangle();
+            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+            if (Intersector.overlaps(heartBounds, characterBounds)) {
+                restoreHealth(HEAL_AMOUNT);
+                tiledMap.getLayers().get("Objects").getObjects().remove(heartObject);
+            }
+        }
+    }
+
+    private void reduceHealth(int amount) {
+        if (!isCharacterRed) {
+            characterHealth -= amount;
+            if (characterHealth <= 0) {
+                characterHealth = 0;
+                onCharacterDeath();
+            }
+            isCharacterRed = true;
+        }
+    }
+
+    private void restoreHealth(int amount) {
+        characterHealth += amount;
+        if (characterHealth > MAX_HEALTH) {
+            characterHealth = MAX_HEALTH;
+        }
+    }
+
+    private void onCharacterDeath() {
+        System.out.println("Game Over");
+        isGameStarted = false;
+        game.goToMenu();
     }
 
     /**
