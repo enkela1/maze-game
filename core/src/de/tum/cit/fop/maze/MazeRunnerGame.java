@@ -126,9 +126,13 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
 
+
+        this.loadObjectsAnimation();  // Make sure we load hearts, coins, and fire
+
         // Load all animations
         this.loadCharacterAnimation();
         this.loadEnemyAnimation();
+
 
         // Play some background music
         Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
@@ -169,7 +173,6 @@ public class MazeRunnerGame extends Game {
 
         int frameWidth = 16;
         int frameHeight = 16;
-        int col = 4;
 
 
         Array<TextureRegion> heartFrames = new Array<>();
@@ -177,18 +180,24 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> fireFrames = new Array<>();
 
 
-//heart
-        heartFrames.add(new TextureRegion(oSheet, col * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
-
-        heartAnimation = new Animation<>(0.1f, heartFrames);
+//t
+        for(int col = 0; col < 4; col++){
+            heartFrames.add(new TextureRegion(oSheet, col*frameWidth  , 3 * frameWidth , frameWidth, frameHeight));
+        }
+        heartAnimation = new Animation<>(0.3f, heartFrames);
 
 //coin
-        coinFrames.add(new TextureRegion(oSheet, col * frameWidth, 5 * frameHeight, frameWidth, frameHeight));
+        for(int col = 0; col < 4; col++) {
+            coinFrames.add(new TextureRegion(oSheet, col*frameWidth, 4 * frameWidth, frameWidth, frameHeight));
+        }
 
-        coinAnimation = new Animation<>(0.1f, coinFrames);
+        coinAnimation = new Animation<>(0.3f, coinFrames);
 
 //fire
-        fireFrames.add(new TextureRegion(oSheet, 48 + 7 * frameWidth, 4 * frameHeight, frameWidth, frameHeight));
+        for(int col = 5; col < 11; col++) {
+            fireFrames.add(new TextureRegion(oSheet, col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
+
+        }
 
         fireAnimation = new Animation<>(0.1f, fireFrames);
 
@@ -197,9 +206,7 @@ public class MazeRunnerGame extends Game {
 
 
 
-
-
-        private void loadCharacterAnimation() {
+    private void loadCharacterAnimation() {
         Texture walkSheet = new Texture(Gdx.files.internal("character.png"));
 
         int frameWidth = 16;

@@ -93,6 +93,32 @@ public class GameScreen implements Screen {
     private float redTimer = 0f;
     private static final float RED_DURATION = 0.5f; // 角色变红持续时间（秒）
 
+
+
+
+
+    private int coinCount = 0;
+
+    // use a small class to unify hearts, coins, and fires:
+    private static class Item {
+        float x, y;
+        ItemType type;
+        boolean collected = false; // track if already taken
+        public Item(float x, float y, ItemType type) {
+            this.x = x;
+            this.y = y;
+            this.type = type;
+        }
+    }
+
+    // define the types of items:
+    private enum ItemType {
+        HEART, COIN, FIRE
+    }
+
+
+    private List<Item> items;
+
     /**
      * Constructor for GameScreen. Sets up the camera and font.
      *
@@ -138,6 +164,9 @@ public class GameScreen implements Screen {
 
         // Initialize health
         characterHealth = MAX_HEALTH;
+
+        // Initialize our items list
+        items = new ArrayList<>();
     }
 
     /**
@@ -149,6 +178,8 @@ public class GameScreen implements Screen {
         initializeCharacterPosition();
         // Initialize enemy positions
         initializeEnemies();
+
+        initializeItems();
     }
     public void loadMap(String mapName) {
         // Load the map using the mapName (e.g., level1, level2, level3)
@@ -195,6 +226,27 @@ public class GameScreen implements Screen {
             }
         }
     }
+
+    private void initializeItems() {
+        // Check the "Objects" layer for items named heart, coin, or fire
+        for (String itemName : new String[]{"heart", "coin", "fire"}) {
+            RectangleMapObject itemObject = (RectangleMapObject)
+                    tiledMap.getLayers().get("Objects").getObjects().get(itemName);
+            if (itemObject != null) {
+                Rectangle rect = itemObject.getRectangle();
+                ItemType type = switch (itemName) {
+                    case "heart" -> ItemType.HEART;
+                    case "coin"  -> ItemType.COIN;
+                    case "fire"  -> ItemType.FIRE;
+                    default      -> null;
+                };
+                if (type != null) {
+                    items.add(new Item(rect.x, rect.y, type));
+                }
+            }
+        }
+    }
+
 
     @Override
     public void render(float delta) {
@@ -307,6 +359,34 @@ public class GameScreen implements Screen {
                 renderEnemy(enemy);
             }
 
+
+            // Draw items (heart, coin, fire) if they are not yet collected
+            for (Item item : items) {
+                if (!item.collected) {
+                    switch (item.type) {
+                        case HEART -> game.getSpriteBatch().draw(
+                                game.getHeartAnimation().getKeyFrame(sinusInput, true),
+                                item.x, item.y,
+                                32, 32 // scale as you like
+                        );
+                        case COIN -> game.getSpriteBatch().draw(
+                                game.getCoinAnimation().getKeyFrame(sinusInput, true),
+                                item.x, item.y,
+                                32, 32
+                        );
+                        case FIRE -> game.getSpriteBatch().draw(
+                                game.getFireAnimation().getKeyFrame(sinusInput, true),
+                                item.x, item.y,
+                                32, 32
+                        );
+                    }
+                }
+            }
+
+            // Display health and coinCount
+
+            font.draw(game.getSpriteBatch(), "Coins: " + coinCount,      camera.position.x - 130,        camera.position.y + 150);
+
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
         }
 
@@ -319,6 +399,12 @@ public class GameScreen implements Screen {
                 redTimer = 0f;
             }
         }
+
+        checkItemCollisions();
+//        checkHeartCollision();
+
+
+
 
 
     }
@@ -348,7 +434,8 @@ public class GameScreen implements Screen {
 
         // Update enemies logic
         updateEnemies(delta);
-        checkHeartCollision();
+//        checkHeartCollision();
+        checkItemCollisions();
     }
 
     /**
@@ -984,17 +1071,45 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void checkHeartCollision() {
-        RectangleMapObject heartObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("heart");
-        if (heartObject != null) {
-            Rectangle heartBounds = heartObject.getRectangle();
-            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
-            if (Intersector.overlaps(heartBounds, characterBounds)) {
-                restoreHealth(HEAL_AMOUNT);
-                tiledMap.getLayers().get("Objects").getObjects().remove(heartObject);
+    private void checkItemCollisions() {
+        Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+        for (Item item : items) {
+            if (!item.collected) {
+                Rectangle itemBounds = new Rectangle(item.x, item.y, 32, 32);
+                if (Intersector.overlaps(itemBounds, characterBounds)) {
+                    // Handle the collision
+                    switch (item.type) {
+                        case HEART -> {
+                            restoreHealth(HEAL_AMOUNT);
+                            item.collected = true;
+                        }
+                        case COIN -> {
+                            coinCount++;
+                            item.collected = true;
+                        }
+                        case FIRE -> {
+
+                            reduceHealth(DAMAGE_AMOUNT * 2);
+                            // if u don't want fire to go away after the burn remove this line:
+                            item.collected = true;
+                        }
+                    }
+                }
             }
         }
     }
+
+//    private void checkHeartCollision() {
+//        RectangleMapObject heartObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("heart");
+//        if (heartObject != null) {
+//            Rectangle heartBounds = heartObject.getRectangle();
+//            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+//            if (Intersector.overlaps(heartBounds, characterBounds)) {
+//                restoreHealth(HEAL_AMOUNT);
+//                tiledMap.getLayers().get("Objects").getObjects().remove(heartObject);
+//            }
+//        }
+//    }
 
     private void reduceHealth(int amount) {
         if (!isCharacterRed) {
