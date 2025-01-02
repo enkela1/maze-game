@@ -227,25 +227,120 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void initializeItems() {
-        // Check the "Objects" layer for items named heart, coin, or fire
-        for (String itemName : new String[]{"heart", "coin", "fire"}) {
-            RectangleMapObject itemObject = (RectangleMapObject)
-                    tiledMap.getLayers().get("Objects").getObjects().get(itemName);
-            if (itemObject != null) {
-                Rectangle rect = itemObject.getRectangle();
-                ItemType type = switch (itemName) {
-                    case "heart" -> ItemType.HEART;
-                    case "coin"  -> ItemType.COIN;
-                    case "fire"  -> ItemType.FIRE;
-                    default      -> null;
-                };
-                if (type != null) {
-                    items.add(new Item(rect.x, rect.y, type));
+    private List<Vector2> gatherOpenTiles() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        // or whichever layer holds your maze
+        float tileWidth = layer.getTileWidth();
+        float tileHeight = layer.getTileHeight();
+
+        int mapWidth = layer.getWidth();
+        int mapHeight = layer.getHeight();
+
+        List<Vector2> openTiles = new ArrayList<>();
+
+        // Loop over every tile in the layer
+        for (int ty = 0; ty < mapHeight; ty++) {
+            for (int tx = 0; tx < mapWidth; tx++) {
+                float worldX = tx * tileWidth;
+                float worldY = ty * tileHeight;
+
+                // If NOT blocked => store in openTiles
+                if (!isTileBlockedInMaze(worldX, worldY)) {
+                    openTiles.add(new Vector2(worldX, worldY));
                 }
             }
         }
+
+        return openTiles;
     }
+
+    private boolean isTileBlockedInMaze(float worldX, float worldY) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        float tileWidth = layer.getTileWidth();
+        float tileHeight = layer.getTileHeight();
+
+        int tileX = (int) (worldX / tileWidth);
+        int tileY = (int) (worldY / tileHeight);
+
+        // Check bounds
+        if (tileX < 0 || tileY < 0 || tileX >= layer.getWidth() || tileY >= layer.getHeight()) {
+            return true; // Out-of-bounds => treat as blocked
+        }
+
+        TiledMapTileLayer.Cell cell = layer.getCell(tileX, tileY);
+        if (cell == null || cell.getTile() == null) {
+            return false; // no tile => not blocked
+        }
+
+        MapProperties props = cell.getTile().getProperties();
+        // If "blocked" property is true => blocked
+        return props.containsKey("blocked") && (boolean) props.get("blocked");
+    }
+
+    private void initializeItems() {
+        items = new ArrayList<>();
+
+        // 1) Gather all open tile positions (already implemented above)
+        List<Vector2> openTiles = gatherOpenTiles();
+
+        // 2) Shuffle them for randomization
+        java.util.Collections.shuffle(openTiles);
+
+        // We'll track how many items we still need.
+        int heartsToPlace = 5;
+        int coinsToPlace  = 5;
+        int firesToPlace  = 3;
+
+        // 3) Iterate over shuffled openTiles. For each tile:
+        //    - Compute center of the tile
+        //    - Check collisions with walls (the item bounding box)
+        //    - Check distance from other items
+        //    - If safe, place the item
+        for (Vector2 tilePos : openTiles) {
+            // If we've placed them all, break out
+            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0) {
+                break;
+            }
+
+            // Convert tile’s top-left to item center:
+            // tilePos is the top-left corner of the tile, e.g. (x=16, y=32).
+            // We want the item (32×32) to appear centered in a 16×16 tile.
+            final float tileWidth  = 16;
+            final float tileHeight = 16;
+
+            // Center of this tile
+            float centerX = tilePos.x + (tileWidth / 2f) - (32 / 2f);
+            float centerY = tilePos.y + (tileHeight / 2f) - (32 / 2f);
+
+            // Check collision with walls or if too close to other items
+            if (isItemCollidingWithWalls(centerX, centerY)) continue;
+            if (isTooCloseToOtherItems(centerX, centerY))    continue;
+
+            // At this point, the tile is valid. Place whichever item we still need.
+            if (heartsToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.HEART));
+                heartsToPlace--;
+                continue; // go to the next tile
+            }
+            if (coinsToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.COIN));
+                coinsToPlace--;
+                continue;
+            }
+            if (firesToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.FIRE));
+                firesToPlace--;
+                continue;
+            }
+        }
+    }
+
+
+
+
+
+
+
 
 
     @Override
@@ -1091,7 +1186,7 @@ public class GameScreen implements Screen {
 
                             reduceHealth(DAMAGE_AMOUNT * 2);
                             // if u don't want fire to go away after the burn remove this line:
-                            item.collected = true;
+//                            item.collected = true;
                         }
                     }
                 }
@@ -1246,4 +1341,38 @@ public class GameScreen implements Screen {
             return type;
         }
     }
+
+
+
+    // 1) Check if placing an item at (itemX, itemY) would collide with walls,
+//   given the item is ITEM_SIZE x ITEM_SIZE in pixel dimensions.
+    private boolean isItemCollidingWithWalls(float itemX, float itemY) {
+        final float ITEM_SIZE = 32; // same as you draw items (32×32)
+
+        // Check the four corners of the item’s bounding box
+        if (isTileBlockedInMaze(itemX,        itemY))         return true;
+        if (isTileBlockedInMaze(itemX + ITEM_SIZE - 1, itemY))         return true;
+        if (isTileBlockedInMaze(itemX,        itemY + ITEM_SIZE - 1)) return true;
+        if (isTileBlockedInMaze(itemX + ITEM_SIZE - 1, itemY + ITEM_SIZE - 1)) return true;
+
+        return false;
+    }
+
+    // 2) Check if (itemX, itemY) is too close to already placed items.
+    private boolean isTooCloseToOtherItems(float itemX, float itemY) {
+        final float MIN_DISTANCE = 128f; // e.g., 64px = 4 tiles if tile is 16px
+
+        for (Item existing : items) {
+            if (!existing.collected) {
+                float dx = existing.x - itemX;
+                float dy = existing.y - itemY;
+                float distSq = dx * dx + dy * dy;
+                if (distSq < MIN_DISTANCE * MIN_DISTANCE) {
+                    return true; // too close to another item
+                }
+            }
+        }
+        return false;
+    }
+
 }
