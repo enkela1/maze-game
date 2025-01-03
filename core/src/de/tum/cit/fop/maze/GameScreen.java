@@ -79,6 +79,8 @@ public class GameScreen implements Screen {
     private float pickUpTimer = 0f;
     private static final float PICKUP_DURATION = 1f;
 
+    private boolean keyCollected = false;
+
 
 
     private Array<Rectangle> collisionRectangles;
@@ -113,7 +115,7 @@ public class GameScreen implements Screen {
 
     // define the types of items:
     private enum ItemType {
-        HEART, COIN, FIRE
+        HEART, COIN, FIRE, KEY
     }
 
 
@@ -290,6 +292,7 @@ public class GameScreen implements Screen {
         int heartsToPlace = 5;
         int coinsToPlace  = 5;
         int firesToPlace  = 3;
+        int keysToPlace = 1;
 
         // 3) Iterate over shuffled openTiles. For each tile:
         //    - Compute center of the tile
@@ -298,7 +301,7 @@ public class GameScreen implements Screen {
         //    - If safe, place the item
         for (Vector2 tilePos : openTiles) {
             // If we've placed them all, break out
-            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0) {
+            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0) {
                 break;
             }
 
@@ -332,6 +335,11 @@ public class GameScreen implements Screen {
                 firesToPlace--;
                 continue;
             }
+            if (keysToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.KEY));
+                keysToPlace--;
+            }
+
         }
     }
 
@@ -474,6 +482,19 @@ public class GameScreen implements Screen {
                                 item.x, item.y,
                                 32, 32
                         );
+
+                        case KEY -> {
+                            // Draw the key on the map
+                            game.getSpriteBatch().draw(
+                                    game.getKeyAnimation().getKeyFrame(sinusInput, true),
+                                    item.x, item.y,
+                                    32, 32 //size
+                            );
+                        }
+
+
+
+
                     }
                 }
             }
@@ -483,6 +504,16 @@ public class GameScreen implements Screen {
             font.draw(game.getSpriteBatch(), "Coins: " + coinCount,      camera.position.x - 130,        camera.position.y + 150);
 
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
+        }
+
+
+        if (keyCollected) {
+            font.draw(
+                    game.getSpriteBatch(),
+                    "KEY COLLECTED!",
+                    camera.position.x + 220,
+                    camera.position.y + 300
+            );
         }
 
         game.getSpriteBatch().end();
@@ -497,6 +528,8 @@ public class GameScreen implements Screen {
 
         checkItemCollisions();
 //        checkHeartCollision();
+
+
 
 
 
@@ -1187,6 +1220,11 @@ public class GameScreen implements Screen {
                             reduceHealth(DAMAGE_AMOUNT * 2);
                             // if u don't want fire to go away after the burn remove this line:
 //                            item.collected = true;
+                        }
+                        case KEY -> {
+                            // Actually collect the key here
+                            keyCollected = true;
+                            item.collected = true;
                         }
                     }
                 }

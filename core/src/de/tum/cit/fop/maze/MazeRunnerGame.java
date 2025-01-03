@@ -109,6 +109,11 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> coinAnimation;
     private Animation<TextureRegion> fireAnimation;
 
+    // Key Animation
+
+    private Animation<TextureRegion> keyAnimation;
+
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -178,6 +183,9 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> heartFrames = new Array<>();
         Array<TextureRegion> coinFrames = new Array<>();
         Array<TextureRegion> fireFrames = new Array<>();
+        Array<TextureRegion> keyFrames = new Array<>();
+
+
 
 
 //t
@@ -200,6 +208,15 @@ public class MazeRunnerGame extends Game {
         }
 
         fireAnimation = new Animation<>(0.1f, fireFrames);
+
+
+        for (int col = 15; col < 20; col++) {
+            keyFrames.add(new TextureRegion(oSheet, col*frameWidth, 0 * frameWidth, frameWidth, frameHeight));
+        }
+        for (int col = 19; col >= 15; col--) {
+            keyFrames.add(new TextureRegion(oSheet, col*frameWidth, 0 * frameWidth, frameWidth, frameHeight));
+        }
+        keyAnimation = new Animation<>(0.2f, keyFrames);
 
 
     }
@@ -914,4 +931,14 @@ public class MazeRunnerGame extends Game {
     public Animation<TextureRegion> getFireAnimation() {
         return fireAnimation;
     }
+
+    public Animation<TextureRegion> getKeyAnimation() {
+        return keyAnimation;
+    }
+
+
+
+
+
+
 }
