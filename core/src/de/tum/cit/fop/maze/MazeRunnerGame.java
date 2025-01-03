@@ -168,6 +168,11 @@ public class MazeRunnerGame extends Game {
             menuScreen = null;
         }
     }
+    public void selectMap(String mapName) {
+        if (gameScreen != null) {
+            gameScreen.selectMap(mapName); // Call GameScreen's selectMap method to load the map
+        }
+    }
 
     /**
      * Loads the character animation from the character.png file,
