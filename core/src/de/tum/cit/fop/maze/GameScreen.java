@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import com.badlogic.gdx.graphics.Color;
 
@@ -554,6 +555,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             isAttacking = true;
             attackTimer = 0f;
+            handleAttack(new Vector2(characterX, characterY));
             return;
         }
         // Key H => put down (stop holding)
@@ -677,6 +679,7 @@ public class GameScreen implements Screen {
      */
     private void renderEnemy(Enemy enemy) {
         // Switch on the enemy type and draw accordingly.
+
         switch (enemy.getType()) {
             case 1:
                 // Animations for enemy1
@@ -1144,11 +1147,36 @@ public class GameScreen implements Screen {
                     );
         }
     }
+    private boolean isCollidingWithEnemy(Vector2 characterPos, Vector2 enemyPos) {
+        float attackRange = 50f;
+        return characterPos.dst(enemyPos) <= attackRange;
+    }
 
+    private void handleAttack(Vector2 characterPos) {
+        Iterator<Enemy> iterator = enemies.iterator();
+        while (iterator.hasNext()) {
+            Enemy enemy = iterator.next();
+            if (!enemy.isDead() && isCollidingWithEnemy(characterPos, new Vector2(enemy.getX(), enemy.getY()))) {
+                enemy.reduceHealth();
+                if (enemy.isDead()) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+    private void renderEnemies() {
+        for (Enemy enemy : enemies) {
+            if (!enemy.isDead()) {
+                renderEnemy(enemy);
+            }
+        }
+    }
     /**
      * Updates enemies so that if within detectionRange, they move toward the character.
      */
     private void updateEnemies(float delta) {
+
+
         for (Enemy enemy : enemies) {
             float distance = Vector2.dst(characterX, characterY, enemy.getX(), enemy.getY());
             if (distance <= detectionRange) {
@@ -1309,13 +1337,37 @@ public class GameScreen implements Screen {
         private float y;
         private final float speed;
         private final int type;
+        private int health;
+        private boolean isDead;
+
+
 
         public Enemy(float x, float y, float speed, int type) {
             this.x = x;
             this.y = y;
             this.speed = speed;
             this.type = type;
+            this.health = 5;
+            this.isDead = false;
         }
+        public void reduceHealth() {
+            if (!isDead) {
+                health--;
+                if (health <= 0) {
+                    isDead = true;
+                }
+            }
+        }
+
+        public boolean isDead() {
+            return isDead;
+        }
+
+        public void updatePosition(float delta) {
+            this.x -= speed * delta;  // 向左移动
+
+        }
+
 
         public float getX() {
             return x;
