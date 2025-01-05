@@ -113,6 +113,8 @@ public class MazeRunnerGame extends Game {
 
     private Animation<TextureRegion> keyAnimation;
 
+    private Animation<TextureRegion> portalAnimation;
+
 
     /**
      * Constructor for MazeRunnerGame.
@@ -222,6 +224,15 @@ public class MazeRunnerGame extends Game {
             keyFrames.add(new TextureRegion(oSheet, col*frameWidth, 0 * frameWidth, frameWidth, frameHeight));
         }
         keyAnimation = new Animation<>(0.2f, keyFrames);
+
+
+        Array<TextureRegion> portalFrames = new Array<>();
+
+
+        portalFrames.add(new TextureRegion(oSheet, 26*16, 0 , 32, 32));
+
+        portalAnimation = new Animation<>(0.2f, portalFrames);
+
 
 
     }
@@ -939,6 +950,10 @@ public class MazeRunnerGame extends Game {
 
     public Animation<TextureRegion> getKeyAnimation() {
         return keyAnimation;
+    }
+
+    public Animation<TextureRegion> getPortalAnimation() {
+        return portalAnimation;
     }
 
 

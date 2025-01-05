@@ -5,8 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -56,6 +58,8 @@ public class GameScreen implements Screen {
     private Rectangle mapBounds;
     private boolean isGameOver = false;
     private float gameOverTimer = 0;
+
+
 
     // Directions for animations
     private enum Direction {
@@ -118,6 +122,21 @@ public class GameScreen implements Screen {
     private enum ItemType {
         HEART, COIN, FIRE, KEY
     }
+
+    // Portal
+    private boolean isPortalActive = false;
+    private float portalX;
+    private float portalY;
+    private static final float PORTAL_WIDTH = 64;
+    private static final float PORTAL_HEIGHT = 64;
+
+    // For a simple texture (or you can store an Animation<TextureRegion> if you like).
+    private Texture portalTexture;
+
+    // Game win state
+    private boolean isGameWon = false;
+    private float gameWinTimer = 0f;
+
 
 
     private List<Item> items;
@@ -354,6 +373,44 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (isGameWon) {
+            game.getSpriteBatch().begin();
+
+            // You can reuse or create a font; here’s the simplest approach:
+            BitmapFont font = new BitmapFont(); // or use game.getSkin().getFont("font");
+            font.getData().setScale(6f);
+
+            GlyphLayout layout = new GlyphLayout();
+            layout.setText(font, "YOU WIN!");
+
+            float textWidth  = layout.width;
+            float textHeight = layout.height;
+            float centerX    = camera.position.x - (textWidth / 2) ;
+            float centerY    = camera.position.y + (textHeight / 2) + 50;
+
+            font.draw(game.getSpriteBatch(), layout, centerX, centerY);
+            String coinsText = "Coins Collected: " + coinCount;
+            layout.setText(font, coinsText);
+            float coinsTextWidth = layout.width;
+            float coinsCenterX   = camera.position.x - (coinsTextWidth / 2);
+            float coinsCenterY   = centerY - 100;
+
+            font.draw(game.getSpriteBatch(), layout, coinsCenterX, coinsCenterY);
+
+
+            game.getSpriteBatch().end();
+            font.dispose();
+
+            // Return => do NOT call updateGameState or anything else
+            return;
+        }
+
+
         // Check if ESC is pressed => go to menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
@@ -397,6 +454,11 @@ public class GameScreen implements Screen {
 
         // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
+
+        if (!isGameOver && isGameStarted && !isPaused) {
+            updateGameState(delta);
+            checkPortalCollision();
+        }
 
         // If the game has started and is not paused, update logic
         if (isGameStarted && !isPaused) {
@@ -501,6 +563,20 @@ public class GameScreen implements Screen {
             }
 
             // Display health and coinCount
+
+
+            if (isPortalActive && !isGameOver && !isGameWon) {
+
+                float stateTime = sinusInput;
+                TextureRegion portalFrame = game.getPortalAnimation().getKeyFrame(stateTime, true);
+
+                game.getSpriteBatch().draw(
+                        portalFrame,
+                        portalX, portalY,
+                        PORTAL_WIDTH, PORTAL_HEIGHT
+                );
+            }
+
 
             font.draw(game.getSpriteBatch(), "Coins: " + coinCount,      camera.position.x - 130,        camera.position.y + 150);
 
@@ -1253,6 +1329,10 @@ public class GameScreen implements Screen {
                             // Actually collect the key here
                             keyCollected = true;
                             item.collected = true;
+
+                            if (!isPortalActive) {
+                                spawnPortal();
+                            }
                         }
                     }
                 }
@@ -1282,6 +1362,28 @@ public class GameScreen implements Screen {
             isCharacterRed = true;
         }
     }
+
+    private void spawnPortal() {
+        // Put portal near bottom-right corner
+        portalX = mapBounds.width  - PORTAL_WIDTH  - 32f;
+        portalY =  32f;  // a bit above the bottom edge
+        isPortalActive = true;
+    }
+
+    private void checkPortalCollision() {
+        if (!isPortalActive) return;       // nothing to check if no portal
+        if (isGameWon || isGameOver) return; // skip if game is over or won
+
+        Rectangle portalBounds    = new Rectangle(portalX, portalY, PORTAL_WIDTH, PORTAL_HEIGHT);
+        Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+
+        if (Intersector.overlaps(portalBounds, characterBounds)) {
+            // The player steps onto the portal => YOU WIN!
+            isGameWon = true;
+        }
+    }
+
+
 
     private void restoreHealth(int amount) {
         characterHealth += amount;
