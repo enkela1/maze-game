@@ -41,8 +41,8 @@ public class GameScreen implements Screen {
     private float characterX;
     private float characterY;
     private float characterSpeed = 200f; // Base speed (pixels/sec)
-    private boolean isShieldActive = false;
-    private long shieldEndTime = 0;
+    private boolean isaccelarationActive = false;
+    private long accelarationEndTime = 0;
     private static final float SPEED_MULTIPLIER = 2.5f; // Speed multiplier when Shift is pressed
 
     // Define the bounding box for the character's feet
@@ -122,7 +122,7 @@ public class GameScreen implements Screen {
 
     // define the types of items:
     private enum ItemType {
-        HEART, COIN, FIRE, KEY,SHIELD
+        HEART, COIN, FIRE, KEY,ACCELARATION
     }
 
     // Portal
@@ -315,7 +315,7 @@ public class GameScreen implements Screen {
         int coinsToPlace  = 5;
         int firesToPlace  = 3;
         int keysToPlace = 1;
-        int shieldToPlace=3;
+        int accelarationToPlace =3;
 
         // 3) Iterate over shuffled openTiles. For each tile:
         //    - Compute center of the tile
@@ -324,7 +324,7 @@ public class GameScreen implements Screen {
         //    - If safe, place the item
         for (Vector2 tilePos : openTiles) {
             // If we've placed them all, break out
-            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& shieldToPlace<=0) {
+            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& accelarationToPlace <=0) {
                 break;
             }
 
@@ -363,9 +363,9 @@ public class GameScreen implements Screen {
                 keysToPlace--;
                 continue;
             }
-            if (shieldToPlace > 0) {
-                items.add(new Item(centerX, centerY, ItemType.SHIELD));
-                shieldToPlace--;
+            if (accelarationToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.ACCELARATION));
+                accelarationToPlace--;
 
             }
 
@@ -564,8 +564,8 @@ public class GameScreen implements Screen {
                             );
 
                         }
-                        case SHIELD -> game.getSpriteBatch().draw(
-                                game.getShieldAnimation().getKeyFrame(sinusInput, true),
+                        case ACCELARATION -> game.getSpriteBatch().draw(
+                                game.getAccelarationAnimation().getKeyFrame(sinusInput, true),
                                 item.x, item.y,
                                 32, 32
                         );
@@ -646,9 +646,9 @@ public class GameScreen implements Screen {
             if (attackTimer >= ATTACK_DURATION) {
                 isAttacking = false;
                 attackTimer = 0f;
-            } else if ((isShieldActive && System.currentTimeMillis() > shieldEndTime))
+            } else if ((isaccelarationActive && System.currentTimeMillis() > accelarationEndTime))
                 characterSpeed = 200f;
-            isShieldActive = false;{
+            isaccelarationActive = false;{
                 
             }
         } else {
@@ -1344,10 +1344,10 @@ public class GameScreen implements Screen {
                             // if u don't want fire to go away after the burn remove this line:
 //                            item.collected = true;
                         }
-                        case SHIELD -> {
+                        case ACCELARATION -> {
                             characterSpeed = 300f;
-                            isShieldActive = true;
-                            shieldEndTime = System.currentTimeMillis() + 500;
+                            isaccelarationActive = true;
+                            accelarationEndTime = System.currentTimeMillis() + 500;
                             item.collected = true;
                         }
                         case KEY -> {
