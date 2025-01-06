@@ -108,6 +108,7 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> heartAnimation;
     private Animation<TextureRegion> coinAnimation;
     private Animation<TextureRegion> fireAnimation;
+    private Animation<TextureRegion> shieldAnimation;
 
     // Key Animation
 
@@ -139,6 +140,7 @@ public class MazeRunnerGame extends Game {
         // Load all animations
         this.loadCharacterAnimation();
         this.loadEnemyAnimation();
+        this.loadshieldAnimation();
 
 
         // Play some background music
@@ -191,6 +193,7 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> coinFrames = new Array<>();
         Array<TextureRegion> fireFrames = new Array<>();
         Array<TextureRegion> keyFrames = new Array<>();
+
 
 
 
@@ -454,6 +457,17 @@ public class MazeRunnerGame extends Game {
     /**
      * Loads enemy animations (enemy1... enemy5) from mobs.png.
      */
+    private void loadshieldAnimation(){
+        Texture shieldSheet = new Texture("basictiles.png");
+
+        int frameWidth = 16;
+        int frameHeight = 16;
+
+        Array<TextureRegion> shieldFrames = new Array<>();
+        shieldFrames.add(new TextureRegion(shieldSheet, 80 +  frameWidth, 128, frameWidth, frameHeight));
+    shieldAnimation = new Animation<>(0.1f, shieldFrames);
+
+}
     private void loadEnemyAnimation() {
         Texture enemySheet = new Texture(Gdx.files.internal("mobs.png"));
 
@@ -956,9 +970,8 @@ public class MazeRunnerGame extends Game {
         return portalAnimation;
     }
 
+//shield
 
 
-
-
-
+    public Animation<TextureRegion> getShieldAnimation() {return shieldAnimation;}
 }

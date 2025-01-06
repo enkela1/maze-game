@@ -41,6 +41,8 @@ public class GameScreen implements Screen {
     private float characterX;
     private float characterY;
     private float characterSpeed = 200f; // Base speed (pixels/sec)
+    private boolean isShieldActive = false;
+    private long shieldEndTime = 0;
     private static final float SPEED_MULTIPLIER = 2.5f; // Speed multiplier when Shift is pressed
 
     // Define the bounding box for the character's feet
@@ -50,8 +52,8 @@ public class GameScreen implements Screen {
     private static final float FOOT_BOX_HEIGHT   = 18f; // box height for collision
 
     // Enemies
-    private List<Enemy> enemies; // 用于存储敌人的列表
-    private float detectionRange = 300f; // 检测范围
+    private List<Enemy> enemies; // store enemies
+    private float detectionRange = 300f; // detecting range
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -120,7 +122,7 @@ public class GameScreen implements Screen {
 
     // define the types of items:
     private enum ItemType {
-        HEART, COIN, FIRE, KEY
+        HEART, COIN, FIRE, KEY,SHIELD
     }
 
     // Portal
@@ -313,6 +315,7 @@ public class GameScreen implements Screen {
         int coinsToPlace  = 5;
         int firesToPlace  = 3;
         int keysToPlace = 1;
+        int shieldToPlace=3;
 
         // 3) Iterate over shuffled openTiles. For each tile:
         //    - Compute center of the tile
@@ -321,7 +324,7 @@ public class GameScreen implements Screen {
         //    - If safe, place the item
         for (Vector2 tilePos : openTiles) {
             // If we've placed them all, break out
-            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0) {
+            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& shieldToPlace<=0) {
                 break;
             }
 
@@ -358,6 +361,12 @@ public class GameScreen implements Screen {
             if (keysToPlace > 0) {
                 items.add(new Item(centerX, centerY, ItemType.KEY));
                 keysToPlace--;
+                continue;
+            }
+            if (shieldToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.SHIELD));
+                shieldToPlace--;
+
             }
 
         }
@@ -553,7 +562,13 @@ public class GameScreen implements Screen {
                                     item.x, item.y,
                                     32, 32 //size
                             );
+
                         }
+                        case SHIELD -> game.getSpriteBatch().draw(
+                                game.getShieldAnimation().getKeyFrame(sinusInput, true),
+                                item.x, item.y,
+                                32, 32
+                        );
 
 
 
@@ -631,6 +646,10 @@ public class GameScreen implements Screen {
             if (attackTimer >= ATTACK_DURATION) {
                 isAttacking = false;
                 attackTimer = 0f;
+            } else if ((isShieldActive && System.currentTimeMillis() > shieldEndTime))
+                characterSpeed = 200f;
+            isShieldActive = false;{
+                
             }
         } else {
             // Otherwise, handle normal movement input or toggles
@@ -1325,10 +1344,17 @@ public class GameScreen implements Screen {
                             // if u don't want fire to go away after the burn remove this line:
 //                            item.collected = true;
                         }
+                        case SHIELD -> {
+                            characterSpeed = 300f;
+                            isShieldActive = true;
+                            shieldEndTime = System.currentTimeMillis() + 500;
+                            item.collected = true;
+                        }
                         case KEY -> {
                             // Actually collect the key here
                             keyCollected = true;
                             item.collected = true;
+
 
                             if (!isPortalActive) {
                                 spawnPortal();
