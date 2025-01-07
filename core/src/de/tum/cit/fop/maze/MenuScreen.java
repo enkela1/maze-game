@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -23,6 +24,8 @@ public class MenuScreen implements Screen {
     private final MazeRunnerGame game;
     private Table mainMenuTable;
     private Table mapSelectionTable;
+    private final Texture backgroundTexture;
+
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -35,8 +38,9 @@ public class MenuScreen implements Screen {
         // Set up the camera and viewport
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
-        Viewport viewport = new ScreenViewport(camera);
+        Viewport viewport = new ScreenViewport(new OrthographicCamera());
         stage = new Stage(viewport, game.getSpriteBatch());
+        backgroundTexture = new Texture(Gdx.files.internal("background.png"));
 
         // Initialize UI components
         setupMainMenu(); // Set up the main menu layout
@@ -143,12 +147,69 @@ public class MenuScreen implements Screen {
         stage.addActor(mapSelectionTable); // Add the map selection table to the stage
     }
 
+    public Stage createPauseMenu() {
+        // Create a stage for the pause menu
+        Stage pauseStage = new Stage(new ScreenViewport());
+
+        // Load background texture
+        Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
+
+        // Create a table for layoutJ
+        Table pauseTable = new Table();
+        pauseTable.setFillParent(true);
+        pauseStage.addActor(pauseTable);
+
+        // Add "Game Paused" label
+        pauseTable.add(new Label("Game Paused", game.getSkin(), "title"))
+                .padBottom(50)
+                .row();
+
+        // Add "Press 'P' to resume" label
+        pauseTable.add(new Label("Press 'P' to resume", game.getSkin()))
+                .padBottom(20)
+                .row();
+
+        // Add "Quit Game" button
+        TextButton quitButton = new TextButton("Quit Game", game.getSkin());
+        pauseTable.add(quitButton).width(200).padTop(20).row();
+
+        quitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit(); // Exit the game when Quit is clicked
+            }
+        });
+
+        // Draw the background image in the render method
+        pauseStage.getBatch().begin();
+        pauseStage.getBatch().draw(backgroundTexture, 0, 0, pauseStage.getViewport().getWorldWidth(), pauseStage.getViewport().getWorldHeight());
+        pauseStage.getBatch().end();
+
+        return pauseStage; // Return the created pause menu stage
+    }
+
+
     @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage logic
-        stage.draw(); // Render the stage
+        // Clear the screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw the background texture
+        game.getSpriteBatch().begin();
+        game.getSpriteBatch().draw(
+                backgroundTexture,
+                0,
+                0,
+                stage.getViewport().getWorldWidth(), // Match viewport width
+                stage.getViewport().getWorldHeight() // Match viewport height
+        );
+        game.getSpriteBatch().end();
+
+        // Update and draw the stage
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -158,6 +219,7 @@ public class MenuScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        backgroundTexture.dispose();
     }
 
     @Override

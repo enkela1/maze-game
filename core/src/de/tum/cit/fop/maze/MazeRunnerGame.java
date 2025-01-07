@@ -117,6 +117,15 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> portalAnimation;
 
 
+    //third obstacle blackhole
+    private Animation<TextureRegion> blackholeAnimation;
+
+
+
+
+
+
+
     /**
      * Constructor for MazeRunnerGame.
      *
@@ -183,7 +192,8 @@ public class MazeRunnerGame extends Game {
      * including move/idle/pickup/hold/attack frames.
      */
     private void loadObjectsAnimation() {
-        Texture oSheet = new Texture(Gdx.files.internal("Objects.png"));
+        Texture oSheet = new Texture(Gdx.files.internal("objects.png"));
+        Texture bSheet = new Texture(Gdx.files.internal("blackhole.png"));
 
         int frameWidth = 16;
         int frameHeight = 16;
@@ -194,11 +204,17 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> fireFrames = new Array<>();
         Array<TextureRegion> keyFrames = new Array<>();
 
+        Array<TextureRegion> blackholeFrames = new Array<>();
 
 
+//blackhole
+        for(int col = 0; col < 5; col++){
+            blackholeFrames.add(new TextureRegion(bSheet, col*96 , 0 , 96, 96));
+        }
+        blackholeAnimation = new Animation<>(0.3f, blackholeFrames);
 
 
-//t
+//heart
         for(int col = 0; col < 4; col++){
             heartFrames.add(new TextureRegion(oSheet, col*frameWidth  , 3 * frameWidth , frameWidth, frameHeight));
         }
@@ -219,7 +235,7 @@ public class MazeRunnerGame extends Game {
 
         fireAnimation = new Animation<>(0.1f, fireFrames);
 
-
+//key
         for (int col = 15; col < 20; col++) {
             keyFrames.add(new TextureRegion(oSheet, col*frameWidth, 0 * frameWidth, frameWidth, frameHeight));
         }
@@ -228,7 +244,7 @@ public class MazeRunnerGame extends Game {
         }
         keyAnimation = new Animation<>(0.2f, keyFrames);
 
-
+//portal
         Array<TextureRegion> portalFrames = new Array<>();
 
 
@@ -465,9 +481,9 @@ public class MazeRunnerGame extends Game {
 
         Array<TextureRegion> accelarationFrames = new Array<>();
         accelarationFrames.add(new TextureRegion(accelarationSheet, 80 +  frameWidth, 128, frameWidth, frameHeight));
-    accelarationAnimation = new Animation<>(0.1f, accelarationFrames);
+        accelarationAnimation = new Animation<>(0.1f, accelarationFrames);
 
-}
+    }
     private void loadEnemyAnimation() {
         Texture enemySheet = new Texture(Gdx.files.internal("mobs.png"));
 
@@ -924,7 +940,7 @@ public class MazeRunnerGame extends Game {
     }
 
     // Enemy5
-  
+
     public Animation<TextureRegion> getEnemy5DownAnimation() {
         return enemy5DownAnimation;
     }
@@ -974,4 +990,10 @@ public class MazeRunnerGame extends Game {
 
 
     public Animation<TextureRegion> getAccelarationAnimation() {return accelarationAnimation;}
+
+    public Animation<TextureRegion> getBlackholeAnimation() {
+        return blackholeAnimation;
+    }
+
+
 }

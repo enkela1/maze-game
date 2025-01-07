@@ -108,6 +108,12 @@ public class GameScreen implements Screen {
 
     private int coinCount = 0;
 
+
+
+
+
+
+
     // use a small class to unify hearts, coins, and fires:
     private static class Item {
         float x, y;
@@ -122,7 +128,7 @@ public class GameScreen implements Screen {
 
     // define the types of items:
     private enum ItemType {
-        HEART, COIN, FIRE, KEY,ACCELARATION
+        HEART, COIN, FIRE, KEY,ACCELARATION,BLACKHOLE
     }
 
     // Portal
@@ -142,6 +148,8 @@ public class GameScreen implements Screen {
 
 
     private List<Item> items;
+
+
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -191,6 +199,8 @@ public class GameScreen implements Screen {
 
         // Initialize our items list
         items = new ArrayList<>();
+
+
     }
 
     /**
@@ -316,6 +326,8 @@ public class GameScreen implements Screen {
         int firesToPlace  = 3;
         int keysToPlace = 1;
         int accelarationToPlace =3;
+        int blackHolesToPlace = 2;
+
 
         // 3) Iterate over shuffled openTiles. For each tile:
         //    - Compute center of the tile
@@ -324,7 +336,7 @@ public class GameScreen implements Screen {
         //    - If safe, place the item
         for (Vector2 tilePos : openTiles) {
             // If we've placed them all, break out
-            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& accelarationToPlace <=0) {
+            if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& accelarationToPlace <=0 &&blackHolesToPlace <= 0 ) {
                 break;
             }
 
@@ -367,6 +379,11 @@ public class GameScreen implements Screen {
                 items.add(new Item(centerX, centerY, ItemType.ACCELARATION));
                 accelarationToPlace--;
 
+            }
+
+            if (blackHolesToPlace > 0) {
+                items.add(new Item(centerX, centerY, ItemType.BLACKHOLE));
+                blackHolesToPlace--;
             }
 
         }
@@ -570,6 +587,12 @@ public class GameScreen implements Screen {
                                 32, 32
                         );
 
+                        case BLACKHOLE -> game.getSpriteBatch().draw(
+                                game.getBlackholeAnimation().getKeyFrame(sinusInput, true),
+                                item.x, item.y,
+                                96, 96
+                        );
+
 
 
 
@@ -649,7 +672,7 @@ public class GameScreen implements Screen {
             } else if ((isaccelarationActive && System.currentTimeMillis() > accelarationEndTime))
                 characterSpeed = 200f;
             isaccelarationActive = false;{
-                
+
             }
         } else {
             // Otherwise, handle normal movement input or toggles
@@ -660,6 +683,7 @@ public class GameScreen implements Screen {
         updateEnemies(delta);
 //        checkHeartCollision();
         checkItemCollisions();
+
     }
 
     /**
@@ -1360,23 +1384,40 @@ public class GameScreen implements Screen {
                                 spawnPortal();
                             }
                         }
+
+                        case BLACKHOLE -> {
+                            // 吸引角色到黑洞中心
+                            float blackholeCenterX = item.x ;
+                            float blackholeCenterY = item.y ;
+                            Vector2 direction = new Vector2(blackholeCenterX - characterX, blackholeCenterY - characterY).nor();
+                            characterX += direction.x * 400 * Gdx.graphics.getDeltaTime(); // 吸引速度
+                            characterY += direction.y * 400 * Gdx.graphics.getDeltaTime();
+
+                            // 每次被吸引减少5点生命值
+                            reduceHealth(5);
+
+                            // 黑洞持续时间
+                            if (item.collected) {
+                                item.collected = true;
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-//    private void checkHeartCollision() {
-//        RectangleMapObject heartObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("heart");
-//        if (heartObject != null) {
-//            Rectangle heartBounds = heartObject.getRectangle();
-//            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
-//            if (Intersector.overlaps(heartBounds, characterBounds)) {
-//                restoreHealth(HEAL_AMOUNT);
-//                tiledMap.getLayers().get("Objects").getObjects().remove(heartObject);
-//            }
-//        }
-//    }
+    private void checkHeartCollision() {
+        RectangleMapObject heartObject = (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("heart");
+        if (heartObject != null) {
+            Rectangle heartBounds = heartObject.getRectangle();
+            Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
+            if (Intersector.overlaps(heartBounds, characterBounds)) {
+                restoreHealth(HEAL_AMOUNT);
+                tiledMap.getLayers().get("Objects").getObjects().remove(heartObject);
+            }
+        }
+    }
 
     private void reduceHealth(int amount) {
         if (!isCharacterRed) {
