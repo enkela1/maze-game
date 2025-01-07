@@ -20,6 +20,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class MenuScreen implements Screen {
 
     private final Stage stage;
+    private final MazeRunnerGame game;
+    private Table mainMenuTable;
+    private Table mapSelectionTable;
 
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
@@ -27,40 +30,57 @@ public class MenuScreen implements Screen {
      * @param game The main game class, used to access global resources and methods.
      */
     public MenuScreen(MazeRunnerGame game) {
+        this.game = game;
+
+        // Set up the camera and viewport
         var camera = new OrthographicCamera();
         camera.zoom = 1.5f; // Set camera zoom for a closer view
+        Viewport viewport = new ScreenViewport(camera);
+        stage = new Stage(viewport, game.getSpriteBatch());
 
-        Viewport viewport = new ScreenViewport(camera); // Create a viewport with the camera
-        stage = new Stage(viewport, game.getSpriteBatch()); // Create a stage for UI elements
+        // Initialize UI components
+        setupMainMenu(); // Set up the main menu layout
+        setupMapSelection(); // Set up the map selection layout
 
-        Table table = new Table(); // Create a table for layout
-        table.setFillParent(true); // Make the table fill the stage
-        stage.addActor(table); // Add the table to the stage
+        // Show the main menu by default
+        showMainMenu();
+    }
 
-        // Add a label as a title
-        table.add(new Label("Hello World from the Menu!", game.getSkin(), "title")).padBottom(80).row();
+    /**
+     * Sets up the main menu layout with buttons and title.
+     */
+    private void setupMainMenu() {
+        mainMenuTable = new Table();
+        mainMenuTable.setFillParent(true); // Make the table fill the stage
 
-        // Create and add a button to go to the game screen
-        // Create and add a button to go to the game screen
+        // Add title to the main menu
+        mainMenuTable.add(new Label("Hello World from the Menu!", game.getSkin(), "title"))
+                .padBottom(80)
+                .row();
+
+        // Add "Continue Game" button
         TextButton goToGameButton = new TextButton("Continue Game", game.getSkin());
-        table.add(goToGameButton).width(300).padBottom(20).row();
+        mainMenuTable.add(goToGameButton).width(300).padBottom(20).row();
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.goToGame(); // Change to the game screen when button is pressed
+                game.goToGame(); // Navigate to the game screen
             }
         });
 
+        // Add "Select New Map" button
         TextButton selectMapButton = new TextButton("Select New Map", game.getSkin());
-        table.add(selectMapButton).width(300).padBottom(20).row();
+        mainMenuTable.add(selectMapButton).width(300).padBottom(20).row();
         selectMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.selectMap("level1");
+                showMapSelection(); // Show the map selection screen
             }
         });
+
+        // Add "Quit Game" button
         TextButton quitButton = new TextButton("Quit Game", game.getSkin());
-        table.add(quitButton).width(300).padBottom(20).row();
+        mainMenuTable.add(quitButton).width(300).padBottom(20).row();
         quitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -68,79 +88,89 @@ public class MenuScreen implements Screen {
             }
         });
     }
-    public void selectMap(MazeRunnerGame game) {
-        // Create a new table to display level selection buttons
-        Table mapSelectionTable = new Table();
-        mapSelectionTable.setFillParent(true); // Make the table fill the screen
-        stage.addActor(mapSelectionTable); // Add the table to the stage
 
-        // Create buttons for level selection
+    /**
+     * Sets up the map selection layout with level buttons and a back button.
+     */
+    private void setupMapSelection() {
+        mapSelectionTable = new Table();
+        mapSelectionTable.setFillParent(true); // Make the table fill the stage
+
+        // Add "Level 1" button
         TextButton level1Button = new TextButton("Level 1", game.getSkin());
-        TextButton level2Button = new TextButton("Level 2", game.getSkin());
-        TextButton level3Button = new TextButton("Level 3", game.getSkin());
-
-        // Add the buttons to the table
         mapSelectionTable.add(level1Button).width(300).padBottom(20).row();
-        mapSelectionTable.add(level2Button).width(300).padBottom(20).row();
-        mapSelectionTable.add(level3Button).width(300).padBottom(20).row();
-
-        // Add listeners for each button to load the corresponding map
         level1Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.selectMap("level1"); // Load level 1
             }
         });
+
+        // Add "Level 2" button
+        TextButton level2Button = new TextButton("Level 2", game.getSkin());
+        mapSelectionTable.add(level2Button).width(300).padBottom(20).row();
         level2Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 game.selectMap("level2"); // Load level 2
             }
         });
-        level3Button.addListener(new ChangeListener() {
+
+        // Add "Back to Main Menu" button
+        TextButton backButton = new TextButton("Back to Menu", game.getSkin());
+        mapSelectionTable.add(backButton).width(300).padTop(40).row();
+        backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.selectMap("level3"); // Load level 3
+                showMainMenu(); // Return to the main menu
             }
         });
     }
 
+    /**
+     * Displays the main menu by adding its table to the stage.
+     */
+    private void showMainMenu() {
+        stage.clear(); // Clear the stage of any previous actors
+        stage.addActor(mainMenuTable); // Add the main menu table to the stage
+    }
 
+    /**
+     * Displays the map selection menu by adding its table to the stage.
+     */
+    private void showMapSelection() {
+        stage.clear(); // Clear the stage of any previous actors
+        stage.addActor(mapSelectionTable); // Add the map selection table to the stage
+    }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage
-        stage.draw(); // Draw the stage
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f)); // Update the stage logic
+        stage.draw(); // Render the stage
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Update the stage viewport on resize
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void dispose() {
-        // Dispose of the stage when screen is disposed
         stage.dispose();
     }
 
     @Override
     public void show() {
-        // Set the input processor so the stage can receive input events
         Gdx.input.setInputProcessor(stage);
     }
 
-    // The following methods are part of the Screen interface but are not used in this screen.
     @Override
-    public void pause() {
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-    }
+    public void hide() {}
 }
