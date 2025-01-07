@@ -214,6 +214,7 @@ public class MazeRunnerGame extends Game {
         blackholeAnimation = new Animation<>(0.3f, blackholeFrames);
 
 
+
 //heart
         for(int col = 0; col < 4; col++){
             heartFrames.add(new TextureRegion(oSheet, col*frameWidth  , 3 * frameWidth , frameWidth, frameHeight));

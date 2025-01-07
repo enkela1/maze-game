@@ -18,12 +18,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
  * The GameScreen class is responsible for rendering the gameplay screen.
@@ -32,8 +34,11 @@ import com.badlogic.gdx.graphics.Color;
 public class GameScreen implements Screen {
 
     private final MazeRunnerGame game;
+    private MenuScreen menuScreen;
     private final OrthographicCamera camera;
     private final BitmapFont font;
+    private Stage pauseStage;
+    private Stage gameStage;
 
     private float sinusInput = 0f;
 
@@ -158,6 +163,8 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
+        menuScreen = new MenuScreen(game);
+
 
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
@@ -474,9 +481,15 @@ public class GameScreen implements Screen {
         }
 
         // Check if 'P' is pressed => pause toggle
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            isPaused = !isPaused;
-        }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+                isPaused = !isPaused;
+                if (isPaused) {
+                    Gdx.input.setInputProcessor(pauseStage); // Set input processor to pause menu
+                } else {
+                    Gdx.input.setInputProcessor(null); // Reset input processor to game logic
+                }
+            }
 
         // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
@@ -525,12 +538,12 @@ public class GameScreen implements Screen {
             // If game is started, render character and enemies
             if (isPaused) {
                 // Show "Game Paused" message if paused
-                font.draw(
-                        game.getSpriteBatch(),
-                        "Game Paused. Press 'P' to resume.",
-                        camera.position.x - 100,
-                        camera.position.y
-                );
+                if (isPaused) {
+                    pauseStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+                    pauseStage.draw();
+                }
+
+
             }
 
 
@@ -674,16 +687,16 @@ public class GameScreen implements Screen {
             isaccelarationActive = false;{
 
             }
-        } else {
+        } else if (!isPaused) {
             // Otherwise, handle normal movement input or toggles
             handleInput(delta);
-        }
 
-        // Update enemies logic
-        updateEnemies(delta);
+
+            // Update enemies logic
+            updateEnemies(delta);
 //        checkHeartCollision();
-        checkItemCollisions();
-
+            checkItemCollisions();
+        }
     }
 
     /**
@@ -1510,6 +1523,7 @@ public class GameScreen implements Screen {
             return true;
         }
 
+
         return false;
     }
 
@@ -1525,7 +1539,11 @@ public class GameScreen implements Screen {
     public void resume() { }
 
     @Override
-    public void show() { }
+    public void show() {
+        gameStage = new Stage(new ScreenViewport());  // 游戏主舞台
+        pauseStage = menuScreen.createPauseMenu();
+        Gdx.input.setInputProcessor(gameStage);
+    }
 
     @Override
     public void hide() { }
@@ -1534,6 +1552,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         mapRenderer.dispose();
         tiledMap.dispose();
+        pauseStage.dispose();
     }
 
     /**
