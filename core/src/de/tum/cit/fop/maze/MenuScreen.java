@@ -147,6 +147,29 @@ public class MenuScreen implements Screen {
         stage.addActor(mapSelectionTable); // Add the map selection table to the stage
     }
 
+
+    private void renderPauseMenu(Stage pauseStage, Texture backgroundTexture) {
+        // Clear the screen if needed
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw the background texture
+        pauseStage.getBatch().begin();
+        pauseStage.getBatch().draw(
+                backgroundTexture,
+                0,
+                0,
+                pauseStage.getViewport().getWorldWidth(),
+                pauseStage.getViewport().getWorldHeight()
+        );
+        pauseStage.getBatch().end();
+
+        // Then draw any UI elements in the stage
+        pauseStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        pauseStage.draw();
+    }
+
+
     public Stage createPauseMenu() {
         // Create a stage for the pause menu
         Stage pauseStage = new Stage(new ScreenViewport());
@@ -180,10 +203,7 @@ public class MenuScreen implements Screen {
             }
         });
 
-        // Draw the background image in the render method
-        pauseStage.getBatch().begin();
-        pauseStage.getBatch().draw(backgroundTexture, 0, 0, pauseStage.getViewport().getWorldWidth(), pauseStage.getViewport().getWorldHeight());
-        pauseStage.getBatch().end();
+
 
         return pauseStage; // Return the created pause menu stage
     }
@@ -191,6 +211,10 @@ public class MenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
+
+
+
         // Clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

@@ -39,6 +39,8 @@ public class GameScreen implements Screen {
     private final BitmapFont font;
     private Stage pauseStage;
     private Stage gameStage;
+    private Hud hud; // Our new HUD
+
 
     private float sinusInput = 0f;
 
@@ -66,10 +68,12 @@ public class GameScreen implements Screen {
     private boolean isGameOver = false;
     private float gameOverTimer = 0;
 
+    Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
+
 
 
     // Directions for animations
-    private enum Direction {
+    public enum Direction {
         UP, DOWN, LEFT, RIGHT,
         IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
     }
@@ -132,7 +136,7 @@ public class GameScreen implements Screen {
     }
 
     // define the types of items:
-    private enum ItemType {
+    public enum ItemType {
         HEART, COIN, FIRE, KEY,ACCELARATION,BLACKHOLE
     }
 
@@ -200,6 +204,8 @@ public class GameScreen implements Screen {
         // }
 
         collisionRectangles = new Array<>();
+
+        hud = new Hud();
 
         // Initialize health
         characterHealth = MAX_HEALTH;
@@ -397,13 +403,6 @@ public class GameScreen implements Screen {
     }
 
 
-
-
-
-
-
-
-
     @Override
     public void render(float delta) {
 
@@ -421,17 +420,17 @@ public class GameScreen implements Screen {
             GlyphLayout layout = new GlyphLayout();
             layout.setText(font, "YOU WIN!");
 
-            float textWidth  = layout.width;
+            float textWidth = layout.width;
             float textHeight = layout.height;
-            float centerX    = camera.position.x - (textWidth / 2) ;
-            float centerY    = camera.position.y + (textHeight / 2) + 50;
+            float centerX = camera.position.x - (textWidth / 2);
+            float centerY = camera.position.y + (textHeight / 2) + 50;
 
             font.draw(game.getSpriteBatch(), layout, centerX, centerY);
             String coinsText = "Coins Collected: " + coinCount;
             layout.setText(font, coinsText);
             float coinsTextWidth = layout.width;
-            float coinsCenterX   = camera.position.x - (coinsTextWidth / 2);
-            float coinsCenterY   = centerY - 100;
+            float coinsCenterX = camera.position.x - (coinsTextWidth / 2);
+            float coinsCenterY = centerY - 100;
 
             font.draw(game.getSpriteBatch(), layout, coinsCenterX, coinsCenterY);
 
@@ -450,8 +449,8 @@ public class GameScreen implements Screen {
         }
 
 //clear the screen
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        Gdx.gl.glClearColor(0, 0, 0, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //if character is dead=>SHOW GAMEOVER
         if (isGameOver) {
@@ -482,17 +481,39 @@ public class GameScreen implements Screen {
 
         // Check if 'P' is pressed => pause toggle
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-                isPaused = !isPaused;
-                if (isPaused) {
-                    Gdx.input.setInputProcessor(pauseStage); // Set input processor to pause menu
-                } else {
-                    Gdx.input.setInputProcessor(null); // Reset input processor to game logic
-                }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            isPaused = !isPaused;
+            if (isPaused) {
+                Gdx.input.setInputProcessor(pauseStage); // Set input processor to pause menu
+            } else {
+                Gdx.input.setInputProcessor(null); // Reset input processor to game logic
             }
+        }
+
+        if (isPaused) {
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            // Draw the pause background
+            pauseStage.getBatch().begin();
+            pauseStage.getBatch().draw(
+                    backgroundTexture,
+                    0, 0,
+                    pauseStage.getViewport().getWorldWidth(),
+                    pauseStage.getViewport().getWorldHeight()
+            );
+            pauseStage.getBatch().end();
+
+            // Draw pause UI
+            pauseStage.act(delta);
+            pauseStage.draw();
+
+            // Skip all normal game rendering
+            return;
+        }
 
         // Clear screen
-        ScreenUtils.clear(0, 0, 0, 1);
+//        ScreenUtils.clear(0, 0, 0, 1);
 
         if (!isGameOver && isGameStarted && !isPaused) {
             updateGameState(delta);
@@ -607,13 +628,13 @@ public class GameScreen implements Screen {
                         );
 
 
-
-
                     }
                 }
             }
 
             // Display health and coinCount
+
+
 
 
             if (isPortalActive && !isGameOver && !isGameWon) {
@@ -629,7 +650,7 @@ public class GameScreen implements Screen {
             }
 
 
-            font.draw(game.getSpriteBatch(), "Coins: " + coinCount,      camera.position.x - 130,        camera.position.y + 150);
+            font.draw(game.getSpriteBatch(), "Coins: " + coinCount, camera.position.x - 130, camera.position.y + 150);
 
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
         }
@@ -644,7 +665,18 @@ public class GameScreen implements Screen {
             );
         }
 
+
+
+        // draws the arrow
+
+
         game.getSpriteBatch().end();
+        if(keyCollected) {
+                hud.update(delta, characterX, characterY, portalX, portalY, camera);
+                hud.render(); // arrow is drawn pinned to the corner
+        }
+
+
 
         if (isCharacterRed) {
             redTimer += delta;
@@ -716,7 +748,7 @@ public class GameScreen implements Screen {
             isHolding = true;
             return;
         }
-        // Key J => start attacking
+        // Key J => start attackingr
         if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             isAttacking = true;
             attackTimer = 0f;
@@ -1530,6 +1562,7 @@ public class GameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false);
+        hud.resize(width, height);
     }
 
     @Override
@@ -1553,6 +1586,7 @@ public class GameScreen implements Screen {
         mapRenderer.dispose();
         tiledMap.dispose();
         pauseStage.dispose();
+        hud.dispose();
     }
 
     /**
