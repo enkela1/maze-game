@@ -1,4 +1,6 @@
 package de.tum.cit.fop.maze;
+import de.tum.cit.fop.maze.GameScreen; // This should be automatically added by your IDE
+
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
