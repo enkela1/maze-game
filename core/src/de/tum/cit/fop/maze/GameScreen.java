@@ -1512,6 +1512,7 @@ public class GameScreen implements Screen {
     }
 
     private void onCharacterDeath() {
+        deathSound.play();
         System.out.println("Game Over");
         isGameOver = true;
         gameOverTimer = 0;
