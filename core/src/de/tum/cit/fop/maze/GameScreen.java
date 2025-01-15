@@ -41,6 +41,8 @@ public class GameScreen implements Screen {
     private final BitmapFont font;
     private Stage pauseStage;
     private Stage gameStage;
+    private Stage winStage;
+    private Stage loseStage;
     private Hud hud; // Our new HUD
 
 
@@ -161,6 +163,9 @@ public class GameScreen implements Screen {
     private List<Item> items;
 
 
+    public int getCoinCount() {
+        return coinCount;
+    }
 
     /**
      * Constructor for GameScreen. Sets up the camera and font.
@@ -169,13 +174,13 @@ public class GameScreen implements Screen {
      */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
-        menuScreen = new MenuScreen(game);
+        menuScreen = new MenuScreen(game,coinCount);
 
 
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
-        camera.zoom = 0.75f;
+        camera.zoom = 0.5f;
 
         // Get the font from the game's skin
         font = game.getSkin().getFont("font");
@@ -413,36 +418,26 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (isGameWon) {
-            game.getSpriteBatch().begin();
-
-            // You can reuse or create a font; here’s the simplest approach:
-            BitmapFont font = new BitmapFont(); // or use game.getSkin().getFont("font");
-            font.getData().setScale(6f);
-
-            GlyphLayout layout = new GlyphLayout();
-            layout.setText(font, "YOU WIN!");
-
-            float textWidth = layout.width;
-            float textHeight = layout.height;
-            float centerX = camera.position.x - (textWidth / 2);
-            float centerY = camera.position.y + (textHeight / 2) + 50;
-
-            font.draw(game.getSpriteBatch(), layout, centerX, centerY);
-            String coinsText = "Coins Collected: " + coinCount;
-            layout.setText(font, coinsText);
-            float coinsTextWidth = layout.width;
-            float coinsCenterX = camera.position.x - (coinsTextWidth / 2);
-            float coinsCenterY = centerY - 100;
-
-            font.draw(game.getSpriteBatch(), layout, coinsCenterX, coinsCenterY);
 
 
-            game.getSpriteBatch().end();
-            font.dispose();
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            // Return => do NOT call updateGameState or anything else
+            winStage.getBatch().begin();
+            winStage.getBatch().draw(
+                    backgroundTexture,
+                    0, 0,
+                    winStage.getViewport().getWorldWidth(),
+                    winStage.getViewport().getWorldHeight()
+            );
+            winStage.getBatch().end();
+
+            winStage.act(delta);
+            winStage.draw();
+
             return;
         }
+
 
 
         // Check if ESC is pressed => go to menu
@@ -456,24 +451,24 @@ public class GameScreen implements Screen {
 
         //if character is dead=>SHOW GAMEOVER
         if (isGameOver) {
-            game.getSpriteBatch().begin();
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            BitmapFont font = new BitmapFont();
-            font.getData().setScale(6f);
+            // Draw the pause background
+            loseStage.getBatch().begin();
+            loseStage.getBatch().draw(
+                    backgroundTexture,
+                    0, 0,
+                    loseStage.getViewport().getWorldWidth(),
+                    loseStage.getViewport().getWorldHeight()
+            );
+            loseStage.getBatch().end();
 
-            GlyphLayout layout = new GlyphLayout();
-            layout.setText(font, "Game Over !");
+            // Draw pause UI
+            loseStage.act(delta);
+            loseStage.draw();
 
-            float textWidth = layout.width;
-            float textHeight = layout.height;
-            float centerX = camera.position.x - (textWidth / 2);
-            float centerY = camera.position.y + (textHeight / 2);
-
-            font.draw(game.getSpriteBatch(), layout, centerX, centerY);
-
-            game.getSpriteBatch().end();
-
-            font.dispose();
+            // Skip all normal game rendering
             return;
         }
         // Check if ENTER is pressed => start game
@@ -1393,7 +1388,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void checkItemCollisions() {
+    void checkItemCollisions() {
         Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
         for (Item item : items) {
             if (!item.collected) {
@@ -1575,10 +1570,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        gameStage = new Stage(new ScreenViewport());  // 游戏主舞台
+        gameStage = new Stage(new ScreenViewport());
         pauseStage = menuScreen.createPauseMenu();
+        winStage=menuScreen.createWinMenu(coinCount);
+        loseStage=menuScreen.createGameoverMenu();
         Gdx.input.setInputProcessor(gameStage);
     }
+
 
     @Override
     public void hide() { }

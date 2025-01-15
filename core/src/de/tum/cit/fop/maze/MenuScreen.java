@@ -1,5 +1,4 @@
 package de.tum.cit.fop.maze;
-import de.tum.cit.fop.maze.GameScreen; // This should be automatically added by your IDE
 
 
 import com.badlogic.gdx.Gdx;
@@ -24,6 +23,7 @@ public class MenuScreen implements Screen {
 
     private final Stage stage;
     private final MazeRunnerGame game;
+    private final int coinCount;
     private Table mainMenuTable;
     private Table mapSelectionTable;
     private final Texture backgroundTexture;
@@ -34,8 +34,9 @@ public class MenuScreen implements Screen {
      *
      * @param game The main game class, used to access global resources and methods.
      */
-    public MenuScreen(MazeRunnerGame game) {
+    public MenuScreen(MazeRunnerGame game, int coinCount) {
         this.game = game;
+        this.coinCount = coinCount;
 
         // Set up the camera and viewport
         var camera = new OrthographicCamera();
@@ -206,16 +207,59 @@ public class MenuScreen implements Screen {
             }
         });
 
-
-
         return pauseStage; // Return the created pause menu stage
     }
 
 
+    public Stage createWinMenu(int coinCount) {
+        // Create a stage for the pause menu
+        Stage winStage = new Stage(new ScreenViewport());
+
+        // Load background texture
+        Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
+
+        // Create a table for layoutJ
+        Table winTable = new Table();
+        winTable.setFillParent(true);
+        winStage.addActor(winTable);
+
+        // Add "Game Paused" label
+        winTable.add(new Label("YOU WIN!", game.getSkin(), "title"))
+                .padBottom(50)
+                .row();
+
+        winTable.add(new Label("Coins collected: " + coinCount, game.getSkin()))
+                .padBottom(20)
+                .row();
+
+
+        return winStage;
+    }
+
+    public Stage createGameoverMenu() {
+        // Create a stage for the pause menu
+        Stage loseStage = new Stage(new ScreenViewport());
+
+        // Load background texture
+        Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
+
+        Table loseTable = new Table();
+        loseTable.setFillParent(true);
+        loseStage.addActor(loseTable);
+
+
+        loseTable.add(new Label("GAME OVER!", game.getSkin(), "title"))
+                .padBottom(50)
+                .row();
+
+
+        return loseStage;
+    }
+
+
+
     @Override
     public void render(float delta) {
-
-
 
 
         // Clear the screen
@@ -238,6 +282,8 @@ public class MenuScreen implements Screen {
     }
 
 
+
+
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
@@ -255,11 +301,16 @@ public class MenuScreen implements Screen {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 }
+
+
