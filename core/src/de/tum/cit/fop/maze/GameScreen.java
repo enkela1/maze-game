@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.audio.Sound;
+
 
 import static de.tum.cit.fop.maze.GameScreen.Direction.*;
 
@@ -44,7 +46,12 @@ public class GameScreen implements Screen {
     private Stage winStage;
     private Stage loseStage;
     private Hud hud; // Our new HUD
-
+    private Sound collectSound;
+    private Sound heartSound;
+    private Sound hurtSound;
+    private Sound deathSound;
+    private Sound victorySound;
+    private Sound menuSound;
 
     private float sinusInput = 0f;
 
@@ -566,6 +573,7 @@ public class GameScreen implements Screen {
 
 
             if (isCharacterRed) {
+                hurtSound.play();
                 game.getSpriteBatch().setColor(Color.RED);
             } else {
                 game.getSpriteBatch().setColor(Color.WHITE);
@@ -1394,6 +1402,7 @@ public class GameScreen implements Screen {
             if (!item.collected) {
                 Rectangle itemBounds = new Rectangle(item.x, item.y, 32, 32);
                 if (Intersector.overlaps(itemBounds, characterBounds)) {
+                    collectSound.play();
                     // Handle the collision
                     switch (item.type) {
                         case HEART -> {
@@ -1489,6 +1498,7 @@ public class GameScreen implements Screen {
         if (Intersector.overlaps(portalBounds, characterBounds)) {
             // The player steps onto the portal => YOU WIN!
             isGameWon = true;
+            victorySound.play();
         }
     }
 
@@ -1575,6 +1585,11 @@ public class GameScreen implements Screen {
         winStage=menuScreen.createWinMenu(coinCount);
         loseStage=menuScreen.createGameoverMenu();
         Gdx.input.setInputProcessor(gameStage);
+        hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
+        collectSound = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));
+        deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"));
+        victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
+
     }
 
 
@@ -1587,6 +1602,10 @@ public class GameScreen implements Screen {
         tiledMap.dispose();
         pauseStage.dispose();
         hud.dispose();
+        if (collectSound != null) collectSound.dispose();
+        if (hurtSound != null) hurtSound.dispose();
+        if (deathSound != null) deathSound.dispose();
+        if (victorySound != null) victorySound.dispose();
     }
 
     /**
