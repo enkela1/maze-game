@@ -61,13 +61,17 @@ public class GameScreen implements Screen {
     private float characterSpeed = 200f; // Base speed (pixels/sec)
     private boolean isaccelarationActive = false;
     private long accelarationEndTime = 0;
-    private static final float SPEED_MULTIPLIER = 2.5f; // Speed multiplier when Shift is pressed
+    private static final float SPEED_MULTIPLIER = 2.5f;
+    private int characterWidth = 32;
+    private int characterHeight = 64;
+    private int enemyWidth = 32;
+    private int enemyHeight = 32; // Speed multiplier when Shift is pressed
 
-    // Define the bounding box for the character's feet
-    private static final float FOOT_BOX_OFFSET_X = 16f; // offset from characterX's left edge
-    private static final float FOOT_BOX_OFFSET_Y = 21f; // offset from characterY's bottom edge
-    private static final float FOOT_BOX_WIDTH    = 32f; // box width for collision
-    private static final float FOOT_BOX_HEIGHT   = 18f; // box height for collision
+
+    private static final float FOOT_BOX_OFFSET_X = 8f;    // offset from characterX's left edge
+    private static final float FOOT_BOX_OFFSET_Y = 10.5f; // offset from characterY's bottom edge
+    private static final float FOOT_BOX_WIDTH    = 16f;   // box width for collision
+    private static final float FOOT_BOX_HEIGHT   = 9f;    // box height for collision
 
     // Enemies
     private List<Enemy> enemies; // store enemies
@@ -263,8 +267,8 @@ public class GameScreen implements Screen {
             // characterX = rect.x;
             // characterY = rect.y;
 
-            characterX = 0;               // Start at the left corner (X-coordinate)
-            characterY = mapBounds.height - 128;  // Start near the top corner
+            characterX = 87;               // Start at the left corner (X-coordinate)
+            characterY = mapBounds.height - 130;  // Start near the top corner
         } else {
             // Fallback if no character object is found
             characterX = camera.viewportWidth / 2;
@@ -629,7 +633,7 @@ public class GameScreen implements Screen {
                         case BLACKHOLE -> game.getSpriteBatch().draw(
                                 game.getBlackholeAnimation().getKeyFrame(sinusInput, true),
                                 item.x, item.y,
-                                96, 96
+                                50, 50
                         );
 
 
@@ -890,56 +894,55 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy1RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
-                        );
+                                enemyWidth, enemyHeight                        );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy1IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                 }
@@ -952,56 +955,56 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy2RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy2IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                 }
@@ -1012,56 +1015,56 @@ public class GameScreen implements Screen {
                     game.getSpriteBatch().draw(
                             game.getEnemy3RightAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case LEFT:
                     game.getSpriteBatch().draw(
                             game.getEnemy3LeftAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case UP:
                     game.getSpriteBatch().draw(
                             game.getEnemy3UpAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case DOWN:
                     game.getSpriteBatch().draw(
                             game.getEnemy3DownAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case IDLE_RIGHT:
                     game.getSpriteBatch().draw(
                             game.getEnemy3IdleRightAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case IDLE_LEFT:
                     game.getSpriteBatch().draw(
                             game.getEnemy3IdleLeftAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case IDLE_UP:
                     game.getSpriteBatch().draw(
                             game.getEnemy3IdleUpAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
                 case IDLE_DOWN:
                     game.getSpriteBatch().draw(
                             game.getEnemy3IdleDownAnimation().getKeyFrame(sinusInput, true),
                             enemy.getX(), enemy.getY(),
-                            64, 64
+                            enemyWidth, enemyHeight
                     );
                     break;
             }
@@ -1073,56 +1076,56 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy4RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy4IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                 }
@@ -1133,56 +1136,56 @@ public class GameScreen implements Screen {
                         game.getSpriteBatch().draw(
                                 game.getEnemy5RightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5LeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5UpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5DownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_RIGHT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5IdleRightAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_LEFT:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5IdleLeftAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_UP:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5IdleUpAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                     case IDLE_DOWN:
                         game.getSpriteBatch().draw(
                                 game.getEnemy5IdleDownAnimation().getKeyFrame(sinusInput, true),
                                 enemy.getX(), enemy.getY(),
-                                64, 64
+                                enemyWidth, enemyHeight
                         );
                         break;
                 }
@@ -1198,22 +1201,22 @@ public class GameScreen implements Screen {
             case UP, IDLE_UP -> game.getSpriteBatch().draw(
                     game.getCharacterPickupUpAnimation().getKeyFrame(pickUpTimer, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case DOWN, IDLE_DOWN -> game.getSpriteBatch().draw(
                     game.getCharacterPickupDownAnimation().getKeyFrame(pickUpTimer, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case LEFT, IDLE_LEFT -> game.getSpriteBatch().draw(
                     game.getCharacterPickupLeftAnimation().getKeyFrame(pickUpTimer, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case RIGHT, IDLE_RIGHT -> game.getSpriteBatch().draw(
                     game.getCharacterPickupRightAnimation().getKeyFrame(pickUpTimer, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
         }
     }
@@ -1226,42 +1229,42 @@ public class GameScreen implements Screen {
             case UP -> game.getSpriteBatch().draw(
                     game.getCharacterHoldUpAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case DOWN -> game.getSpriteBatch().draw(
                     game.getCharacterHoldDownAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case LEFT -> game.getSpriteBatch().draw(
                     game.getCharacterHoldLeftAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case RIGHT -> game.getSpriteBatch().draw(
                     game.getCharacterHoldRightAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case IDLE_UP -> game.getSpriteBatch().draw(
                     game.getCharacterHoldIdleUpAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case IDLE_DOWN -> game.getSpriteBatch().draw(
                     game.getCharacterHoldIdleDownAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case IDLE_LEFT -> game.getSpriteBatch().draw(
                     game.getCharacterHoldIdleLeftAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
             case IDLE_RIGHT -> game.getSpriteBatch().draw(
                     game.getCharacterHoldIdleRightAnimation().getKeyFrame(sinusInput, false),
                     characterX, characterY,
-                    64, 128
+                    characterWidth, characterHeight
             );
         }
     }
@@ -1274,22 +1277,22 @@ public class GameScreen implements Screen {
             case UP, IDLE_UP -> game.getSpriteBatch().draw(
                     game.getCharacterAttackUpAnimation().getKeyFrame(attackTimer, true),
                     characterX - 32, characterY,
-                    128, 128
+                    characterHeight, characterHeight
             );
             case DOWN, IDLE_DOWN -> game.getSpriteBatch().draw(
                     game.getCharacterAttackDownAnimation().getKeyFrame(attackTimer, true),
                     characterX - 32, characterY,
-                    128, 128
+                    characterHeight, characterHeight
             );
             case LEFT, IDLE_LEFT -> game.getSpriteBatch().draw(
                     game.getCharacterAttackLeftAnimation().getKeyFrame(attackTimer, true),
                     characterX - 32, characterY,
-                    128, 128
+                    characterHeight, characterHeight
             );
             case RIGHT, IDLE_RIGHT -> game.getSpriteBatch().draw(
                     game.getCharacterAttackRightAnimation().getKeyFrame(attackTimer, true),
                     characterX - 32, characterY,
-                    128, 128
+                    characterHeight, characterHeight
             );
         }
     }
@@ -1303,49 +1306,49 @@ public class GameScreen implements Screen {
                     game.getSpriteBatch().draw(
                             game.getCharacterUpAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case DOWN ->
                     game.getSpriteBatch().draw(
                             game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case LEFT ->
                     game.getSpriteBatch().draw(
                             game.getCharacterLeftAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case RIGHT ->
                     game.getSpriteBatch().draw(
                             game.getCharacterRightAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case IDLE_UP ->
                     game.getSpriteBatch().draw(
                             game.getCharacterIdleUpAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case IDLE_DOWN ->
                     game.getSpriteBatch().draw(
                             game.getCharacterIdleDownAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case IDLE_LEFT ->
                     game.getSpriteBatch().draw(
                             game.getCharacterIdleLeftAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
             case IDLE_RIGHT ->
                     game.getSpriteBatch().draw(
                             game.getCharacterIdleRightAnimation().getKeyFrame(sinusInput, true),
                             characterX, characterY,
-                            64, 128
+                            characterWidth, characterHeight
                     );
         }
     }
@@ -1483,8 +1486,8 @@ public class GameScreen implements Screen {
 
     private void spawnPortal() {
         // Put portal near bottom-right corner
-        portalX = mapBounds.width  - PORTAL_WIDTH  - 32f;
-        portalY =  32f;  // a bit above the bottom edge
+        portalX = mapBounds.width  - PORTAL_WIDTH  - 40f;
+        portalY =  40f;  // a bit above the bottom edge
         isPortalActive = true;
     }
 
@@ -1499,6 +1502,8 @@ public class GameScreen implements Screen {
             // The player steps onto the portal => YOU WIN!
             isGameWon = true;
             victorySound.play();
+            winStage = menuScreen.createWinMenu(coinCount);
+
         }
     }
 
@@ -1583,7 +1588,6 @@ public class GameScreen implements Screen {
     public void show() {
         gameStage = new Stage(new ScreenViewport());
         pauseStage = menuScreen.createPauseMenu();
-        winStage=menuScreen.createWinMenu(coinCount);
         loseStage=menuScreen.createGameoverMenu();
         Gdx.input.setInputProcessor(gameStage);
         hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
