@@ -3,6 +3,7 @@
  <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
   <image source="../assets/down.png" width="128" height="240"/>
  </tileset>
+
  <tileset firstgid="121" name="left" tilewidth="16" tileheight="16" tilecount="120" columns="15">
   <image source="../assets/left.png" width="240" height="128"/>
  </tileset>
