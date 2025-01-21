@@ -105,22 +105,23 @@ public class MenuScreen implements Screen {
         mapSelectionTable.setFillParent(true); // Make the table fill the stage
 
         // Add "Level 1" button
+        // 创建 Level 1 按钮
         TextButton level1Button = new TextButton("Level 1", game.getSkin());
         mapSelectionTable.add(level1Button).width(300).padBottom(20).row();
         level1Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.selectMap("level1"); // Load level 1
+                game.selectMap("input"); // 加载 maps 下的 input 文件
             }
         });
 
-        // Add "Level 2" button
+// 创建 Level 2 按钮
         TextButton level2Button = new TextButton("Level 2", game.getSkin());
         mapSelectionTable.add(level2Button).width(300).padBottom(20).row();
         level2Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.selectMap("level2"); // Load level 2
+                game.selectMap("map_2"); // 加载 maps 下的 map_2 文件
             }
         });
 

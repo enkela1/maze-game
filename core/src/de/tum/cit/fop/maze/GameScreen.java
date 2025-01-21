@@ -198,7 +198,7 @@ public class GameScreen implements Screen {
 
         // Load the tiled map
         TmxMapLoader loader = new TmxMapLoader();
-        tiledMap = loader.load("input.tmx");
+        tiledMap = loader.load("map_2.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         // Get boundaries from first layer
@@ -247,14 +247,24 @@ public class GameScreen implements Screen {
         initializeItems();
     }
     public void loadMap(String mapName) {
-        // Load the map using the mapName (e.g., level1, level2, level3)
-        TiledMap map = new TmxMapLoader().load(mapName + ".tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(map); // Initialize the map renderer
-        tiledMap = map;
+
+            TmxMapLoader loader = new TmxMapLoader();
+
+            tiledMap = loader.load(mapName + ".tmx");
+            mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+            TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+            mapBounds = new Rectangle(
+                    0,
+                    0,
+                    layer.getWidth() * layer.getTileWidth(),
+                    layer.getHeight() * layer.getTileHeight()
+            );
+
     }
-    public void selectMap(String mapName) {
-        loadMap(mapName); // Call the loadMap method to load the selected map
-    }
+
+
+
     /**
      * Initializes character position from the "Objects" layer in the Tiled map.
      */
@@ -427,7 +437,9 @@ public class GameScreen implements Screen {
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        camera.update();
+        mapRenderer.setView(camera);
+        mapRenderer.render();
         if (isGameWon) {
 
 
@@ -1611,7 +1623,8 @@ public class GameScreen implements Screen {
     public void dispose() {
         mapRenderer.dispose();
         tiledMap.dispose();
-        pauseStage.dispose();
+        if (pauseStage != null) {
+            pauseStage.dispose();}
         hud.dispose();
         if (collectSound != null) collectSound.dispose();
         if (hurtSound != null) hurtSound.dispose();

@@ -143,49 +143,66 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
 
-
         this.loadObjectsAnimation();  // Make sure we load hearts, coins, and fire
 
         // Load all animations
         this.loadCharacterAnimation();
         this.loadEnemyAnimation();
-        this. loadaccelarationAnimation();
-
+        this.loadaccelarationAnimation();
 
         // Play some background music
         Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
 
-        goToMenu(); // Navigate to the menu screen
+        // Only initialize gameScreen if it is not already initialized
+        if (gameScreen == null) {
+            gameScreen = new GameScreen(this);
+        }
+
+        // Go to the menu screen
+        goToMenu();
     }
 
     /**
      * Switches to the menu screen.
      */
     public void goToMenu() {
-        this.setScreen(new MenuScreen(this,0));
-        if (gameScreen != null) {
-            gameScreen.dispose();
-            gameScreen = null;
+        // First dispose of menuScreen if it's not null
+        if (menuScreen != null) {
+            menuScreen.dispose();  // Dispose the current menu screen
+            menuScreen = null;  // Reset the menuScreen reference
         }
+
+        // Switch to the MenuScreen
+        this.setScreen(new MenuScreen(this, 0));
     }
 
     /**
      * Switches to the game screen.
      */
     public void goToGame() {
-        this.setScreen(new GameScreen(this));
+        // Initialize gameScreen if it's null
+        if (gameScreen == null) {
+            gameScreen = new GameScreen(this);
+        }
+
+        this.setScreen(gameScreen);
+
+        // Dispose of menuScreen when switching to the game
         if (menuScreen != null) {
             menuScreen.dispose();
             menuScreen = null;
         }
     }
+
     public void selectMap(String mapName) {
         if (gameScreen != null) {
-            gameScreen.selectMap(mapName); // Call GameScreen's selectMap method to load the map
+            gameScreen.loadMap(mapName); // Load the map
+            setScreen(gameScreen);       // Switch to the game screen
         }
     }
+
 
     /**
      * Loads the character animation from the character.png file,
