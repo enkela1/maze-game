@@ -83,9 +83,9 @@ public class GameScreen implements Screen {
     private boolean isGameOver = false;
     private float gameOverTimer = 0;
 
+
     Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
     Texture backgroundTexture1 = new Texture(Gdx.files.internal("background1.png"));
-
 
     // Directions for animations
     public enum Direction {
