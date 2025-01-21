@@ -84,7 +84,7 @@ public class GameScreen implements Screen {
     private float gameOverTimer = 0;
 
     Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
-
+    Texture backgroundTexture1 = new Texture(Gdx.files.internal("background1.png"));
 
 
     // Directions for animations
@@ -554,13 +554,19 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().begin();
 
         if (!isGameStarted) {
+            game.getSpriteBatch().draw(
+                    backgroundTexture1,
+                    0, 0,
+                    camera.viewportWidth/2,
+                    camera.viewportHeight/2
+            );
             // If game not started, show instructions
             font.draw(game.getSpriteBatch(), "Press ENTER to start", textX, textY);
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY - 100);
             // Draw a fun animation for the character (e.g. idleDown)
             game.getSpriteBatch().draw(
                     game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
-                    textX - 96, textY - 64,
+                    textX - 4, textY - 120,
                     64, 128
             );
         } else {
@@ -681,8 +687,8 @@ public class GameScreen implements Screen {
 
         game.getSpriteBatch().end();
         if(keyCollected) {
-                hud.update(delta, characterX, characterY, portalX, portalY, camera);
-                hud.render(); // arrow is drawn pinned to the corner
+            hud.update(delta, characterX, characterY, portalX, portalY, camera);
+            hud.render(); // arrow is drawn pinned to the corner
         }
 
 
@@ -1712,3 +1718,4 @@ public class GameScreen implements Screen {
     }
 
 }
+
