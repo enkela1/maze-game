@@ -75,7 +75,7 @@ public class GameScreen implements Screen {
 
     // Enemies
     private List<Enemy> enemies; // store enemies
-    private float detectionRange = 300f; // detecting range
+    private float detectionRange = 140f; // detecting range
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -300,7 +300,7 @@ public class GameScreen implements Screen {
                     tiledMap.getLayers().get("Objects").getObjects().get(objectName);
             if (enemyObject != null) {
                 Rectangle rect = enemyObject.getRectangle();
-                enemies.add(new Enemy(rect.x, rect.y, 80f, i));
+                enemies.add(new Enemy(rect.x, rect.y, 95f, i));
             }
         }
     }
