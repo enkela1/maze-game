@@ -58,10 +58,10 @@ public class GameScreen implements Screen {
     // Character position and movement state
     private float characterX;
     private float characterY;
-    private float characterSpeed = 200f; // Base speed (pixels/sec)
+    private float characterSpeed = 80f; // Base speed (pixels/sec)
     private boolean isaccelarationActive = false;
     private long accelarationEndTime = 0;
-    private static final float SPEED_MULTIPLIER = 2.5f;
+    private static final float SPEED_MULTIPLIER = 2f;
     private int characterWidth = 32;
     private int characterHeight = 64;
     private int enemyWidth = 32;
@@ -245,6 +245,9 @@ public class GameScreen implements Screen {
         initializeEnemies();
 
         initializeItems();
+
+        camera.zoom = 0.3f; // 这里设置缩放程度，值越小视角越大
+        camera.update();
     }
     public void loadMap(String mapName) {
 
@@ -297,7 +300,7 @@ public class GameScreen implements Screen {
                     tiledMap.getLayers().get("Objects").getObjects().get(objectName);
             if (enemyObject != null) {
                 Rectangle rect = enemyObject.getRectangle();
-                enemies.add(new Enemy(rect.x, rect.y, 100f, i));
+                enemies.add(new Enemy(rect.x, rect.y, 80f, i));
             }
         }
     }
@@ -742,7 +745,7 @@ public class GameScreen implements Screen {
                 isAttacking = false;
                 attackTimer = 0f;
             } else if ((isaccelarationActive && System.currentTimeMillis() > accelarationEndTime))
-                characterSpeed = 200f;
+                characterSpeed = 150f;
             isaccelarationActive = false;{
 
             }
@@ -1441,7 +1444,7 @@ public class GameScreen implements Screen {
 //                            item.collected = true;
                         }
                         case ACCELARATION -> {
-                            characterSpeed = 300f;
+                            characterSpeed = 200f;
                             isaccelarationActive = true;
                             accelarationEndTime = System.currentTimeMillis() + 500;
                             item.collected = true;
@@ -1462,11 +1465,11 @@ public class GameScreen implements Screen {
                             float blackholeCenterX = item.x ;
                             float blackholeCenterY = item.y ;
                             Vector2 direction = new Vector2(blackholeCenterX - characterX, blackholeCenterY - characterY).nor();
-                            characterX += direction.x * 400 * Gdx.graphics.getDeltaTime(); // 吸引速度
-                            characterY += direction.y * 400 * Gdx.graphics.getDeltaTime();
+                            characterX += direction.x * 152 * Gdx.graphics.getDeltaTime(); // 吸引速度
+                            characterY += direction.y * 152 * Gdx.graphics.getDeltaTime();
 
                             // 每次被吸引减少5点生命值
-                            reduceHealth(5);
+                            reduceHealth(2);
 
                             // 黑洞持续时间
                             if (item.collected) {
