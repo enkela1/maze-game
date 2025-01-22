@@ -246,7 +246,7 @@ public class GameScreen implements Screen {
 
         initializeItems();
 
-        camera.zoom = 0.3f; // 这里设置缩放程度，值越小视角越大
+        camera.zoom = 0.5f; // 这里设置缩放程度，值越小视角越大
         camera.update();
     }
     public void loadMap(String mapName) {
