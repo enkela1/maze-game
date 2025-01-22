@@ -249,22 +249,56 @@ public class GameScreen implements Screen {
         camera.zoom = 0.3f; // 这里设置缩放程度，值越小视角越大
         camera.update();
     }
-    public void loadMap(String mapName) {
+     public void loadMap(String mapName) {
 
-            TmxMapLoader loader = new TmxMapLoader();
+        TmxMapLoader loader = new TmxMapLoader();
 
-            tiledMap = loader.load(mapName + ".tmx");
-            mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tiledMap = loader.load(mapName + ".tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-            TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
-            mapBounds = new Rectangle(
-                    0,
-                    0,
-                    layer.getWidth() * layer.getTileWidth(),
-                    layer.getHeight() * layer.getTileHeight()
-            );
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        mapBounds = new Rectangle(
+                0,
+                0,
+                layer.getWidth() * layer.getTileWidth(),
+                layer.getHeight() * layer.getTileHeight()
+        );
 
+         resetCharacterPosition();
+         currentDirection = Direction.IDLE_DOWN;
+
+         // 重置关卡状态（如敌人、道具等）
+         resetLevelState();
+
+    }private void resetCharacterPosition() {
+        RectangleMapObject characterObject =
+                (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
+        if (characterObject != null) {
+
+            // Rectangle rect = characterObject.getRectangle();
+            // characterX = rect.x;
+            // characterY = rect.y;
+
+            characterX = 87;               // Start at the left corner (X-coordinate)
+            characterY = mapBounds.height - 130;  // Start near the top corner
+        } else {
+            // Fallback if no character object is found
+            characterX = camera.viewportWidth / 2;
+            characterY = camera.viewportHeight / 2;
+        }
     }
+
+    void resetLevelState() {
+        // 清除之前的敌人和道具
+        enemies.clear();
+        items.clear();
+
+        // 初始化新的敌人和道具
+        initializeEnemies();
+        initializeItems();
+    }
+
+
 
 
 
@@ -494,8 +528,10 @@ public class GameScreen implements Screen {
             loseStage.act(delta);
             loseStage.draw();
 
+
             // Skip all normal game rendering
             return;
+
         }
         // Check if ENTER is pressed => start game
         if (!isGameStarted && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {

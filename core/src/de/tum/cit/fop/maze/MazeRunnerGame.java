@@ -174,6 +174,7 @@ public class MazeRunnerGame extends Game {
             menuScreen = null;  // Reset the menuScreen reference
         }
 
+
         // Switch to the MenuScreen
         this.setScreen(new MenuScreen(this, 0));
     }
