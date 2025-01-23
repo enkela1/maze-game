@@ -31,6 +31,7 @@ public class MenuScreen implements Screen {
     private final Texture backgroundTexture;
 
 
+
     /**
      * Constructor for MenuScreen. Sets up the camera, viewport, stage, and UI elements.
      *
@@ -39,6 +40,7 @@ public class MenuScreen implements Screen {
     public MenuScreen(MazeRunnerGame game, int coinCount) {
         this.game = game;
         this.coinCount = coinCount;
+
 
         // Set up the camera and viewport
         var camera = new OrthographicCamera();
@@ -255,7 +257,19 @@ public class MenuScreen implements Screen {
                 .padBottom(50)
                 .row();
 
-         return loseStage;
+        TextButton restartButton = new TextButton("Restart Game", game.getSkin());
+        restartButton.addListener(new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GameScreen(game));
+                dispose();
+
+            }
+        });
+        loseTable.add(restartButton).width(300).height(50).padTop(20).row();
+
+        return loseStage;
     }
     @Override
     public void render(float delta) {
@@ -292,6 +306,7 @@ public class MenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
         backgroundTexture.dispose();
+
     }
 
     @Override
@@ -309,6 +324,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void hide() {
+
     }
 }
 

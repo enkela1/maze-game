@@ -186,6 +186,7 @@ public class GameScreen implements Screen {
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
         menuScreen = new MenuScreen(game,coinCount);
+        isGameOver = false;
 
 
         // Create and configure the camera for the game view
@@ -249,6 +250,7 @@ public class GameScreen implements Screen {
         camera.zoom = 0.3f; // 这里设置缩放程度，值越小视角越大
         camera.update();
     }
+
      public void loadMap(String mapName) {
 
         TmxMapLoader loader = new TmxMapLoader();
@@ -267,7 +269,6 @@ public class GameScreen implements Screen {
          resetCharacterPosition();
          currentDirection = Direction.IDLE_DOWN;
 
-         // 重置关卡状态（如敌人、道具等）
          resetLevelState();
 
     }private void resetCharacterPosition() {
@@ -289,13 +290,13 @@ public class GameScreen implements Screen {
     }
 
     void resetLevelState() {
-        // 清除之前的敌人和道具
         enemies.clear();
         items.clear();
 
-        // 初始化新的敌人和道具
         initializeEnemies();
         initializeItems();
+        characterHealth= MAX_HEALTH;
+        coinCount=0;
     }
 
 
@@ -472,6 +473,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
 
 
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
@@ -503,6 +505,7 @@ public class GameScreen implements Screen {
         // Check if ESC is pressed => go to menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
+            game.setScreen(new MenuScreen(game,0));
         }
 
 //clear the screen
@@ -525,14 +528,18 @@ public class GameScreen implements Screen {
             loseStage.getBatch().end();
 
             // Draw pause UI
+            Gdx.input.setInputProcessor(loseStage);
             loseStage.act(delta);
             loseStage.draw();
 
 
-            // Skip all normal game rendering
             return;
-
         }
+
+            // Skip all normal game rendering
+
+
+
         // Check if ENTER is pressed => start game
         if (!isGameStarted && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startGame();
@@ -1653,11 +1660,9 @@ public class GameScreen implements Screen {
         victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
 
     }
+    public void hide() {
 
-
-    @Override
-    public void hide() { }
-
+    }
     @Override
     public void dispose() {
         mapRenderer.dispose();
@@ -1669,6 +1674,9 @@ public class GameScreen implements Screen {
         if (hurtSound != null) hurtSound.dispose();
         if (deathSound != null) deathSound.dispose();
         if (victorySound != null) victorySound.dispose();
+        if (loseStage != null) {
+            loseStage.dispose();
+        }
     }
 
     /**

@@ -173,7 +173,9 @@ public class MazeRunnerGame extends Game {
             menuScreen.dispose();  // Dispose the current menu screen
             menuScreen = null;  // Reset the menuScreen reference
         }
-
+        if (gameScreen != null) {
+            setScreen(new MenuScreen(this, gameScreen.getCoinCount())); // 进入菜单屏幕
+        }
 
         // Switch to the MenuScreen
         this.setScreen(new MenuScreen(this, 0));
