@@ -55,7 +55,7 @@ public class GameScreen implements Screen {
             "Good Luck..."
 
     };
-    private boolean tutorialIsActive = true;
+    private boolean tutorialIsActive = false;
     private int tutorialWordState = 0; // 当前显示的状态：0=显示"1 word"，1=显示"2 word"，2=显示"3 word"，3=全部消失
     private float wordDisplayTimer = 0f; // 用于计时
     private final float WORD_DISPLAY_INTERVAL = 2f; // 每个状态持续时间(秒)
@@ -210,7 +210,6 @@ public class GameScreen implements Screen {
         menuScreen = new MenuScreen(game,coinCount);
         isGameOver = false;
 
-
         // Create and configure the camera for the game view
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
@@ -271,6 +270,8 @@ public class GameScreen implements Screen {
 
         camera.zoom = 0.5f; // 这里设置缩放程度，值越小视角越大
         camera.update();
+
+
     }
 
      public void loadMap(String mapName) {
@@ -293,6 +294,14 @@ public class GameScreen implements Screen {
 
          resetLevelState();
          camera.zoom=0.5f;
+
+         if (mapName.equals("input")) { // "input" 对应 Level 1 地图文件名
+             tutorialIsActive = true;  // 启用教程
+         } else {
+             tutorialIsActive = false; // 禁用教程
+         }
+
+
 
     }
     private void resetCharacterPosition() {
@@ -756,10 +765,10 @@ public class GameScreen implements Screen {
 
 
             font.draw(game.getSpriteBatch(), "Coins: " + coinCount,
-                    camera.position.x - 130 * zoom, camera.position.y + 150 * zoom);
+                    camera.position.x - 130 * zoom, camera.position.y + 350 * zoom);
 
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth,
-                    camera.position.x - 150 * zoom, camera.position.y + 200 * zoom);
+                    camera.position.x - 150 * zoom, camera.position.y + 300 * zoom);
 
 
 
@@ -799,25 +808,29 @@ public class GameScreen implements Screen {
         checkItemCollisions();
 //        checkHeartCollision();
 
+        //level1 && game starts -> tutorial starts
+        //tutorial starts -> no health reduce
         game.getSpriteBatch().begin();
-        if (tutorialIsActive && isGameStarted) {
-            wordDisplayTimer += delta;
 
-            // 切换到下一个文字
-            if (wordDisplayTimer >= WORD_DISPLAY_INTERVAL) {
-                wordDisplayTimer = 0f; // 重置计时器
-                tutorialWordState++; // 进入下一个状态
+            if (tutorialIsActive && isGameStarted) {
+                wordDisplayTimer += delta;
+
+                // 切换到下一个文字
+                if (wordDisplayTimer >= WORD_DISPLAY_INTERVAL) {
+                    wordDisplayTimer = 0f; // 重置计时器
+                    tutorialWordState++; // 进入下一个状态
+                }
+
+
+
+                // 动态显示当前文字
+                if (tutorialWordState < tutorialMessages.length) {
+                    font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
+                } else {
+                    tutorialIsActive = false; // 结束教程
+                }
             }
 
-            font.getData().setScale(0.4f); // 设置字体大小
-
-            // 动态显示当前文字
-            if (tutorialWordState < tutorialMessages.length) {
-                font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
-            } else {
-                tutorialIsActive = false; // 结束教程
-            }
-        }
         game.getSpriteBatch().end();
     }
 
@@ -1537,7 +1550,7 @@ public class GameScreen implements Screen {
     void checkItemCollisions() {
         Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
         for (Item item : items) {
-            if (!item.collected) {
+            if (!item.collected && !tutorialIsActive) {
                 Rectangle itemBounds = new Rectangle(item.x, item.y, 32, 32);
                 if (Intersector.overlaps(itemBounds, characterBounds)) {
                     collectSound.play();
@@ -1609,7 +1622,7 @@ public class GameScreen implements Screen {
     }
 
     private void reduceHealth(int amount) {
-        if (!isCharacterRed) {
+        if (!isCharacterRed && !tutorialIsActive) {
             characterHealth -= amount;
             if (characterHealth <= 0) {
                 characterHealth = 0;
