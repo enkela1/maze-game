@@ -764,19 +764,24 @@ public class GameScreen implements Screen {
                         PORTAL_WIDTH, PORTAL_HEIGHT
                 );
             }
+
             float zoom = camera.zoom;
-            float adjustedFontSize = 32 * zoom;
-            font.getData().setScale(adjustedFontSize / 32);
 
 
-
-            font.draw(game.getSpriteBatch(), "Coins: " + coinCount,
-                    camera.position.x - 130 * zoom, camera.position.y + 350 * zoom);
-
-            font.draw(game.getSpriteBatch(), "Health: " + characterHealth,
-                    camera.position.x - 150 * zoom, camera.position.y + 300 * zoom);
+            float fixedVerticalSpacing = 50;
 
 
+            font.draw(game.getSpriteBatch(),
+                    "Coins: " + coinCount,
+                    camera.position.x - 930 * zoom,
+                    camera.position.y + 530 * zoom
+            );
+
+            font.draw(game.getSpriteBatch(),
+                    "Health: " + characterHealth,
+                    camera.position.x - 930 * zoom,
+                    camera.position.y + 530 * zoom - fixedVerticalSpacing
+            );
 
         }
 
@@ -1008,7 +1013,7 @@ public class GameScreen implements Screen {
     }
     private void zoomIn() {
         camera.zoom -= 0.1f;
-        if (camera.zoom < 0.1f) camera.zoom = 0.1f;  // Prevent too much zoom out
+        if (camera.zoom < 0.2f) camera.zoom = 0.2f;  // Prevent too much zoom out
         camera.update();
 
     }
