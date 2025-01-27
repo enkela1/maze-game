@@ -199,7 +199,7 @@ public class GameScreen implements Screen {
 
         // Load the tiled map
         TmxMapLoader loader = new TmxMapLoader();
-        tiledMap = loader.load("map_2.tmx");
+        tiledMap = loader.load("map_3.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         // Get boundaries from first layer
@@ -311,12 +311,12 @@ public class GameScreen implements Screen {
                 (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
         if (characterObject != null) {
 
-            // Rectangle rect = characterObject.getRectangle();
-            // characterX = rect.x;
-            // characterY = rect.y;
-
-            characterX = 87;               // Start at the left corner (X-coordinate)
-            characterY = mapBounds.height - 130;  // Start near the top corner
+             Rectangle rect = characterObject.getRectangle();
+             characterX = rect.x;
+             characterY = rect.y;
+//
+//            characterX = 87;               // Start at the left corner (X-coordinate)
+//            characterY = mapBounds.height - 130;  // Start near the top corner
         } else {
             // Fallback if no character object is found
             characterX = camera.viewportWidth / 2;

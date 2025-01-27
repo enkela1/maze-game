@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="9">
+ <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
+  <image source="down.png" width="128" height="240"/>
+ </tileset>
+ <tileset firstgid="121" name="left" tilewidth="16" tileheight="16" tilecount="120" columns="15">
+  <image source="left.png" width="240" height="128"/>
+ </tileset>
+ <tileset firstgid="241" name="right" tilewidth="16" tileheight="16" tilecount="120" columns="15">
+  <image source="right.png" width="240" height="128"/>
+ </tileset>
+ <tileset firstgid="361" name="up" tilewidth="16" tileheight="16" tilecount="120" columns="8">
+  <image source="up.png" width="128" height="240"/>
+  <tile id="0"/>
+  <tile id="16">
+   <properties>
+    <property name="blocked" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="2"/>
+  <tile id="3"/>
+  <tile id="4"/>
+  <tile id="5"/>
+  <tile id="6"/>
+  <tile id="7"/>
+  <tile id="8"/>
+  <tile id="1">
+   <properties>
+    <property name="blocked" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="9"/>
+  <tile id="10"/>
+  <tile id="11"/>
+  <tile id="12"/>
+  <tile id="13"/>
+  <tile id="14"/>
+  <tile id="15"/>
+  <tile id="17"/>
+  <tile id="18"/>
+  <tile id="19"/>
+  <tile id="20"/>
+  <tile id="21"/>
+  <tile id="22"/>
+  <tile id="23"/>
+  <tile id="24"/>
+  <tile id="25"/>
+  <tile id="26"/>
+  <tile id="27"/>
+  <tile id="28"/>
+  <tile id="29"/>
+  <tile id="30"/>
+  <tile id="31"/>
+  <tile id="32"/>
+  <tile id="33"/>
+  <tile id="34"/>
+  <tile id="35"/>
+  <tile id="36"/>
+  <tile id="37"/>
+  <tile id="38"/>
+  <tile id="39"/>
+  <tile id="40"/>
+  <tile id="41"/>
+  <tile id="42"/>
+  <tile id="43"/>
+  <tile id="44"/>
+  <tile id="45"/>
+  <tile id="46"/>
+  <tile id="47"/>
+  <tile id="48"/>
+  <tile id="49"/>
+  <tile id="50"/>
+  <tile id="51"/>
+  <tile id="52"/>
+  <tile id="53"/>
+  <tile id="54"/>
+  <tile id="55"/>
+  <tile id="56"/>
+  <tile id="57"/>
+  <tile id="58"/>
+  <tile id="59"/>
+  <tile id="60"/>
+  <tile id="61"/>
+  <tile id="62"/>
+  <tile id="63"/>
+  <tile id="64"/>
+  <tile id="65"/>
+  <tile id="66"/>
+  <tile id="67"/>
+  <tile id="68"/>
+  <tile id="69"/>
+  <tile id="70"/>
+  <tile id="71"/>
+  <tile id="72"/>
+  <tile id="73"/>
+  <tile id="74"/>
+  <tile id="75"/>
+  <tile id="76"/>
+  <tile id="77"/>
+  <tile id="78"/>
+  <tile id="79"/>
+  <tile id="80"/>
+  <tile id="81"/>
+  <tile id="82"/>
+  <tile id="83"/>
+  <tile id="84"/>
+  <tile id="85"/>
+  <tile id="86"/>
+  <tile id="87"/>
+  <tile id="88"/>
+  <tile id="89"/>
+  <tile id="90"/>
+  <tile id="91"/>
+  <tile id="92"/>
+  <tile id="93"/>
+  <tile id="94"/>
+  <tile id="95"/>
+  <tile id="96"/>
+  <tile id="97"/>
+  <tile id="98"/>
+  <tile id="99"/>
+  <tile id="100"/>
+  <tile id="101"/>
+  <tile id="102"/>
+  <tile id="103"/>
+  <tile id="104"/>
+  <tile id="105"/>
+  <tile id="106"/>
+  <tile id="107"/>
+  <tile id="108"/>
+  <tile id="109"/>
+  <tile id="110"/>
+  <tile id="111"/>
+  <tile id="112"/>
+  <tile id="113"/>
+  <tile id="114"/>
+  <tile id="115"/>
+  <tile id="116"/>
+  <tile id="117"/>
+  <tile id="118"/>
+  <tile id="119"/>
+ </tileset>
+ <tileset firstgid="481" source="Tiles.tsx"/>
+ <tileset firstgid="1106" source="Props.tsx"/>
+ <tileset firstgid="1731" source="TiledSmall.tsx"/>
+ <tileset firstgid="4231" source="SpaceObjects.tsx"/>
+ <tileset firstgid="4363" source="Mobs.tsx"/>
+ <tileset firstgid="4459" source="SpaceShipSimple.tsx"/>
+ <tileset firstgid="4795" source="TileSet v1.0.tsx"/>
+ <layer id="1" name="CollisionLayer" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJzt1sERwjAMRNHQCaXQVm6UmlJowASWaGVZfM3szZb0kszAftvuOyGEELJAtsDK7I0XL168kTs5e+P1PIdV+lfbBy9evPled+HFi1fbu7pXueec4ahqXvU7ijivGJSzeD37z/Z2qFle5jK309xZxf+NmBkdfo/w4s0qvHi/vafEq/LtjRev4l2lf/A+j4tZ3fupXzfvO3+X93uWw9wfL1557i818hr648Wb6U3tX8D7b+8Xb2z/ajkmzz/LcxDl7OhuZW/m87LnBZd3mvk=
+  </data>
+ </layer>
+ <objectgroup id="2" name="Objects" visible="0">
+  <properties>
+   <property name="Key" value="100"/>
+  </properties>
+  <object id="1" name="character" x="176" y="144" width="56" height="46"/>
+  <object id="2" name="object1" x="64" y="528" width="63" height="50">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="3" name="object2" x="832" y="480" width="58" height="41">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="4" name="object3" x="720" y="848" width="48" height="40">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="5" name="object4" x="288" y="816" width="52" height="46">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="6" name="object5" x="640" y="160" width="48" height="40">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="7" name="heart1" x="272" y="432" width="16" height="16"/>
+  <object id="8" name="coin1" x="704" y="496" width="16" height="16"/>
+  <object id="9" name="fire1" x="700" y="300" width="16" height="16"/>
+  <object id="7" name="object4" x="192" y="848" width="52" height="46">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="8" name="object5" x="384" y="160" width="48" height="40">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="5" name="BlackBackground" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJzt1zEKgDAQBMDoK/xZ/v8S7cM1Ipq4TDHFwRGysM31rbUOAD9zPpxnvQ0AAACjY5//hy8yJN7PiZmgktj1xExQSex6YiaoJHY9MRMAALCGu/fGavsAAG+7AA+F4mE=
+  </data>
+ </layer>
+ <layer id="11" name="Floor" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztmklyEzEUhtvtJWPaoZJQBRlgCdnAhrHYBIcDMC4ohxswF7AgF4CEnMBbwnABJhewZ9wBVYyBAzDGhvArsYks6z2r1VLaQKvqK1tt9d/6q9uv9SQFQVaykpV/tYyGQbBXophPVt8XLo22TbmYC4IxaMziswpqoJRfrFfr9aphHeeNQ2+8oe9T27aIPhXANLTX4PNcfrHeXa93G9ZxXotfX9pJ/N6H3gPwEEzlk9VVv760k/h9Aa2X4BWYyyWrq359aSfx+xlaX8DX+jXiIp8PvcpSaCfxa9MPCtWvL+3Mb+Y3Db+9DJQG1d6F3/PQ2axhmOnPJuIcwYWwvbatvqztunD3/ZiD63L6Lu6jy/5kft3qd5rfESXvsaHYgX5vRUFwG9wBd8E9UIn8H0/it5GDvs0155VyXZdbCr+PcO3H4Al4Cp6B55H/46rfOB7kHJTKM3W5pTjvHa79HnwAM+Aj+BT5P676jeNBtJVzSjmv5HJLcd43XPs7+AFmQRXUIv/HdX5NPag56ExuIa8Un1xuKc5bVgiC5WAFWAlWgdUF/8d1fk096HLQBlxuKc7rx7UHwCAYAhvAxoL/4zq/ph64HJTLLbn4rBvvifHhOvy2HvSDATAIhpj2pvE5jgfR9lfrO64koR1DcPFZN94Q7bfht+1gB9gJdoHdTHvT+FzPO8roZ1nyUFZh/AaqX3UMUWTis268IdpfxW/T4Bq4Dm6Am0x7U/1is9+yhd/SnOYeq1Dxk3puf3YFwYQGqj2lT/VH59HSrw4yflLPrfArzqvis7bwvTLZRben9Nv5ou6z4fNM+qXi53709QA4CA6Bw+CI5LcH33ujRb9Ue0o/pt8/9z6pXyp+HgcnwElwCpwGZyS/W/B9q+SXak/pe/Br9P+l4uclcBlMgElwBUzV/a6NWqHaU/oW/99YfhH7SngflsYkhpn4ScVhKi5R7Sl99X093Bqftfc5jl/oltR3HhU/qfEDFZeo9pS+bizQxm/ZhV8qflLjB+q5pdqb6hv6jfU86/xS8dPVeIPST8tvWvMbjv22vHsov2nNb7TxK8fpprjd8NsT8vP8fQsxpMVvWvMbOr/MO6rJr5jjH1PeNTrUufs05zdUvwYeXguSrD+kOb/hYn7bxm9a8xtp+aX+L9x6mSncelmn+fW9Dttp6ymZ387Tp4puz59Yp+DWs0aU9ty6jE7/jUP9uEVeq2js+Ztfr2D6czQ03/On0591qG/jV93zN79ewfTnbGi+50+nX3Cob+NX3cMn1ilmmPFbnD1/vvVt/FJrFRoqgjh7/nzr2/iNseevUqfpeLt1GZ/6Fn73cNeKQxDq/brSFzj0m5g2fp3gwK+zvvwtfrm5gDj0EX5d6bvYU8jt+bNhVOmPb/2s/F/lN6on9AU=
+  </data>
+ </layer>
+ <layer id="12" name="Props" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+  </data>
+ </layer>
+ <layer id="13" name="PropsLastLayer" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+  </data>
+ </layer>
+</map>
