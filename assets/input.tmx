@@ -150,12 +150,12 @@
    eJzt1s0NwjAMhmGzSUdhlK7RG2emyGgdhSIVqRKxQ4l/0uRDek/Q4KdJEcuNaEHIr6RYtKXYk3Ta1pqjLS16Sen7mBmG8I62v6N5a8/zPnvi6tTLXTO35D1zluG190ac4Uivhbnl5xfevr1WVnjhjfJa2Gt+O+DV81bMZLn2Vb1TqZ68Fc8CvPDCC6+HN3EJ67DXZIrynplR0/vPmag+c60FL7zwXjeH3+f71ir0YK6zysMrXeftVQteeOGF90dvad0o77vEpLW/66EWvNJ+9Li/Fl6Nqu5Z4X9ci/ubXaP2P6uV12qmQO8q1JXXI3jhhdffq3WPgrxck1CPXqkhvaVZS7NfyUuUP/O0vz6flV7KM6VMal7hva97IKTptUzyRpTb2zO5z/wCbWKLUA==
   </data>
  </layer>
- <objectgroup id="2" name="Objects" visible="0" locked="1">
+ <objectgroup id="2" name="Objects">
   <properties>
    <property name="Key" value="100"/>
   </properties>
   <object id="1" name="character" x="439" y="617" width="56" height="46"/>
-  <object id="2" name="object1" x="616" y="466" width="63" height="50">
+  <object id="2" name="object1" x="64" y="80" width="63" height="50">
    <properties>
     <property name="Key" value="50"/>
    </properties>

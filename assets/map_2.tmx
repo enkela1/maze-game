@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="9">
  <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
-  <image source="../assets/down.png" width="128" height="240"/>
+  <image source="down.png" width="128" height="240"/>
  </tileset>
-
  <tileset firstgid="121" name="left" tilewidth="16" tileheight="16" tilecount="120" columns="15">
-  <image source="../assets/left.png" width="240" height="128"/>
+  <image source="left.png" width="240" height="128"/>
  </tileset>
  <tileset firstgid="241" name="right" tilewidth="16" tileheight="16" tilecount="120" columns="15">
-  <image source="../assets/right.png" width="240" height="128"/>
+  <image source="right.png" width="240" height="128"/>
  </tileset>
  <tileset firstgid="361" name="up" tilewidth="16" tileheight="16" tilecount="120" columns="8">
-  <image source="../assets/up.png" width="128" height="240"/>
+  <image source="up.png" width="128" height="240"/>
   <tile id="0"/>
   <tile id="16">
    <properties>
@@ -141,11 +140,11 @@
   <tile id="118"/>
   <tile id="119"/>
  </tileset>
- <tileset firstgid="481" source="../assets/Tiles.tsx"/>
- <tileset firstgid="1106" source="../assets/Props.tsx"/>
- <tileset firstgid="1731" source="../assets/TiledSmall.tsx"/>
- <tileset firstgid="4231" source="../assets/SpaceObjects.tsx"/>
- <tileset firstgid="4363" source="../assets/Mobs.tsx"/>
+ <tileset firstgid="481" source="Tiles.tsx"/>
+ <tileset firstgid="1106" source="Props.tsx"/>
+ <tileset firstgid="1731" source="TiledSmall.tsx"/>
+ <tileset firstgid="4231" source="SpaceObjects.tsx"/>
+ <tileset firstgid="4363" source="Mobs.tsx"/>
  <layer id="1" name="CollisionLayer" width="60" height="60">
   <data encoding="base64" compression="zlib">
    eJztme1txCAMhrlNukiljtI17t/9vilutI7SRioqco2xzQsEgqVX4SSw82DH+bj7Lbzdt7b66QXUaJatwQo/9mykUtwWNoJXu8/Unk7GdN1MvBZLfdDxCvUc19DjKrzvt/+8mrW9eS19ssQblePPjbVxR/JyvaoFrzXXpTnI/HLHkpXiHn4s+YvWu1+luY5cubFWvXi1fJQVwevJr6auEbwcc8la5FebZ1Qtp8y1vNb+G8hYYkbkN8forecaXqmuvb0q+kx5kddvem5W9tK+oPIr5ZrWWi9ejglx/Uq83H3D0q8sdY/yW6p7ytsj7iherp437+bdvH/S9knufkN7YmmN5V6muR95+rOVt8a0rIetwKv1xX3bSH/nnvMOQ/BKebCYtXZzz841vIjzzzFJnJZrWeNHy+vtzz16NLfHwvxPZOwJeKG6Om+P2Geq59/YX4IeC/JKa3rzQpVyXo1XGXt6XmPsU/KmPjj/0azPYCVeoztrbPd+RluRF3keZ+Vt6H9qXqmeT8j7UVvH9P2O+J+G1/MuqnzumJ43912hBW/NNwIvrya2l7eGpyWvJt+bd/NenTcAbBRvzjavjlc7bwVey1wP70QK9/z/oYEIyftihPL9APmZJb8o3pjnFrm1qPsefgMI5DD9
@@ -155,7 +154,7 @@
   <properties>
    <property name="Key" value="100"/>
   </properties>
-  <object id="1" name="character" x="439" y="617" width="56" height="46"/>
+  <object id="1" name="character" x="80" y="80" width="56" height="46"/>
   <object id="2" name="object1" x="336" y="672" width="63" height="50">
    <properties>
     <property name="Key" value="50"/>
