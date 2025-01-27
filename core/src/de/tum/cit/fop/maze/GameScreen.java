@@ -37,6 +37,10 @@ import static de.tum.cit.fop.maze.GameScreen.Direction.*;
  */
 public class GameScreen implements Screen {
 
+    private boolean isHurtSoundPlaying = false; // 声音是否正在播放
+    private float hurtSoundTimer = 0f; // 计时器，用于追踪播放时间
+    private final float HURT_SOUND_DURATION = 3.0f; // 声音播放的时长（根据实际声音时长设置，单位秒）
+
     // 定义文字数组
     private final String[] tutorialMessages = {
             "You wake up...",
@@ -684,8 +688,16 @@ public class GameScreen implements Screen {
 
 
             if (isCharacterRed) {
-                hurtSound.play();
+                if (!isHurtSoundPlaying) {
+                    hurtSound.play(); // 播放声音
+                    isHurtSoundPlaying = true; // 标记声音正在播放
+                    hurtSoundTimer = 0f; // 重置计时器
+                }
                 game.getSpriteBatch().setColor(Color.RED);
+                hurtSoundTimer += Gdx.graphics.getDeltaTime();
+                if (hurtSoundTimer >= HURT_SOUND_DURATION) {
+                    isHurtSoundPlaying = false; // 声音播放完成，允许再次播放
+                }
             } else {
                 game.getSpriteBatch().setColor(Color.WHITE);
             }
@@ -1752,6 +1764,7 @@ public class GameScreen implements Screen {
         loseStage=menuScreen.createGameoverMenu();
         Gdx.input.setInputProcessor(gameStage);
         hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
+        hurtSound.play(1.0f); // 播放声音并设置音量
         collectSound = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));
         deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"));
         victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
