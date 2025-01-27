@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
 
     private final MazeRunnerGame game;
     private MenuScreen menuScreen;
-    private final OrthographicCamera camera;
+    private  OrthographicCamera camera;
     private final BitmapFont font;
     private Stage pauseStage;
     private Stage gameStage;
@@ -270,8 +270,10 @@ public class GameScreen implements Screen {
          currentDirection = Direction.IDLE_DOWN;
 
          resetLevelState();
+         camera.zoom=0.5f;
 
-    }private void resetCharacterPosition() {
+    }
+    private void resetCharacterPosition() {
         RectangleMapObject characterObject =
                 (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
         if (characterObject != null) {
@@ -734,6 +736,9 @@ public class GameScreen implements Screen {
 
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth,
                     camera.position.x - 150 * zoom, camera.position.y + 200 * zoom);
+
+
+
         }
 
 
@@ -1705,6 +1710,9 @@ public class GameScreen implements Screen {
         if (loseStage != null) {
             loseStage.dispose();
         }
+    }
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 
     /**

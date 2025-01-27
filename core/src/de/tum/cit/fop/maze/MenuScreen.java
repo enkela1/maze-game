@@ -71,6 +71,7 @@ public class MenuScreen implements Screen {
                 .padBottom(80)
                 .row();
 
+
         // Add "Continue Game" button
         TextButton goToGameButton = new TextButton(
                 "Continue Game", game.getSkin());
