@@ -836,7 +836,9 @@ public class GameScreen implements Screen {
 
                 // 动态显示当前文字
                 if (tutorialWordState < tutorialMessages.length) {
+                    font.getData().setScale(0.5f); // 将字体缩放到原来的 50%
                     font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
+                    font.getData().setScale(1.0f); // 恢复默认字体大小，避免影响其他文字
                 } else {
                     tutorialIsActive = false; // 结束教程
                 }
