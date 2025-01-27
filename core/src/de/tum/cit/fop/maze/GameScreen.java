@@ -199,7 +199,7 @@ public class GameScreen implements Screen {
 
         // Load the tiled map
         TmxMapLoader loader = new TmxMapLoader();
-        tiledMap = loader.load("map_3.tmx");
+        tiledMap = loader.load("input.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
         // Get boundaries from first layer
