@@ -300,6 +300,7 @@ public class GameScreen implements Screen {
          resetLevelState();
          camera.zoom=0.5f;
 
+
          if (mapName.equals("input")) { // "input" 对应 Level 1 地图文件名
              tutorialIsActive = true;  // 启用教程
          } else {

@@ -199,6 +199,7 @@ public class MazeRunnerGame extends Game {
             menuScreen = null;
         }
         gameScreen.getCamera().zoom=0.5f;
+
     }
 
     public void selectMap(String mapName) {

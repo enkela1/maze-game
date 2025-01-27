@@ -2,6 +2,7 @@ package de.tum.cit.fop.maze;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -45,7 +47,7 @@ public class MenuScreen implements Screen {
 
         // Set up the camera and viewport
         var camera = new OrthographicCamera();
-        camera.zoom = 1.5f; // Set camera zoom for a closer view
+        camera.zoom = 1f; // Set camera zoom for a closer view
         Viewport viewport = new ScreenViewport(new OrthographicCamera());
         stage = new Stage(viewport, game.getSpriteBatch());
         backgroundTexture = new Texture(Gdx.files.internal("background.png"));
@@ -76,6 +78,7 @@ public class MenuScreen implements Screen {
         TextButton goToGameButton = new TextButton(
                 "Continue Game", game.getSkin());
         mainMenuTable.add(goToGameButton).width(300).padBottom(20).row();
+
         goToGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -264,8 +267,19 @@ public class MenuScreen implements Screen {
         winTable.add(new Label("Coins collected: " + coinCount, game.getSkin()))
                 .padBottom(20)
                 .row();
+        winStage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    game.setScreen(new MenuScreen(game, coinCount));
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
+        Gdx.input.setInputProcessor(winStage);
         return winStage;
     }
 
@@ -285,12 +299,12 @@ public class MenuScreen implements Screen {
                 .padBottom(50)
                 .row();
 
-        TextButton restartButton = new TextButton("Restart Game", game.getSkin());
+        TextButton restartButton = new TextButton("Back to Menu", game.getSkin());
         restartButton.addListener(new ClickListener() {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));
+                game.goToMenu();
                 dispose();
 
             }
