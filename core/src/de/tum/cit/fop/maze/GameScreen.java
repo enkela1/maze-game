@@ -61,7 +61,7 @@ public class GameScreen implements Screen {
     private final float WORD_DISPLAY_INTERVAL = 2f; // 每个状态持续时间(秒)
     private final MazeRunnerGame game;
     private MenuScreen menuScreen;
-    private final OrthographicCamera camera;
+    private  OrthographicCamera camera;
     private final BitmapFont font;
     private Stage pauseStage;
     private Stage gameStage;
@@ -292,8 +292,10 @@ public class GameScreen implements Screen {
          currentDirection = Direction.IDLE_DOWN;
 
          resetLevelState();
+         camera.zoom=0.5f;
 
-    }private void resetCharacterPosition() {
+    }
+    private void resetCharacterPosition() {
         RectangleMapObject characterObject =
                 (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
         if (characterObject != null) {
@@ -501,6 +503,7 @@ public class GameScreen implements Screen {
         camera.update();
         mapRenderer.setView(camera);
         mapRenderer.render();
+
         if (isGameWon) {
 
 
@@ -528,6 +531,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             game.setScreen(new MenuScreen(game,0));
+            camera.zoom=1f;
         }
 
 //clear the screen
@@ -745,11 +749,20 @@ public class GameScreen implements Screen {
                         PORTAL_WIDTH, PORTAL_HEIGHT
                 );
             }
+            float zoom = camera.zoom;
+            float adjustedFontSize = 32 * zoom;
+            font.getData().setScale(adjustedFontSize / 32);
 
 
-            font.draw(game.getSpriteBatch(), "Coins: " + coinCount, camera.position.x - 130, camera.position.y + 150);
 
-            font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
+            font.draw(game.getSpriteBatch(), "Coins: " + coinCount,
+                    camera.position.x - 130 * zoom, camera.position.y + 150 * zoom);
+
+            font.draw(game.getSpriteBatch(), "Health: " + characterHealth,
+                    camera.position.x - 150 * zoom, camera.position.y + 200 * zoom);
+
+
+
         }
 
 
@@ -884,6 +897,14 @@ public class GameScreen implements Screen {
             }
             return;
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            zoomIn();
+        }
+
+        // Handle zoom out (DOWN key)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            zoomOut();
+        }
 
 
         float adjustedSpeed = characterSpeed;
@@ -966,7 +987,19 @@ public class GameScreen implements Screen {
             }
         }
     }
+    private void zoomIn() {
+        camera.zoom -= 0.1f;
+        if (camera.zoom < 0.1f) camera.zoom = 0.1f;  // Prevent too much zoom out
+        camera.update();
 
+    }
+
+    private void zoomOut() {
+        camera.zoom += 0.1f;
+        if (camera.zoom > 2.0f) camera.zoom = 2.0f;  // Prevent too much zoom in
+        camera.update();
+
+    }
     /**
      * Renders the character, taking into account picking up, holding, and attacking animations.
      */
@@ -1715,6 +1748,9 @@ public class GameScreen implements Screen {
         if (loseStage != null) {
             loseStage.dispose();
         }
+    }
+    public OrthographicCamera getCamera() {
+        return camera;
     }
 
     /**

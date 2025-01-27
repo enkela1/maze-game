@@ -143,6 +143,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
 
+
         this.loadObjectsAnimation();  // Make sure we load hearts, coins, and fire
 
         // Load all animations
@@ -197,6 +198,7 @@ public class MazeRunnerGame extends Game {
             menuScreen.dispose();
             menuScreen = null;
         }
+        gameScreen.getCamera().zoom=0.5f;
     }
 
     public void selectMap(String mapName) {
