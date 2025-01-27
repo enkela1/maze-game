@@ -772,7 +772,7 @@ public class GameScreen implements Screen {
 
 
             font.draw(game.getSpriteBatch(),
-                    "Coins: " + coinCount,
+                    "GameScores: " + coinCount,
                     camera.position.x - 930 * zoom,
                     camera.position.y + 530 * zoom
             );
