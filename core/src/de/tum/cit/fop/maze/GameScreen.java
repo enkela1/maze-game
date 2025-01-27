@@ -1437,22 +1437,22 @@ public class GameScreen implements Screen {
         switch (currentDirection) {
             case UP, IDLE_UP -> game.getSpriteBatch().draw(
                     game.getCharacterAttackUpAnimation().getKeyFrame(attackTimer, true),
-                    characterX - 32, characterY,
+                    characterX - 16, characterY,
                     characterHeight, characterHeight
             );
             case DOWN, IDLE_DOWN -> game.getSpriteBatch().draw(
                     game.getCharacterAttackDownAnimation().getKeyFrame(attackTimer, true),
-                    characterX - 32, characterY,
+                    characterX - 16 , characterY,
                     characterHeight, characterHeight
             );
             case LEFT, IDLE_LEFT -> game.getSpriteBatch().draw(
                     game.getCharacterAttackLeftAnimation().getKeyFrame(attackTimer, true),
-                    characterX - 32, characterY,
+                    characterX - 16, characterY,
                     characterHeight, characterHeight
             );
             case RIGHT, IDLE_RIGHT -> game.getSpriteBatch().draw(
                     game.getCharacterAttackRightAnimation().getKeyFrame(attackTimer, true),
-                    characterX - 32, characterY,
+                    characterX - 16, characterY,
                     characterHeight, characterHeight
             );
         }
