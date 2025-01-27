@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -66,8 +67,6 @@ public class Hud {
 
         // 4) Place the arrow slightly in front of the character on screen
         //    40 pixels in direction of 'angle'
-
-
         float arrowX = playerOnScreen.x +  40 +  arrowImage.getWidth() / 2f;
         float arrowY = playerOnScreen.y +   arrowImage.getHeight() / 2f;
         arrowImage.setPosition(arrowX, arrowY);
@@ -75,6 +74,7 @@ public class Hud {
         // 5) Update stage
         stage.act(delta);
     }
+
 
     public void render() {
         stage.draw();

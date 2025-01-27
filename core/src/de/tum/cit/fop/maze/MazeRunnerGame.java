@@ -143,6 +143,7 @@ public class MazeRunnerGame extends Game {
         spriteBatch = new SpriteBatch(); // Create SpriteBatch
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json")); // Load UI skin
 
+
         this.loadObjectsAnimation();  // Make sure we load hearts, coins, and fire
 
         // Load all animations

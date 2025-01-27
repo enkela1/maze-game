@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -63,6 +64,7 @@ public class MenuScreen implements Screen {
     private void setupMainMenu() {
         mainMenuTable = new Table();
         mainMenuTable.setFillParent(true); // Make the table fill the stage
+
 
         // Add title to the main menu
         mainMenuTable.add(new Label("Hello World from the Menu!", game.getSkin(), "title"))
@@ -317,6 +319,7 @@ public class MenuScreen implements Screen {
         // Update and draw the stage
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
+
     }
 
 

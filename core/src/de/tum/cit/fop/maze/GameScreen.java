@@ -479,6 +479,7 @@ public class GameScreen implements Screen {
         camera.update();
         mapRenderer.setView(camera);
         mapRenderer.render();
+
         if (isGameWon) {
 
 
@@ -506,6 +507,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.goToMenu();
             game.setScreen(new MenuScreen(game,0));
+            camera.zoom=1f;
         }
 
 //clear the screen
@@ -721,11 +723,17 @@ public class GameScreen implements Screen {
                         PORTAL_WIDTH, PORTAL_HEIGHT
                 );
             }
+            float zoom = camera.zoom;
+            float adjustedFontSize = 32 * zoom;
+            font.getData().setScale(adjustedFontSize / 32);
 
 
-            font.draw(game.getSpriteBatch(), "Coins: " + coinCount, camera.position.x - 130, camera.position.y + 150);
 
-            font.draw(game.getSpriteBatch(), "Health: " + characterHealth, camera.position.x - 150, camera.position.y + 200);
+            font.draw(game.getSpriteBatch(), "Coins: " + coinCount,
+                    camera.position.x - 130 * zoom, camera.position.y + 150 * zoom);
+
+            font.draw(game.getSpriteBatch(), "Health: " + characterHealth,
+                    camera.position.x - 150 * zoom, camera.position.y + 200 * zoom);
         }
 
 
@@ -846,6 +854,14 @@ public class GameScreen implements Screen {
             }
             return;
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            zoomIn();
+        }
+
+        // Handle zoom out (DOWN key)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            zoomOut();
+        }
 
 
         float adjustedSpeed = characterSpeed;
@@ -928,7 +944,19 @@ public class GameScreen implements Screen {
             }
         }
     }
+    private void zoomIn() {
+        camera.zoom -= 0.1f;
+        if (camera.zoom < 0.1f) camera.zoom = 0.1f;  // Prevent too much zoom out
+        camera.update();
 
+    }
+
+    private void zoomOut() {
+        camera.zoom += 0.1f;
+        if (camera.zoom > 2.0f) camera.zoom = 2.0f;  // Prevent too much zoom in
+        camera.update();
+
+    }
     /**
      * Renders the character, taking into account picking up, holding, and attacking animations.
      */
