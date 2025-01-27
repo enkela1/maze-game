@@ -37,9 +37,14 @@ import static de.tum.cit.fop.maze.GameScreen.Direction.*;
  */
 public class GameScreen implements Screen {
 
+    private Sound fasterSound; // 加速的声音
+    private boolean isFasterSoundPlaying = false; // 声音是否正在播放
+    private float fasterSoundTimer = 0f; // 跟踪声音播放的计时器
+    private final float FASTER_SOUND_DURATION = 6.0f; // faster.mp3 的播放时长，单位：秒
+
     private boolean isHurtSoundPlaying = false; // 声音是否正在播放
     private float hurtSoundTimer = 0f; // 计时器，用于追踪播放时间
-    private final float HURT_SOUND_DURATION = 3.0f; // 声音播放的时长（根据实际声音时长设置，单位秒）
+    private final float HURT_SOUND_DURATION = 3.3f; // 声音播放的时长（根据实际声音时长设置，单位秒）
 
     // 定义文字数组
     private final String[] tutorialMessages = {
@@ -949,6 +954,18 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
             adjustedSpeed *= SPEED_MULTIPLIER;
+            // 播放加速声音
+            if (!isFasterSoundPlaying) {
+                fasterSound.play(); // 播放声音
+                isFasterSoundPlaying = true; // 标记声音正在播放
+                fasterSoundTimer = 0f; // 重置计时器
+            }
+        }
+        if (isFasterSoundPlaying) {
+            fasterSoundTimer += delta;
+            if (fasterSoundTimer >= FASTER_SOUND_DURATION) {
+                isFasterSoundPlaying = false; // 声音播放完成
+            }
         }
 
         // We do partial movement checks + collisions
@@ -1768,6 +1785,7 @@ public class GameScreen implements Screen {
         collectSound = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));
         deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"));
         victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
+        fasterSound = Gdx.audio.newSound(Gdx.files.internal("faster.mp3"));
 
     }
     public void hide() {
@@ -1787,6 +1805,7 @@ public class GameScreen implements Screen {
         if (loseStage != null) {
             loseStage.dispose();
         }
+        if (fasterSound != null) fasterSound.dispose();
     }
     public OrthographicCamera getCamera() {
         return camera;
