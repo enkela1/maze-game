@@ -129,6 +129,31 @@ public class MenuScreen implements Screen {
             }
         });
 
+        TextButton level3Button = new TextButton("Level 3", game.getSkin());
+        mapSelectionTable.add(level3Button).width(300).padBottom(20).row();
+        level3Button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.selectMap("map_3");
+            }
+        });
+        TextButton level4Button = new TextButton("Level 4", game.getSkin());
+        mapSelectionTable.add(level4Button).width(300).padBottom(20).row();
+        level4Button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.selectMap("map_4");
+            }
+        });
+        TextButton level5Button = new TextButton("Level 5", game.getSkin());
+        mapSelectionTable.add(level5Button).width(300).padBottom(20).row();
+        level5Button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.selectMap("map_5");
+            }
+        });
+
         // Add "Back to Main Menu" button
         TextButton backButton = new TextButton("Back to Menu", game.getSkin());
         mapSelectionTable.add(backButton).width(300).padTop(40).row();
