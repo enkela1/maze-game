@@ -37,6 +37,28 @@ import static de.tum.cit.fop.maze.GameScreen.Direction.*;
  */
 public class GameScreen implements Screen {
 
+    // 定义文字数组
+    private final String[] tutorialMessages = {
+            "The coins on the ground are rare metals...",
+            " which determine your game score...",
+            " Hearts on the ground ...",
+            " can heal you to your maximum health...",
+            " The strange boxes on the ground...",
+            " can increase your speed...",
+            "AWSD controls direction. ...",
+            "Shift controls acceleration...",
+            "J controls attack...",
+            "Don't be seen by monsters...",
+            "Don't forget to avoid the flames...",
+            "Black holes are attractive...",
+            "They are dangerous...",
+            "Good Luck..."
+
+    };
+    private boolean tutorialIsActive = true;
+    private int tutorialWordState = 0; // 当前显示的状态：0=显示"1 word"，1=显示"2 word"，2=显示"3 word"，3=全部消失
+    private float wordDisplayTimer = 0f; // 用于计时
+    private final float WORD_DISPLAY_INTERVAL = 2f; // 每个状态持续时间(秒)
     private final MazeRunnerGame game;
     private MenuScreen menuScreen;
     private final OrthographicCamera camera;
@@ -586,6 +608,10 @@ public class GameScreen implements Screen {
             checkPortalCollision();
         }
 
+        // Use SpriteBatch for drawing text, character, enemies, etc.
+        game.getSpriteBatch().setProjectionMatrix(camera.combined);
+        game.getSpriteBatch().begin();
+
         // If the game has started and is not paused, update logic
         if (isGameStarted && !isPaused) {
             updateGameState(delta);
@@ -607,9 +633,7 @@ public class GameScreen implements Screen {
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
         float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
 
-        // Use SpriteBatch for drawing text, character, enemies, etc.
-        game.getSpriteBatch().setProjectionMatrix(camera.combined);
-        game.getSpriteBatch().begin();
+
 
         if (!isGameStarted) {
             game.getSpriteBatch().draw(
@@ -738,12 +762,12 @@ public class GameScreen implements Screen {
             );
         }
 
-
+        game.getSpriteBatch().end();
 
         // draws the arrow
 
 
-        game.getSpriteBatch().end();
+
         if(keyCollected) {
             hud.update(delta, characterX, characterY, portalX, portalY, camera);
             hud.render(); // arrow is drawn pinned to the corner
@@ -762,12 +786,26 @@ public class GameScreen implements Screen {
         checkItemCollisions();
 //        checkHeartCollision();
 
+        game.getSpriteBatch().begin();
+        if (tutorialIsActive && isGameStarted) {
+            wordDisplayTimer += delta;
 
+            // 切换到下一个文字
+            if (wordDisplayTimer >= WORD_DISPLAY_INTERVAL) {
+                wordDisplayTimer = 0f; // 重置计时器
+                tutorialWordState++; // 进入下一个状态
+            }
 
+            font.getData().setScale(0.4f); // 设置字体大小
 
-
-
-
+            // 动态显示当前文字
+            if (tutorialWordState < tutorialMessages.length) {
+                font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
+            } else {
+                tutorialIsActive = false; // 结束教程
+            }
+        }
+        game.getSpriteBatch().end();
     }
 
     /**
