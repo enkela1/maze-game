@@ -39,15 +39,19 @@ public class GameScreen implements Screen {
 
     // 定义文字数组
     private final String[] tutorialMessages = {
+            "You wake up...",
+            "Aurora spaceship is damaged...",
+            "Find the repair manual...",
+            "Escape through the portal...",
+            "AWSD controls direction...",
+            "Shift controls acceleration...",
+            "J controls attack...",
             "The coins on the ground are rare metals...",
             " which determine your game score...",
             " Hearts on the ground ...",
             " can heal you to your maximum health...",
             " The strange boxes on the ground...",
             " can increase your speed...",
-            "AWSD controls direction. ...",
-            "Shift controls acceleration...",
-            "J controls attack...",
             "Don't be seen by monsters...",
             "Don't forget to avoid the flames...",
             "Black holes are attractive...",
@@ -222,6 +226,7 @@ public class GameScreen implements Screen {
         TmxMapLoader loader = new TmxMapLoader();
         tiledMap = loader.load("input.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tutorialIsActive = true;
 
         // Get boundaries from first layer
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
