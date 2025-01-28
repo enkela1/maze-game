@@ -69,15 +69,15 @@ public class MenuScreen implements Screen {
 
 
         // Add title to the main menu
-        mainMenuTable.add(new Label("Hello World from the Menu!", game.getSkin(), "title"))
+        mainMenuTable.add(new Label("Cosmic Survival:\nThe Aurora’s Crash", game.getSkin(), "title"))
                 .padBottom(80)
                 .row();
 
 
         // Add "Continue Game" button
         TextButton goToGameButton = new TextButton(
-                "Continue Game", game.getSkin());
-        mainMenuTable.add(goToGameButton).width(300).padBottom(20).row();
+                "Continue Mission", game.getSkin());
+        mainMenuTable.add(goToGameButton).width(400).padBottom(20).row();
 
         goToGameButton.addListener(new ChangeListener() {
             @Override
@@ -87,8 +87,8 @@ public class MenuScreen implements Screen {
         });
 
         // Add "Select New Map" button
-        TextButton selectMapButton = new TextButton("Select New Map", game.getSkin());
-        mainMenuTable.add(selectMapButton).width(300).padBottom(20).row();
+        TextButton selectMapButton = new TextButton("Navigate the Aurora", game.getSkin());
+        mainMenuTable.add(selectMapButton).width(400).padBottom(20).row();
         selectMapButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -98,7 +98,7 @@ public class MenuScreen implements Screen {
 
         // Add "Quit Game" button
         TextButton quitButton = new TextButton("Quit Game", game.getSkin());
-        mainMenuTable.add(quitButton).width(300).padBottom(20).row();
+        mainMenuTable.add(quitButton).width(400).padBottom(20).row();
         quitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

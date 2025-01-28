@@ -191,6 +191,8 @@ public class MazeRunnerGame extends Game {
             gameScreen = new GameScreen(this);
         }
 
+        gameScreen.loadMap("input");
+
         this.setScreen(gameScreen);
 
         // Dispose of menuScreen when switching to the game

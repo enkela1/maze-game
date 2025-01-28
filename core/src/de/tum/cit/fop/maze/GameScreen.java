@@ -334,8 +334,13 @@ public class GameScreen implements Screen {
 
         initializeEnemies();
         initializeItems();
+
+
         characterHealth= MAX_HEALTH;
         coinCount=0;
+        isGameOver = false;
+        isGameWon  = false;
+        isPortalActive = false;
     }
 
 
