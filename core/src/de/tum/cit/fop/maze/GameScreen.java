@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
 
     private boolean isHurtSoundPlaying = false; // 声音是否正在播放
     private float hurtSoundTimer = 0f; // 计时器，用于追踪播放时间
-    private final float HURT_SOUND_DURATION = 3.3f; // 声音播放的时长（根据实际声音时长设置，单位秒）
+    private final float HURT_SOUND_DURATION = 3.1f; // 声音播放的时长（根据实际声音时长设置，单位秒）
 
     // 定义文字数组
     private final String[] tutorialMessages = {
