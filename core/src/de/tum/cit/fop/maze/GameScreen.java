@@ -38,6 +38,7 @@ import static de.tum.cit.fop.maze.GameScreen.Direction.*;
  */
 public class GameScreen implements Screen {
 
+    private Music messageSound;
     private Sound attackSound;
     private Sound keySound;
     private Sound fasterSound; // 加速的声音
@@ -561,6 +562,7 @@ public class GameScreen implements Screen {
 
         // Check if ESC is pressed => go to menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+
             game.goToMenu();
             game.setScreen(new MenuScreen(game,0));
             camera.zoom=1f;
@@ -791,23 +793,17 @@ public class GameScreen implements Screen {
             }
 
             float zoom = camera.zoom;
-
-
-            float fixedVerticalSpacing = 50;
-
-
-            font.draw(game.getSpriteBatch(),
-                    "GameScores: " + coinCount,
-                    camera.position.x - 930 * zoom,
-                    camera.position.y + 530 * zoom
-            );
-
-            font.draw(game.getSpriteBatch(),
-                    "Health: " + characterHealth,
-                    camera.position.x - 930 * zoom,
-                    camera.position.y + 530 * zoom - fixedVerticalSpacing
-            );
-
+            float marginLeft = 10;
+            float marginTop = 10;
+            float screenWidth = camera.viewportWidth * zoom;
+            float screenHeight = camera.viewportHeight * zoom;
+            float coinsX = camera.position.x - screenWidth / 2 + marginLeft;
+            float coinsY = camera.position.y + screenHeight / 2 - marginTop;
+            float healthX = coinsX; float healthY = coinsY - 25;
+            font.getData().setScale(0.4f);
+            font.draw(game.getSpriteBatch(), "Coins: " + coinCount, coinsX, coinsY);
+            font.draw(game.getSpriteBatch(), "Health: " + characterHealth, healthX, healthY);
+            font.getData().setScale(1.0f);
         }
 
 
@@ -863,10 +859,16 @@ public class GameScreen implements Screen {
                 if (tutorialWordState < tutorialMessages.length) {
                     font.getData().setScale(0.5f); // 将字体缩放到原来的 50%
                     font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
+                    messageSound.play();
+                    messageSound.setVolume(0.3f);
                     font.getData().setScale(1.0f); // 恢复默认字体大小，避免影响其他文字
                 } else {
                     tutorialIsActive = false; // 结束教程
+
                 }
+            }
+        if(!tutorialIsActive ||Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) ){
+            messageSound.stop();
             }
 
         game.getSpriteBatch().end();
@@ -1799,6 +1801,8 @@ public class GameScreen implements Screen {
         fasterSound = Gdx.audio.newSound(Gdx.files.internal("faster.mp3"));
         keySound = Gdx.audio.newSound(Gdx.files.internal("key.mp3"));
         attackSound = Gdx.audio.newSound(Gdx.files.internal("attack.mp3"));
+        messageSound = Gdx.audio.newMusic(Gdx.files.internal("message.mp3"));
+        messageSound.setLooping(true);
     }
     public void hide() {
 
@@ -1820,6 +1824,10 @@ public class GameScreen implements Screen {
         if (fasterSound != null) fasterSound.dispose();
         if (keySound != null) keySound.dispose();
         if (attackSound != null) keySound.dispose();
+        if (messageSound != null ){
+            messageSound.stop();
+            messageSound.dispose();
+        }
     }
     public OrthographicCamera getCamera() {
         return camera;

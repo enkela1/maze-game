@@ -192,7 +192,6 @@ public class MazeRunnerGame extends Game {
             gameScreen = new GameScreen(this);
         }
 
-        gameScreen.loadMap("input");
 
         this.setScreen(gameScreen);
 
