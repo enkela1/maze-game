@@ -37,6 +37,8 @@ import static de.tum.cit.fop.maze.GameScreen.Direction.*;
  */
 public class GameScreen implements Screen {
 
+    private Sound attackSound;
+    private Sound keySound;
     private Sound fasterSound; // 加速的声音
     private boolean isFasterSoundPlaying = false; // 声音是否正在播放
     private float fasterSoundTimer = 0f; // 跟踪声音播放的计时器
@@ -919,6 +921,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             isAttacking = true;
             attackTimer = 0f;
+            attackSound.play();
             handleAttack(new Vector2(characterX, characterY));
             return;
         }
@@ -1595,16 +1598,18 @@ public class GameScreen implements Screen {
             if (!item.collected && !tutorialIsActive) {
                 Rectangle itemBounds = new Rectangle(item.x, item.y, 32, 32);
                 if (Intersector.overlaps(itemBounds, characterBounds)) {
-                    collectSound.play();
+
                     // Handle the collision
                     switch (item.type) {
                         case HEART -> {
                             restoreHealth(HEAL_AMOUNT);
                             item.collected = true;
+                            collectSound.play();
                         }
                         case COIN -> {
                             coinCount++;
                             item.collected = true;
+                            collectSound.play();
                         }
                         case FIRE -> {
 
@@ -1617,12 +1622,13 @@ public class GameScreen implements Screen {
                             isaccelarationActive = true;
                             accelarationEndTime = System.currentTimeMillis() + 500;
                             item.collected = true;
+                            collectSound.play();
                         }
                         case KEY -> {
                             // Actually collect the key here
                             keyCollected = true;
                             item.collected = true;
-
+                            keySound.play();
 
                             if (!isPortalActive) {
                                 spawnPortal();
@@ -1786,7 +1792,9 @@ public class GameScreen implements Screen {
         deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"));
         victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
         fasterSound = Gdx.audio.newSound(Gdx.files.internal("faster.mp3"));
-
+        keySound = Gdx.audio.newSound(Gdx.files.internal("key.mp3"));
+        keySound.play(5.0f); // 播放声音并设置音量
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("attack.mp3"));
     }
     public void hide() {
 
@@ -1806,6 +1814,8 @@ public class GameScreen implements Screen {
             loseStage.dispose();
         }
         if (fasterSound != null) fasterSound.dispose();
+        if (keySound != null) keySound.dispose();
+        if (attackSound != null) keySound.dispose();
     }
     public OrthographicCamera getCamera() {
         return camera;
