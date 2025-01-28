@@ -3,6 +3,7 @@ package de.tum.cit.fop.maze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -42,11 +43,11 @@ public class GameScreen implements Screen {
     private Sound fasterSound; // 加速的声音
     private boolean isFasterSoundPlaying = false; // 声音是否正在播放
     private float fasterSoundTimer = 0f; // 跟踪声音播放的计时器
-    private final float FASTER_SOUND_DURATION = 6.0f; // faster.mp3 的播放时长，单位：秒
+    private final float FASTER_SOUND_DURATION = 8.0f; // faster.mp3 的播放时长，单位：秒
 
     private boolean isHurtSoundPlaying = false; // 声音是否正在播放
     private float hurtSoundTimer = 0f; // 计时器，用于追踪播放时间
-    private final float HURT_SOUND_DURATION = 3.1f; // 声音播放的时长（根据实际声音时长设置，单位秒）
+    private final float HURT_SOUND_DURATION = 5.0f; // 声音播放的时长（根据实际声音时长设置，单位秒）
 
     // 定义文字数组
     private final String[] tutorialMessages = {
@@ -1792,13 +1793,11 @@ public class GameScreen implements Screen {
         loseStage=menuScreen.createGameoverMenu();
         Gdx.input.setInputProcessor(gameStage);
         hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
-        hurtSound.play(1.0f); // 播放声音并设置音量
         collectSound = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));
         deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"));
         victorySound = Gdx.audio.newSound(Gdx.files.internal("victory.mp3"));
         fasterSound = Gdx.audio.newSound(Gdx.files.internal("faster.mp3"));
         keySound = Gdx.audio.newSound(Gdx.files.internal("key.mp3"));
-        keySound.play(5.0f); // 播放声音并设置音量
         attackSound = Gdx.audio.newSound(Gdx.files.internal("attack.mp3"));
     }
     public void hide() {

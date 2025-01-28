@@ -154,6 +154,7 @@ public class MazeRunnerGame extends Game {
         // Play some background music
         Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("background.mp3"));
         backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.2f);
         backgroundMusic.play();
 
         // Only initialize gameScreen if it is not already initialized
