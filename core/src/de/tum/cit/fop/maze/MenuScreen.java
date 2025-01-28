@@ -299,12 +299,12 @@ public class MenuScreen implements Screen {
                 .padBottom(50)
                 .row();
 
-        TextButton restartButton = new TextButton("Back to Menu", game.getSkin());
+        TextButton restartButton = new TextButton("Restart Game", game.getSkin());
         restartButton.addListener(new ClickListener() {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.goToMenu();
+                game.setScreen(new GameScreen(game));
                 dispose();
 
             }
