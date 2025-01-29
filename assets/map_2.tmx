@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="9">
+<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="13">
  <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
   <image source="down.png" width="128" height="240"/>
  </tileset>
@@ -193,6 +193,22 @@
     <property name="Key" value="50"/>
    </properties>
   </object>
+  <object id="9" name="portal" type="portal" x="848" y="848"/>
+  <object id="10" name="object4" x="752" y="784" width="52" height="46">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="11" name="object3" x="560" y="112" width="48" height="40">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
+  <object id="12" name="object4" x="560" y="192" width="52" height="46">
+   <properties>
+    <property name="Key" value="50"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="5" name="BlackBackground" width="60" height="60" locked="1">
   <data encoding="base64" compression="zlib">
@@ -206,7 +222,7 @@
  </layer>
  <layer id="12" name="Props" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJztmrlOAzEQhl0k/b4OPAMVRyh4AwiEAgk6inQUHB0COgoogYJLFNAgOq4KkiDC8QYQroY/YgsrrB3b8a7tZD5plNVm5PG/47F2bTNGEN3NeP7vdz4v9hnLqd9fEPjqohNT5JtEOda5KtE7I2gv6f6mJb06MUW+WXDSJvaA5LmGyFPE2HMk/t+13jv07R5WkfRRh0+085Wy3ke0X4/+X/sIr7dPUfssauQFml5jXQ38fiRcZ80a4q7DNizndxl6v9Hmj2d53EF/dmF7no7nYcQegRUszSHncdyLlPWajudJxJ6Cldr0QbXOqohbgz14Oj/bzq8KLsezan5VKGb4zEzHs4v8ukSW3/4eeQY2mEv5/d2396uVlPV28n5VQN9Guf5VcF2F1TT6vI+xfwA7hB3Bjj2uhRJ0TXPa3nD9Dmto6L2EvivYNewGduuxXoIgCCJssvweIAiCIAiCIMJhMcfYUryW0XqmQXbGwcQ/jTZ0/begdTvW23qmQXbGwcQ/jTZ0/U+h9czh+Ycs4dciTdeM+T1flf1fl/BrkaZrxvyer8r+b+jwe74q+78uGUROhyR5LSvMBfyer8r+r0smoLXY4VwVUv3agOrX3/q1QUj1awOqX6rfbqLX6pcwp3kO1sY3TCg0z8Ha+IYhCCJ8fgHDdKiK
+   eJztmrlOAzEQhrcIfV4HnoGKIxS8AQRCgQQdRToKjg4BHQWUQMElCmgCHVcFSRDnG0C4Gv6IjWQtWWfszO56k/mkUVbJxON/7bF27fE8Qehsxnr+Pud6wn1GM/Tv50N8TTGJGebbjKKvc0WjdzqkvWbfbzDpNYkZ5hsHxy1i92vuaxp5ynreczb894beVfiswdY1vlFwi3h3sDJT3E+080XQuw2fHdiuRdwH/Ocx+//aRRp6S+jjGeyc0NcZ5MgL/F593xo+P5pcxw1ljjb0VuBThd0T+roEvd/w+3FsHClzlGO9sp3PQ4g9DMsxrZklP65ujnKsV7bzeQKxJ2GFFnp7ifeDMkc51itbuMeXgs16FcR2PlPHl0LesA2T9SqI7XxOYnyTRDe+fV1yDziYjfj53bXnq+WI9bbzfJVD30aU/pVxXYFVDfq8h7m/DzuAHcKOHM6FAnRNKdrecP0OqxnovYC+S9gV7Bp247BeQRAEId2Yvg8IgiAIgiAI3cFCxvMW/b2MYE2DrsbBxj+KNkz9N6F1y9cbrGnQ1TjY+EfRhqn/CbSeJlj/ECfqXqTtnrF6zpdUjQIVdS/Sds9YPedL4swvbtQzX8r5b5IMYEwHNeNaJKwF6jlfO2d+cTAOrfk216o05S8Hkr/u5i8HacpfDiR/JX87iW7LXxfgrvGNi3odLMc7TFqo18FyvMMIgpB+fgE8wb4q
   </data>
  </layer>
  <layer id="13" name="PropsLastLayer" width="60" height="60" visible="0">

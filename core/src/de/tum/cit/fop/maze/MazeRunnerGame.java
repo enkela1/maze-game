@@ -219,6 +219,7 @@ public class MazeRunnerGame extends Game {
     private void loadObjectsAnimation() {
         Texture oSheet = new Texture(Gdx.files.internal("objects.png"));
         Texture bSheet = new Texture(Gdx.files.internal("blackhole.png"));
+        Texture portalSheet = new Texture(Gdx.files.internal("teleport.png"));
 
         int frameWidth = 16;
         int frameHeight = 16;
@@ -274,9 +275,23 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> portalFrames = new Array<>();
 
 
-        portalFrames.add(new TextureRegion(oSheet, 26*16, 0 , 32, 32));
+
+
+        int portalFrameWidth = 512 / 8;   // 64 pixels
+        int portalFrameHeight = 192 / 3;  // 64 pixels
+
+// Loop through all frames (3 rows × 8 columns)
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 8; col++) {
+                int x = col * portalFrameWidth;
+                int y = row * portalFrameHeight;
+                portalFrames.add(new TextureRegion(portalSheet, x, y, portalFrameWidth, portalFrameHeight));
+            }
+        }
 
         portalAnimation = new Animation<>(0.2f, portalFrames);
+
+
 
 
 

@@ -1721,18 +1721,59 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * Spawn the portal at the rectangle named "portal" in the Tiled map.
+     */
+    /**
+     * Find the rectangle object named "portal" in Tiled
+     * and store its position and size.
+     */
     private void spawnPortal() {
-        // Put portal near bottom-right corner
-        portalX = mapBounds.width  - PORTAL_WIDTH  - 40f;
-        portalY =  40f;  // a bit above the bottom edge
-        isPortalActive = true;
+        MapObjects mapObjects = tiledMap.getLayers().get("Objects").getObjects();
+        boolean foundPortal = false;
+
+        for (MapObject object : mapObjects) {
+            // Only look at rectangle objects
+            if (object instanceof RectangleMapObject rectObj) {
+                // Must be named "portal"
+                if ("portal".equals(object.getName())) {
+                    Rectangle rect = rectObj.getRectangle();
+
+                    // Use the rectangle's position/size from Tiled
+                    portalX = rect.x;
+                    portalY = rect.y;
+                    // NOTE: If you want to store them dynamically instead of a fixed 64×64
+//                    portalWidth  = rect.width;
+//                    portalHeight = rect.height;
+
+                    isPortalActive = true;
+                    foundPortal = true;
+
+                    // Optional debug print
+//                    System.out.println("spawnPortal(): Found portal rectangle at ("
+//                            + portalX + ", " + portalY
+//                            + ") size (" + portalWidth + "x" + portalHeight + ")");
+                    break;
+                }
+            }
+        }
+
+        // If for some reason we never found it
+        if (!foundPortal) {
+            System.err.println("spawnPortal(): No rectangle named 'portal' found in Tiled!");
+        }
     }
 
-    private void checkPortalCollision() {
-        if (!isPortalActive) return;       // nothing to check if no portal
-        if (isGameWon || isGameOver) return; // skip if game is over or won
 
-        Rectangle portalBounds    = new Rectangle(portalX, portalY, PORTAL_WIDTH, PORTAL_HEIGHT);
+
+    private void checkPortalCollision() {
+        if (!isPortalActive) return;
+        if (isGameWon || isGameOver) return;
+
+        // Use the actual portal rectangle dimension from Tiled:
+//        Rectangle portalBounds = new Rectangle(portalX, portalY, portalWidth, portalHeight);
+
+        Rectangle portalBounds = new Rectangle(portalX, portalY, 64, 64);
         Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
 
         if (Intersector.overlaps(portalBounds, characterBounds)) {
@@ -1740,9 +1781,9 @@ public class GameScreen implements Screen {
             isGameWon = true;
             victorySound.play();
             winStage = menuScreen.createWinMenu(coinCount);
-
         }
     }
+
 
 
 

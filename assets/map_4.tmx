@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="9">
+<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="16" nextobjectid="48">
  <tileset firstgid="1" name="down" tilewidth="16" tileheight="16" tilecount="120" columns="8">
   <image source="down.png" width="128" height="240"/>
  </tileset>
@@ -180,9 +180,6 @@
     <property name="Key" value="50"/>
    </properties>
   </object>
-  <object id="7" name="heart1" x="512" y="336" width="16" height="16"/>
-  <object id="8" name="coin1" x="500" y="500" width="16" height="16"/>
-  <object id="9" name="fire1" x="700" y="300" width="16" height="16"/>
   <object id="7" name="object4" x="656" y="784" width="52" height="46">
    <properties>
     <property name="Key" value="50"/>
@@ -193,23 +190,25 @@
     <property name="Key" value="50"/>
    </properties>
   </object>
+  <object id="46" name="portal" type="portal" x="112" y="816"/>
+  <object id="47" x="112" y="816"/>
  </objectgroup>
  <layer id="5" name="BlackBackground" width="60" height="60" locked="1">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIAzBQOf8POrABSY/+TVcF4Lk5cAAAAAAAAAAAAAAAAIBLFj0J1kw=
   </data>
  </layer>
- <layer id="11" name="Floor" width="60" height="60">
+ <layer id="11" name="Floor" width="60" height="60" locked="1">
   <data encoding="base64" compression="zlib">
    eJztmktuE0EQhsc9S2BFQLAnWfEQB+AhFCAcASIe5gRZREDCxheIkOAC3rGAO2AkyBkCKysI9sQgJBI8VGncck+7uqf6MQ+MW/o17p6Zrv7m0VXuqSRZlP+lrIkkuaXoRlqsq1o17DO1g3rQfy/GuBxktdmFY353kuQQdARaT6d1XfdTun3d0A799LqevDguqs8yldnEfk+CXsOYT8F2M83rSxNhu/z9JKXbNw3t0E8Q75ImtW9Te5lN7PcdHD8AvQftgL51cqntGdRfpLPtWN8h2ndFrpug/Y67bovcZkaMRY6Pav/KuL97cOwn0Od0agMVqz2GuDbHDN7vcOwBaKT1Fam9Dxoq6jPlZZPDG/teaIrCy9WCt3beWhXCuw/7voBOB8w/5+H8Cx666HkfQngPYd8R6FIAb4j/bep5/hPwzLeQ93pVrBPegbQlY+KXoFclcW8A70C16cobKtW2jInfwPYt6KEwx73/Ai81v+m8GON+AH0EbU3qz4i4l8ur26yTl5rfdF4Z96rnUXEvl1e3mYiiTYp3twIfLN97ndfyHAY/z2izCV51jquLV9qsmveMKErfH8JL9UfZVHW2hHfbId4Za3bxWpbFT89F4dqyebnjKrPpW7oG3scOfbvwNl1i8G6XPCcx7kusEoM3Zj++BWM87nqSPk4Ud31Kxo1UP8jru85F6Y7l2s3b/1+U7VmZ8A6z4trCMHNfjyg71zQ+/RyOTRvvcA55bTZj8yYOtr3GWwPvXMnGGxLHcNabfNevZJ8H0Mdd2N4DjeD3D0afdfhx03MS4lexz2Og44pOBPpqrv91+d7TZt6q39+W8prmSdOcaWpPtHp/znlnFDq2c6BfcB1/gpbh90qzvNQzzOIty6PAOs4JG2I6P1+b1NVYWz1eqRtzGpp6f2Uehcyd0HMisP5I5N/MZV/yG/oDYc+psOU0xPK/rr5QzaNQcyLU+pbhXjwVs7kM6vkheRRVFSqPgsqroHjl+q3t/Dby6rkIrvkQtvPbyGvKUeBKnq/XRxF4cT6V37nk1raOwOGNMR9ifD3ShDF2KC+OT37nkttQP3gZxhTKq8cjMiax8XJ9ofzOJbfoB1dTP1+o+P3aebm+ULeFfpDKMeT4QhuvSx6FL6+PL0Q/SOUYcnyhFtcVuF3yKHx5y3yhyR7mGPr4wlh5FL68dfvCMl5uHoWFd2Djje0LVVFr6ab1gYjzlZU3hm2TEpEMKc0rb2b/j7ngdRCuByxrWgngjZFTWCXvFZGvAVxVtMHj7WeBvtCkMbBRgne4b8tN8Mln4OQ0VJ1TGLLm7qu1AN6YOYVtKE2t6SxKNeUvjz6m5Q==
   </data>
  </layer>
  <layer id="12" name="Props" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJzt2j9OAkEcxfEpoN/ryDFEsfAGCGJhIh0FF8COAIdACzAewNhpYikQuQNgy0vYghB2wsACs7vfT/JCsmGZffuHZJOfMUC6lfOrz0Y++ju3ObftcXBZ0+U4mmHPtqXvY8TvRW2Pg8uaxzwOANtdWP4zAFdXup+ulVJG7quqet4rtYz05frur5KRc5YWhQRdr7/AmGlw7qM4nYW6/meor4uS3qVuDnyfGujeHypv4TPw7vGzUFPXhwP7fqnf91rHH4/7AgCSjfcBAAAA+GhzjsI2V7HL/r7bnKOwzVXssj8AAAAA4Lg6gTFdpRfjnMhTzphfZaSMlbpHc+t99XxRXmPs21K/mTJXFsrzCfteaq2iZb2PsOdnSuaA7tS1Yuk7Us+xMklJXyTPEnEQLMo=
+   eJzt2kFKw0AAheFZNPtcR4+htS68gda2C0F3LryA7kQ9hLrQ0gOU7iq4UlvRO2jc9oFZSDBDxsZ0kvk/eBRC08lrJoGQMQZott3o+/M4yv/OTsttexlcxnQ5jpO057ml70HO7+VtL4PLmP95HAB+t2a5ZwCu2ppPW0onkHm1r549pR9IX87v33UD+c+aYr1G5+stNuY9XvVRVCdR16+A+rro6Flqe8nnqTvN/XtlmF4DI4+vhb66DpbsO1W/hx8dHz3uCwCoN54HAAAA4KPsOgrbuooi+/suu47Ctq6iyP4AAABAFZ5iY56VF96TI0AXmveXylWJ8/+wpetJmSlz5cijdevX6nmj3JbY91T9PpRPJVHOKuy7obE2LeON056Thtzf9tS1a+k7U8+58tqQvqifBT2RL4g=
   </data>
  </layer>
- <layer id="13" name="Fauna" width="60" height="60">
+ <layer id="13" name="Fauna" width="60" height="60" locked="1">
   <data encoding="base64" compression="zlib">
    eJztml1ywiAQx2MmSU/RxFNo+9Yj2Bvwqqeg9iIexaP4npgzdLeQNuMnBMhi3N/Mjo5jYP8QYFlIEoaZLnn6bz6pZ4lweR79KcBePPuF5X6miVyB+S3ZjRL8qsDmAfRuQOs6Mr1L8OsN7D2AXuhb4bdUxUK1pbhl3Vjq/+ZbYx8cH+0sOYSr4TpQ777rR/i+G6NObNttSqOXgm78UvsxFnmAOTBmlk+klWGGAvGkE8eR1idfZAbzAq6/KxXPnlEP0OvaxkMADQLrzQ1jtrVaD89oBug1aWPfwHsoINYXlUWMekkv/LZrLfuLQm+j9ZaOejEuaCzj3FcavfPKQ//C8weTdxrHD/xPguEeUlq4OhisE95j1Jp8p7/1OvcvPH9Agz7bZdqw/KO2Wte3UfVJaB85ll5XLumdMrguUfvAPBena2HrmH+k4l5+6Vo+CccczJkC5k+xCJT/ssUk3hgSp8aKiV7ov31wR0bCJL5CvesH1mwbX8FeDPdke4xZbONzKh49vmIYZhjNg8xRvsg9nik3s/jbD8+Vv1TuxPqcsO7pw++FWhui1tydo5f63AzXbvBdwhon7z2b6TsHjdZa6LNcLOt4R3OMdwpCEuOdgpA80xkswnqnDeudNrDWf1D7wDAMQwnFnQZKKM74KTE8Y5DBHRkJk5y73qPL7vzcJQ9NkeOwzbn39/zdXt1UM1WOwyXn3tdbpX93Y4x0u+Q4qCh7fVtd+NzesEz/p9Cfp+3GMCH5AToSpyc=
   </data>
