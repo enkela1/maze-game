@@ -31,28 +31,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.audio.Sound;
 
-
-import static de.tum.cit.fop.maze.GameScreen.Direction.*;
-
-/**
- * The GameScreen class is responsible for rendering the gameplay screen.
- * It handles the game logic and rendering of the game elements.
- */
 public class GameScreen implements Screen {
 
     private Music messageSound;
     private Sound attackSound;
     private Sound keySound;
-    private Sound fasterSound; // 加速的声音
-    private boolean isFasterSoundPlaying = false; // 声音是否正在播放
-    private float fasterSoundTimer = 0f; // 跟踪声音播放的计时器
-    private final float FASTER_SOUND_DURATION = 8.0f; // faster.mp3 的播放时长，单位：秒
+    private Sound fasterSound;
+    private boolean isFasterSoundPlaying = false;
+    private float fasterSoundTimer = 0f;
+    private final float FASTER_SOUND_DURATION = 8.0f;
 
-    private boolean isHurtSoundPlaying = false; // 声音是否正在播放
-    private float hurtSoundTimer = 0f; // 计时器，用于追踪播放时间
-    private final float HURT_SOUND_DURATION = 5.0f; // 声音播放的时长（根据实际声音时长设置，单位秒）
+    private boolean isHurtSoundPlaying = false;
+    private float hurtSoundTimer = 0f;
+    private final float HURT_SOUND_DURATION = 5.0f;
 
-    // 定义文字数组
     private final String[] tutorialMessages = {
             "You wake up...",
             "Aurora spaceship is damaged...",
@@ -76,9 +68,9 @@ public class GameScreen implements Screen {
     };
     private String currentMapName;
     private boolean tutorialIsActive = false;
-    private int tutorialWordState = 0; // 当前显示的状态：0=显示"1 word"，1=显示"2 word"，2=显示"3 word"，3=全部消失
-    private float wordDisplayTimer = 0f; // 用于计时
-    private final float WORD_DISPLAY_INTERVAL = 2f; // 每个状态持续时间(秒)
+    private int tutorialWordState = 0;
+    private float wordDisplayTimer = 0f;
+    private final float WORD_DISPLAY_INTERVAL = 2f;
     private final MazeRunnerGame game;
     private MenuScreen menuScreen;
     private  OrthographicCamera camera;
@@ -87,7 +79,7 @@ public class GameScreen implements Screen {
     private Stage gameStage;
     private Stage winStage;
     private Stage loseStage;
-    private Hud hud; // Our new HUD
+    private Hud hud;
     private Sound collectSound;
     private Sound heartSound;
     private Sound hurtSound;
@@ -97,27 +89,25 @@ public class GameScreen implements Screen {
 
     private float sinusInput = 0f;
 
-    // Character position and movement state
     private float characterX;
     private float characterY;
-    private float characterSpeed = 80f; // Base speed (pixels/sec)
+    private float characterSpeed = 80f;
     private boolean isaccelarationActive = false;
     private long accelarationEndTime = 0;
     private static final float SPEED_MULTIPLIER = 2f;
     private int characterWidth = 32;
     private int characterHeight = 64;
     private int enemyWidth = 32;
-    private int enemyHeight = 32; // Speed multiplier when Shift is pressed
+    private int enemyHeight = 32;
+
+    private static final float FOOT_BOX_OFFSET_X = 8f;
+    private static final float FOOT_BOX_OFFSET_Y = 10.5f;
+    private static final float FOOT_BOX_WIDTH    = 16f;
+    private static final float FOOT_BOX_HEIGHT   = 9f;
 
 
-    private static final float FOOT_BOX_OFFSET_X = 8f;    // offset from characterX's left edge
-    private static final float FOOT_BOX_OFFSET_Y = 10.5f; // offset from characterY's bottom edge
-    private static final float FOOT_BOX_WIDTH    = 16f;   // box width for collision
-    private static final float FOOT_BOX_HEIGHT   = 9f;    // box height for collision
-
-    // Enemies
-    private List<Enemy> enemies; // store enemies
-    private float detectionRange = 140f; // detecting range
+    private List<Enemy> enemies;
+    private float detectionRange = 140f;
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -129,15 +119,14 @@ public class GameScreen implements Screen {
     Texture backgroundTexture = new Texture(Gdx.files.internal("background.png"));
     Texture backgroundTexture1 = new Texture(Gdx.files.internal("background1.png"));
 
-    // Directions for animations
     public enum Direction {
         UP, DOWN, LEFT, RIGHT,
         IDLE_UP, IDLE_DOWN, IDLE_LEFT, IDLE_RIGHT
     }
 
-    private Direction currentDirection = Direction.IDLE_DOWN; // Default direction
+    private Direction currentDirection = Direction.IDLE_DOWN;
 
-    // Flag to track if the game has started
+
     private boolean isGameStarted = false;
 
 
@@ -158,15 +147,14 @@ public class GameScreen implements Screen {
 
     private Array<Rectangle> collisionRectangles;
 
-    // Character health system
     private int characterHealth;
     private static final int MAX_HEALTH = 100;
-    private static final int DAMAGE_AMOUNT = MAX_HEALTH / 20; // 每次碰撞减少1/20生命值
-    private static final int HEAL_AMOUNT = MAX_HEALTH / 2;   // 每次拾取爱心恢复1/2生命值
+    private static final int DAMAGE_AMOUNT = MAX_HEALTH / 20;
+    private static final int HEAL_AMOUNT = MAX_HEALTH / 2;
 
     private boolean isCharacterRed = false;
     private float redTimer = 0f;
-    private static final float RED_DURATION = 0.5f; // 角色变红持续时间（秒）
+    private static final float RED_DURATION = 0.5f;
 
 
 
@@ -177,10 +165,6 @@ public class GameScreen implements Screen {
 
 
 
-
-
-
-    // use a small class to unify hearts, coins, and fires:
     private static class Item {
         float x, y;
         ItemType type;
@@ -192,22 +176,21 @@ public class GameScreen implements Screen {
         }
     }
 
-    // define the types of items:
+
     public enum ItemType {
         HEART, COIN, FIRE, KEY,ACCELARATION,BLACKHOLE
     }
 
-    // Portal
     private boolean isPortalActive = false;
     private float portalX;
     private float portalY;
     private static final float PORTAL_WIDTH = 64;
     private static final float PORTAL_HEIGHT = 64;
 
-    // For a simple texture (or you can store an Animation<TextureRegion> if you like).
+
     private Texture portalTexture;
 
-    // Game win state
+
     private boolean isGameWon = false;
     private float gameWinTimer = 0f;
 
@@ -220,31 +203,22 @@ public class GameScreen implements Screen {
         return coinCount;
     }
 
-    /**
-     * Constructor for GameScreen. Sets up the camera and font.
-     *
-     * @param game The main game class, used to access global resources and methods.
-     */
     public GameScreen(MazeRunnerGame game) {
         this.game = game;
         menuScreen = new MenuScreen(game,coinCount);
         isGameOver = false;
 
-        // Create and configure the camera for the game view
         camera = new OrthographicCamera();
         camera.setToOrtho(false);
         camera.zoom = 0.5f;
 
-        // Get the font from the game's skin
         font = game.getSkin().getFont("font");
 
-        // Load the tiled map
         TmxMapLoader loader = new TmxMapLoader();
         tiledMap = loader.load("input.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         tutorialIsActive = true;
 
-        // Get boundaries from first layer
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
         mapBounds = new Rectangle(
                 0,
@@ -253,43 +227,29 @@ public class GameScreen implements Screen {
                 layer.getHeight() * layer.getTileHeight()
         );
 
-        // Initialize the enemies list
         enemies = new ArrayList<>();
-
-        // rectangle based collisions if needed:
-
-        // collisionRectangles = new Array<>();
-        // MapObjects objects = tiledMap.getLayers().get("layer").getObjects();
-        // for (RectangleMapObject rectangleObject : objects.getByType(RectangleMapObject.class)) {
-        //     collisionRectangles.add(rectangleObject.getRectangle());
-        // }
 
         collisionRectangles = new Array<>();
 
         hud = new Hud();
 
-        // Initialize health
         characterHealth = MAX_HEALTH;
 
-        // Initialize our items list
         items = new ArrayList<>();
 
 
     }
 
-    /**
-     * Called when the player presses ENTER to start the game.
-     */
     private void startGame() {
         isGameStarted = true;
-        // Initialize character position
+
         initializeCharacterPosition();
-        // Initialize enemy positions
+
         initializeEnemies();
 
         initializeItems();
 
-        camera.zoom = 0.5f; // 这里设置缩放程度，值越小视角越大
+        camera.zoom = 0.5f;
         camera.update();
 
 
@@ -318,32 +278,15 @@ public class GameScreen implements Screen {
          camera.zoom=0.5f;
 
 
-         if (mapName.equals("input")) { // "input" 对应 Level 1 地图文件名
-             tutorialIsActive = true;  // 启用教程
+         if (mapName.equals("input")) {
+             tutorialIsActive = true;
          } else {
-             tutorialIsActive = false; // 禁用教程
+             tutorialIsActive = false;
          }
 
 
 
     }
-//    private void resetCharacterPosition() {
-//        RectangleMapObject characterObject =
-//                (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
-//        if (characterObject != null) {
-//
-//            // Rectangle rect = characterObject.getRectangle();
-//            // characterX = rect.x;
-//            // characterY = rect.y;
-//
-//            characterX = 87;               // Start at the left corner (X-coordinate)
-//            characterY = mapBounds.height - 130;  // Start near the top corner
-//        } else {
-//            // Fallback if no character object is found
-//            characterX = camera.viewportWidth / 2;
-//            characterY = camera.viewportHeight / 2;
-//        }
-//    }
 
 
     private void resetCharacterPosition() {
@@ -379,9 +322,7 @@ public class GameScreen implements Screen {
 
 
 
-    /**
-     * Initializes character position from the "Objects" layer in the Tiled map.
-     */
+
     private void initializeCharacterPosition() {
         RectangleMapObject characterObject =
                 (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
@@ -390,55 +331,42 @@ public class GameScreen implements Screen {
              Rectangle rect = characterObject.getRectangle();
              characterX = rect.x;
              characterY = rect.y;
-//
-//            characterX = 87;               // Start at the left corner (X-coordinate)
-//            characterY = mapBounds.height - 130;  // Start near the top corner
+
         } else {
-            // Fallback if no character object is found
+
             characterX = camera.viewportWidth / 2;
             characterY = camera.viewportHeight / 2;
         }
     }
 
-    /**
-     * Initializes enemies from the "Objects" layer in the Tiled map.
-     * For each "objectX" name, we create an Enemy with type X.
-     */
+
     private void initializeEnemies() {
         MapObjects mapObjects = tiledMap.getLayers().get("Objects").getObjects();
 
         for (MapObject mapObject : mapObjects) {
-            // Must be a rectangle object
             if (!(mapObject instanceof RectangleMapObject)) {
                 continue;
             }
 
-            // Must have a non-null name
             if (mapObject.getName() == null) {
                 continue;
             }
 
-            // Must start with "object"
             if (!mapObject.getName().startsWith("object")) {
                 continue;
             }
 
-            // e.g. name = "object1" => type = 1
             int type;
             try {
-                String name = mapObject.getName(); // e.g. "object5"
+                String name = mapObject.getName();
                 type = Integer.parseInt(name.substring(6));
             } catch (NumberFormatException e) {
-                // if substring(6) isn’t a valid integer, skip
                 continue;
             }
 
-            // We have a valid "objectX" with an integer X => parse rectangle
             Rectangle rect = ((RectangleMapObject) mapObject).getRectangle();
-            // Adjust these as needed. For example, speed = 95f
             enemies.add(new Enemy(rect.x, rect.y, 95f, type));
 
-            // Optional: debug print to make sure we found it
             System.out.println("Found enemy: " + mapObject.getName() +
                     " at (" + rect.x + ", " + rect.y +
                     "), type=" + type);
@@ -449,7 +377,6 @@ public class GameScreen implements Screen {
 
     private List<Vector2> gatherOpenTiles() {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
-        // or whichever layer holds your maze
         float tileWidth = layer.getTileWidth();
         float tileHeight = layer.getTileHeight();
 
@@ -458,13 +385,11 @@ public class GameScreen implements Screen {
 
         List<Vector2> openTiles = new ArrayList<>();
 
-        // Loop over every tile in the layer
         for (int ty = 0; ty < mapHeight; ty++) {
             for (int tx = 0; tx < mapWidth; tx++) {
                 float worldX = tx * tileWidth;
                 float worldY = ty * tileHeight;
 
-                // If NOT blocked => store in openTiles
                 if (!isTileBlockedInMaze(worldX, worldY)) {
                     openTiles.add(new Vector2(worldX, worldY));
                 }
@@ -482,31 +407,26 @@ public class GameScreen implements Screen {
         int tileX = (int) (worldX / tileWidth);
         int tileY = (int) (worldY / tileHeight);
 
-        // Check bounds
         if (tileX < 0 || tileY < 0 || tileX >= layer.getWidth() || tileY >= layer.getHeight()) {
-            return true; // Out-of-bounds => treat as blocked
+            return true;
         }
 
         TiledMapTileLayer.Cell cell = layer.getCell(tileX, tileY);
         if (cell == null || cell.getTile() == null) {
-            return false; // no tile => not blocked
+            return false;
         }
 
         MapProperties props = cell.getTile().getProperties();
-        // If "blocked" property is true => blocked
         return props.containsKey("blocked") && (boolean) props.get("blocked");
     }
 
     private void initializeItems() {
         items = new ArrayList<>();
 
-        // 1) Gather all open tile positions (already implemented above)
         List<Vector2> openTiles = gatherOpenTiles();
 
-        // 2) Shuffle them for randomization
         java.util.Collections.shuffle(openTiles);
 
-        // We'll track how many items we still need.
         int heartsToPlace = 5;
         int coinsToPlace  = 5;
         int firesToPlace  = 3;
@@ -515,36 +435,26 @@ public class GameScreen implements Screen {
         int blackHolesToPlace = 2;
 
 
-        // 3) Iterate over shuffled openTiles. For each tile:
-        //    - Compute center of the tile
-        //    - Check collisions with walls (the item bounding box)
-        //    - Check distance from other items
-        //    - If safe, place the item
+
         for (Vector2 tilePos : openTiles) {
-            // If we've placed them all, break out
             if (heartsToPlace <= 0 && coinsToPlace <= 0 && firesToPlace <= 0 && keysToPlace <= 0&& accelarationToPlace <=0 &&blackHolesToPlace <= 0 ) {
                 break;
             }
 
-            // Convert tile’s top-left to item center:
-            // tilePos is the top-left corner of the tile, e.g. (x=16, y=32).
-            // We want the item (32×32) to appear centered in a 16×16 tile.
             final float tileWidth  = 16;
             final float tileHeight = 16;
 
-            // Center of this tile
+
             float centerX = tilePos.x + (tileWidth / 2f) - (32 / 2f);
             float centerY = tilePos.y + (tileHeight / 2f) - (32 / 2f);
 
-            // Check collision with walls or if too close to other items
             if (isItemCollidingWithWalls(centerX, centerY)) continue;
             if (isTooCloseToOtherItems(centerX, centerY))    continue;
 
-            // At this point, the tile is valid. Place whichever item we still need.
             if (heartsToPlace > 0) {
                 items.add(new Item(centerX, centerY, ItemType.HEART));
                 heartsToPlace--;
-                continue; // go to the next tile
+                continue;
             }
             if (coinsToPlace > 0) {
                 items.add(new Item(centerX, centerY, ItemType.COIN));
@@ -608,9 +518,6 @@ public class GameScreen implements Screen {
             return;
         }
 
-
-
-        // Check if ESC is pressed => go to menu
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 
             game.goToMenu();
@@ -618,16 +525,10 @@ public class GameScreen implements Screen {
             camera.zoom=1f;
         }
 
-//clear the screen
-//        Gdx.gl.glClearColor(0, 0, 0, 1);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        //if character is dead=>SHOW GAMEOVER
         if (isGameOver) {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            // Draw the pause background
             loseStage.getBatch().begin();
             loseStage.getBatch().draw(
                     backgroundTexture,
@@ -637,7 +538,6 @@ public class GameScreen implements Screen {
             );
             loseStage.getBatch().end();
 
-            // Draw pause UI
             Gdx.input.setInputProcessor(loseStage);
             loseStage.act(delta);
             loseStage.draw();
@@ -646,23 +546,18 @@ public class GameScreen implements Screen {
             return;
         }
 
-            // Skip all normal game rendering
 
-
-
-        // Check if ENTER is pressed => start game
         if (!isGameStarted && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startGame();
         }
 
-        // Check if 'P' is pressed => pause toggle
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             isPaused = !isPaused;
             if (isPaused) {
-                Gdx.input.setInputProcessor(pauseStage); // Set input processor to pause menu
+                Gdx.input.setInputProcessor(pauseStage);
             } else {
-                Gdx.input.setInputProcessor(null); // Reset input processor to game logic
+                Gdx.input.setInputProcessor(null);
             }
         }
 
@@ -670,7 +565,6 @@ public class GameScreen implements Screen {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            // Draw the pause background
             pauseStage.getBatch().begin();
             pauseStage.getBatch().draw(
                     backgroundTexture,
@@ -680,43 +574,33 @@ public class GameScreen implements Screen {
             );
             pauseStage.getBatch().end();
 
-            // Draw pause UI
             pauseStage.act(delta);
             pauseStage.draw();
 
-            // Skip all normal game rendering
             return;
         }
 
-        // Clear screen
-//        ScreenUtils.clear(0, 0, 0, 1);
 
         if (!isGameOver && isGameStarted && !isPaused) {
             updateGameState(delta);
             checkPortalCollision();
         }
 
-        // Use SpriteBatch for drawing text, character, enemies, etc.
         game.getSpriteBatch().setProjectionMatrix(camera.combined);
         game.getSpriteBatch().begin();
 
-        // If the game has started and is not paused, update logic
         if (isGameStarted && !isPaused) {
             updateGameState(delta);
-            // Update camera position
             camera.position.set(characterX, characterY, 0);
             camera.update();
-            // Render map
             mapRenderer.setView(camera);
             mapRenderer.render();
         } else if (isGameStarted) {
-            // Game is started but paused, so we skip updates but still might want to show something
+
             camera.update();
             mapRenderer.setView(camera);
             mapRenderer.render();
         }
-
-        // Update sinusInput for the wiggly text
         sinusInput += delta;
         float textX = (float) (camera.position.x + Math.sin(sinusInput) * 100);
         float textY = (float) (camera.position.y + Math.cos(sinusInput) * 100);
@@ -730,19 +614,15 @@ public class GameScreen implements Screen {
                     camera.viewportWidth/2,
                     camera.viewportHeight/2
             );
-            // If game not started, show instructions
             font.draw(game.getSpriteBatch(), "Press ENTER to start", textX, textY);
             font.draw(game.getSpriteBatch(), "Press ESC to go to menu", textX, textY - 100);
-            // Draw a fun animation for the character (e.g. idleDown)
             game.getSpriteBatch().draw(
                     game.getCharacterDownAnimation().getKeyFrame(sinusInput, true),
                     textX - 4, textY - 120,
                     64, 128
             );
         } else {
-            // If game is started, render character and enemies
             if (isPaused) {
-                // Show "Game Paused" message if paused
                 if (isPaused) {
                     pauseStage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
                     pauseStage.draw();
@@ -754,20 +634,19 @@ public class GameScreen implements Screen {
 
             if (isCharacterRed) {
                 if (!isHurtSoundPlaying) {
-                    hurtSound.play(); // 播放声音
-                    isHurtSoundPlaying = true; // 标记声音正在播放
-                    hurtSoundTimer = 0f; // 重置计时器
+                    hurtSound.play();
+                    isHurtSoundPlaying = true;
+                    hurtSoundTimer = 0f;
                 }
                 game.getSpriteBatch().setColor(Color.RED);
                 hurtSoundTimer += Gdx.graphics.getDeltaTime();
                 if (hurtSoundTimer >= HURT_SOUND_DURATION) {
-                    isHurtSoundPlaying = false; // 声音播放完成，允许再次播放
+                    isHurtSoundPlaying = false;
                 }
             } else {
                 game.getSpriteBatch().setColor(Color.WHITE);
             }
 
-            // 1) Render character (with pickup/attack logic)
             renderCharacter();
 
             game.getSpriteBatch().setColor(Color.WHITE);
@@ -779,14 +658,14 @@ public class GameScreen implements Screen {
             }
 
 
-            // Draw items (heart, coin, fire) if they are not yet collected
+
             for (Item item : items) {
                 if (!item.collected) {
                     switch (item.type) {
                         case HEART -> game.getSpriteBatch().draw(
                                 game.getHeartAnimation().getKeyFrame(sinusInput, true),
                                 item.x, item.y,
-                                32, 32 // scale as you like
+                                32, 32
                         );
                         case COIN -> game.getSpriteBatch().draw(
                                 game.getCoinAnimation().getKeyFrame(sinusInput, true),
@@ -800,11 +679,10 @@ public class GameScreen implements Screen {
                         );
 
                         case KEY -> {
-                            // Draw the key on the map
                             game.getSpriteBatch().draw(
                                     game.getKeyAnimation().getKeyFrame(sinusInput, true),
                                     item.x, item.y,
-                                    32, 32 //size
+                                    32, 32
                             );
 
                         }
@@ -825,7 +703,6 @@ public class GameScreen implements Screen {
                 }
             }
 
-            // Display health and coinCount
 
 
 
@@ -876,13 +753,12 @@ public class GameScreen implements Screen {
 
         game.getSpriteBatch().end();
 
-        // draws the arrow
 
 
 
 
             hud.update(delta, characterX, characterY, portalX, portalY, camera);
-            hud.render(); // arrow is drawn pinned to the corner
+            hud.render();
 
 
 
@@ -896,32 +772,26 @@ public class GameScreen implements Screen {
         }
 
         checkItemCollisions();
-//        checkHeartCollision();
-
-        //level1 && game starts -> tutorial starts
-        //tutorial starts -> no health reduce
         game.getSpriteBatch().begin();
 
             if (tutorialIsActive && isGameStarted) {
                 wordDisplayTimer += delta;
 
-                // 切换到下一个文字
                 if (wordDisplayTimer >= WORD_DISPLAY_INTERVAL) {
-                    wordDisplayTimer = 0f; // 重置计时器
-                    tutorialWordState++; // 进入下一个状态
+                    wordDisplayTimer = 0f;
+                    tutorialWordState++;
                 }
 
 
 
-                // 动态显示当前文字
                 if (tutorialWordState < tutorialMessages.length) {
-                    font.getData().setScale(0.5f); // 将字体缩放到原来的 50%
+                    font.getData().setScale(0.5f);
                     font.draw(game.getSpriteBatch(), tutorialMessages[tutorialWordState], characterX - 5, characterY + 80);
                     messageSound.play();
                     messageSound.setVolume(0.3f);
-                    font.getData().setScale(1.0f); // 恢复默认字体大小，避免影响其他文字
+                    font.getData().setScale(1.0f);
                 } else {
-                    tutorialIsActive = false; // 结束教程
+                    tutorialIsActive = false;
 
                 }
             }
@@ -932,11 +802,7 @@ public class GameScreen implements Screen {
         game.getSpriteBatch().end();
     }
 
-    /**
-     * Update the overall game logic (movement, attacking, pickups, enemies, etc.).
-     */
     private void updateGameState(float delta) {
-        // If currently picking up or attacking, advance timers
         if (isPickingUp) {
             pickUpTimer += delta;
             if (pickUpTimer >= PICKUP_DURATION) {
@@ -955,35 +821,27 @@ public class GameScreen implements Screen {
 
             }
         } else if (!isPaused) {
-            // Otherwise, handle normal movement input or toggles
             handleInput(delta);
 
-
-            // Update enemies logic
             updateEnemies(delta);
-//        checkHeartCollision();
+
             checkItemCollisions();
         }
     }
 
-    /**
-     * Handle player input for movement, attacking (J), picking up (F), holding (G), dropping (H).
-     */
+
     private void handleInput(float delta) {
         if (isPaused) return;
 
-        // Key F => start picking up
         if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
             isPickingUp = true;
             pickUpTimer = 0f;
             return;
         }
-        // Key G => forcibly go to 'holding' state
         if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
             isHolding = true;
             return;
         }
-        // Key J => start attackingr
         if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             isAttacking = true;
             attackTimer = 0f;
@@ -991,10 +849,8 @@ public class GameScreen implements Screen {
             handleAttack(new Vector2(characterX, characterY));
             return;
         }
-        // Key H => put down (stop holding)
         if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
             isHolding = false;
-            // Force direction to idle
             switch (currentDirection) {
                 case UP:
                     currentDirection = Direction.IDLE_UP; break;
@@ -1013,7 +869,6 @@ public class GameScreen implements Screen {
             zoomIn();
         }
 
-        // Handle zoom out (DOWN key)
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             zoomOut();
         }
@@ -1023,65 +878,59 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
             adjustedSpeed *= SPEED_MULTIPLIER;
-            // 播放加速声音
             if (!isFasterSoundPlaying) {
-                fasterSound.play(); // 播放声音
-                isFasterSoundPlaying = true; // 标记声音正在播放
-                fasterSoundTimer = 0f; // 重置计时器
+                fasterSound.play();
+                isFasterSoundPlaying = true;
+                fasterSoundTimer = 0f;
             }
         }
         if (isFasterSoundPlaying) {
             fasterSoundTimer += delta;
             if (fasterSoundTimer >= FASTER_SOUND_DURATION) {
-                isFasterSoundPlaying = false; // 声音播放完成
+                isFasterSoundPlaying = false;
             }
         }
 
-        // We do partial movement checks + collisions
         boolean moved = false;
         float oldX = characterX;
         float oldY = characterY;
 
-        // Move vertically (W/S)
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             characterY += adjustedSpeed * delta;
             currentDirection = Direction.UP;
             moved = true;
             if (isBoxBlocked(characterX, characterY)) {
-                characterY = oldY; // revert
+                characterY = oldY;
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             characterY -= adjustedSpeed * delta;
             currentDirection = Direction.DOWN;
             moved = true;
             if (isBoxBlocked(characterX, characterY)) {
-                characterY = oldY; // revert
+                characterY = oldY;
             }
         }
 
-        // Move horizontally (A/D)
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             characterX -= adjustedSpeed * delta;
             currentDirection = Direction.LEFT;
             moved = true;
             if (isBoxBlocked(characterX, characterY)) {
-                characterX = oldX; // revert
+                characterX = oldX;
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             characterX += adjustedSpeed * delta;
             currentDirection = Direction.RIGHT;
             moved = true;
             if (isBoxBlocked(characterX, characterY)) {
-                characterX = oldX; // revert
+                characterX = oldX;
             }
         }
 
-        // If no movement, switch to idle direction
+
         if (!moved) {
-            // If holding something, we might keep the movement direction or revert to idle
             if (isHolding) {
 
-                // switch to idle if no movement
                 switch (currentDirection) {
                     case UP:
                         currentDirection = Direction.IDLE_UP;   break;
@@ -1095,7 +944,6 @@ public class GameScreen implements Screen {
                         break;
                 }
             } else {
-                // Not holding => go idle
                 switch (currentDirection) {
                     case UP:
                         currentDirection = Direction.IDLE_UP;   break;
@@ -1113,20 +961,18 @@ public class GameScreen implements Screen {
     }
     private void zoomIn() {
         camera.zoom -= 0.1f;
-        if (camera.zoom < 0.2f) camera.zoom = 0.2f;  // Prevent too much zoom out
+        if (camera.zoom < 0.2f) camera.zoom = 0.2f;
         camera.update();
 
     }
 
     private void zoomOut() {
         camera.zoom += 0.1f;
-        if (camera.zoom > 2.0f) camera.zoom = 2.0f;  // Prevent too much zoom in
+        if (camera.zoom > 2.0f) camera.zoom = 2.0f;
         camera.update();
 
     }
-    /**
-     * Renders the character, taking into account picking up, holding, and attacking animations.
-     */
+
     private void renderCharacter() {
         if (isPickingUp) {
             renderPickUpAnimation();
@@ -1139,15 +985,12 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Renders a single enemy, using your existing approach (enemy1, enemy2, etc.).
-     */
+
     private void renderEnemy(Enemy enemy) {
-        // Switch on the enemy type and draw accordingly.
+
 
         switch (enemy.getType()) {
             case 1:
-                // Animations for enemy1
                 switch (currentDirection) {
                     case RIGHT:
                         game.getSpriteBatch().draw(
@@ -1208,7 +1051,6 @@ public class GameScreen implements Screen {
                 break;
 
             case 2:
-                // Animations for enemy2
                 switch (currentDirection) {
                     case RIGHT:
                         game.getSpriteBatch().draw(
@@ -1452,9 +1294,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Renders the "picking up" animation.
-     */
     private void renderPickUpAnimation() {
         switch (currentDirection) {
             case UP, IDLE_UP -> game.getSpriteBatch().draw(
@@ -1480,9 +1319,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Renders the "holding" animation.
-     */
     private void renderHoldAnimation() {
         switch (currentDirection) {
             case UP -> game.getSpriteBatch().draw(
@@ -1527,10 +1363,6 @@ public class GameScreen implements Screen {
             );
         }
     }
-
-    /**
-     * Renders the "attacking" animation.
-     */
     private void renderAttackAnimation() {
         switch (currentDirection) {
             case UP, IDLE_UP -> game.getSpriteBatch().draw(
@@ -1556,9 +1388,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Renders the normal walking or idle animation (no pickup/attack/hold).
-     */
+
     private void renderMovementOrIdle() {
         switch (currentDirection) {
             case UP ->
@@ -1635,16 +1465,13 @@ public class GameScreen implements Screen {
             }
         }
     }
-    /**
-     * Updates enemies so that if within detectionRange, they move toward the character.
-     */
+
     private void updateEnemies(float delta) {
 
 
         for (Enemy enemy : enemies) {
             float distance = Vector2.dst(characterX, characterY, enemy.getX(), enemy.getY());
             if (distance <= detectionRange) {
-                // Move toward the character
                 Vector2 direction = new Vector2(characterX - enemy.getX(), characterY - enemy.getY()).nor();
                 enemy.setX(enemy.getX() + direction.x * enemy.getSpeed() * delta);
                 enemy.setY(enemy.getY() + direction.y * enemy.getSpeed() * delta);
@@ -1665,7 +1492,6 @@ public class GameScreen implements Screen {
                 Rectangle itemBounds = new Rectangle(item.x, item.y, 32, 32);
                 if (Intersector.overlaps(itemBounds, characterBounds)) {
 
-                    // Handle the collision
                     switch (item.type) {
                         case HEART -> {
                             restoreHealth(HEAL_AMOUNT);
@@ -1680,8 +1506,7 @@ public class GameScreen implements Screen {
                         case FIRE -> {
 
                             reduceHealth(DAMAGE_AMOUNT * 2);
-                            // if u don't want fire to go away after the burn remove this line:
-//                            item.collected = true;
+
                         }
                         case ACCELARATION -> {
                             characterSpeed = 200f;
@@ -1691,7 +1516,6 @@ public class GameScreen implements Screen {
                             collectSound.play();
                         }
                         case KEY -> {
-                            // Actually collect the key here
                             keyCollected = true;
                             item.collected = true;
                             keySound.play();
@@ -1702,17 +1526,14 @@ public class GameScreen implements Screen {
                         }
 
                         case BLACKHOLE -> {
-                            // 吸引角色到黑洞中心
                             float blackholeCenterX = item.x ;
                             float blackholeCenterY = item.y ;
                             Vector2 direction = new Vector2(blackholeCenterX - characterX, blackholeCenterY - characterY).nor();
-                            characterX += direction.x * 152 * Gdx.graphics.getDeltaTime(); // 吸引速度
+                            characterX += direction.x * 152 * Gdx.graphics.getDeltaTime();
                             characterY += direction.y * 152 * Gdx.graphics.getDeltaTime();
 
-                            // 每次被吸引减少5点生命值
                             reduceHealth(2);
 
-                            // 黑洞持续时间
                             if (item.collected) {
                                 item.collected = true;
                             }
@@ -1746,44 +1567,28 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Spawn the portal at the rectangle named "portal" in the Tiled map.
-     */
-    /**
-     * Find the rectangle object named "portal" in Tiled
-     * and store its position and size.
-     */
+
     private void spawnPortal() {
         MapObjects mapObjects = tiledMap.getLayers().get("Objects").getObjects();
         boolean foundPortal = false;
 
         for (MapObject object : mapObjects) {
-            // Only look at rectangle objects
             if (object instanceof RectangleMapObject rectObj) {
-                // Must be named "portal"
                 if ("portal".equals(object.getName())) {
                     Rectangle rect = rectObj.getRectangle();
 
-                    // Use the rectangle's position/size from Tiled
                     portalX = rect.x;
                     portalY = rect.y;
-                    // NOTE: If you want to store them dynamically instead of a fixed 64×64
-//                    portalWidth  = rect.width;
-//                    portalHeight = rect.height;
 
                     isPortalActive = true;
                     foundPortal = true;
 
-                    // Optional debug print
-//                    System.out.println("spawnPortal(): Found portal rectangle at ("
-//                            + portalX + ", " + portalY
-//                            + ") size (" + portalWidth + "x" + portalHeight + ")");
                     break;
                 }
             }
         }
 
-        // If for some reason we never found it
+
         if (!foundPortal) {
             System.err.println("spawnPortal(): No rectangle named 'portal' found in Tiled!");
         }
@@ -1795,17 +1600,15 @@ public class GameScreen implements Screen {
         if (!isPortalActive) return;
         if (isGameWon || isGameOver) return;
 
-        // Use the actual portal rectangle dimension from Tiled:
-//        Rectangle portalBounds = new Rectangle(portalX, portalY, portalWidth, portalHeight);
 
         Rectangle portalBounds = new Rectangle(portalX, portalY, 64, 64);
         Rectangle characterBounds = new Rectangle(characterX, characterY, 64, 128);
 
         if (Intersector.overlaps(portalBounds, characterBounds)) {
-            // The player steps onto the portal => YOU WIN!
+
             isGameWon = true;
             victorySound.play();
-            winStage = menuScreen.createWinMenu(coinCount);
+            winStage = menuScreen.createWinMenu(coinCount,currentMapName);
         }
     }
 
@@ -1829,14 +1632,11 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(loseStage);
     }
 
-    /**
-     * Returns true if the character's foot bounding box at (x, y) is blocked by any tile with "blocked" property.
-     */
+
     private boolean isBoxBlocked(float x, float y) {
         float footBoxX = x + FOOT_BOX_OFFSET_X;
         float footBoxY = y + FOOT_BOX_OFFSET_Y;
 
-        // Check each corner
         if (isTileBlocked(footBoxX, footBoxY)) return true;
         if (isTileBlocked(footBoxX + FOOT_BOX_WIDTH, footBoxY)) return true;
         if (isTileBlocked(footBoxX, footBoxY + FOOT_BOX_HEIGHT)) return true;
@@ -1845,30 +1645,27 @@ public class GameScreen implements Screen {
         return false;
     }
 
-    /**
-     * Checks a single point (in world coordinates) to see if it's on a 'blocked' tile.
-     */
     private boolean isTileBlocked(float worldX, float worldY) {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
         float tileWidth = layer.getTileWidth();
         float tileHeight = layer.getTileHeight();
 
-        // Convert world coords -> tile coords
+
         int tileX = (int) (worldX / tileWidth);
         int tileY = (int) (worldY / tileHeight);
 
-        // If out of range, consider blocked or out of map
+
         if (tileX < 0 || tileY < 0 || tileX >= layer.getWidth() || tileY >= layer.getHeight()) {
             return true;
         }
 
-        // Get the cell
+
         TiledMapTileLayer.Cell cell = layer.getCell(tileX, tileY);
         if (cell == null || cell.getTile() == null) {
-            return false; // no tile => not blocked
+            return false;
         }
 
-        // Check tile property "blocked"
+
         MapProperties props = cell.getTile().getProperties();
         if (props.containsKey("blocked") && (boolean) props.get("blocked")) {
             return true;
@@ -1935,9 +1732,6 @@ public class GameScreen implements Screen {
         return camera;
     }
 
-    /**
-     * 敌人类，用于存储敌人的位置和速度。
-     */
     private static class Enemy {
         private float x;
         private float y;
@@ -1970,7 +1764,7 @@ public class GameScreen implements Screen {
         }
 
         public void updatePosition(float delta) {
-            this.x -= speed * delta;  // 向左移动
+            this.x -= speed * delta;
 
         }
 
@@ -2002,12 +1796,9 @@ public class GameScreen implements Screen {
 
 
 
-    // 1) Check if placing an item at (itemX, itemY) would collide with walls,
-//   given the item is ITEM_SIZE x ITEM_SIZE in pixel dimensions.
     private boolean isItemCollidingWithWalls(float itemX, float itemY) {
-        final float ITEM_SIZE = 32; // same as you draw items (32×32)
+        final float ITEM_SIZE = 32;
 
-        // Check the four corners of the item’s bounding box
         if (isTileBlockedInMaze(itemX,        itemY))         return true;
         if (isTileBlockedInMaze(itemX + ITEM_SIZE - 1, itemY))         return true;
         if (isTileBlockedInMaze(itemX,        itemY + ITEM_SIZE - 1)) return true;
@@ -2016,9 +1807,9 @@ public class GameScreen implements Screen {
         return false;
     }
 
-    // 2) Check if (itemX, itemY) is too close to already placed items.
+
     private boolean isTooCloseToOtherItems(float itemX, float itemY) {
-        final float MIN_DISTANCE = 128f; // e.g., 64px = 4 tiles if tile is 16px
+        final float MIN_DISTANCE = 128f;
 
         for (Item existing : items) {
             if (!existing.collected) {
@@ -2026,7 +1817,7 @@ public class GameScreen implements Screen {
                 float dy = existing.y - itemY;
                 float distSq = dx * dx + dy * dy;
                 if (distSq < MIN_DISTANCE * MIN_DISTANCE) {
-                    return true; // too close to another item
+                    return true;
                 }
             }
         }
