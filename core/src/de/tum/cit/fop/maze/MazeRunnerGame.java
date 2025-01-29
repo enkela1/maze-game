@@ -18,7 +18,7 @@ import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 public class MazeRunnerGame extends Game {
     // Screens
     private MenuScreen menuScreen;
-    private GameScreen gameScreen;
+    GameScreen gameScreen;
 
     // Sprite Batch for rendering
     private SpriteBatch spriteBatch;
@@ -190,8 +190,8 @@ public class MazeRunnerGame extends Game {
         // Initialize gameScreen if it's null
         if (gameScreen == null) {
             gameScreen = new GameScreen(this);
-        }
 
+        }
 
         this.setScreen(gameScreen);
 

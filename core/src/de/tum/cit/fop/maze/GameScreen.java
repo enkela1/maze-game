@@ -74,6 +74,7 @@ public class GameScreen implements Screen {
             "Good Luck..."
 
     };
+    private String currentMapName;
     private boolean tutorialIsActive = false;
     private int tutorialWordState = 0; // 当前显示的状态：0=显示"1 word"，1=显示"2 word"，2=显示"3 word"，3=全部消失
     private float wordDisplayTimer = 0f; // 用于计时
@@ -121,7 +122,7 @@ public class GameScreen implements Screen {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
     private Rectangle mapBounds;
-    private boolean isGameOver = false;
+    boolean isGameOver = false;
     private float gameOverTimer = 0;
 
 
@@ -295,6 +296,7 @@ public class GameScreen implements Screen {
     }
 
      public void loadMap(String mapName) {
+        currentMapName=mapName;
 
         TmxMapLoader loader = new TmxMapLoader();
 
@@ -370,6 +372,7 @@ public class GameScreen implements Screen {
         isGameOver = false;
         isGameWon  = false;
         isPortalActive = false;
+        keyCollected = false;
     }
 
 
@@ -1821,6 +1824,9 @@ public class GameScreen implements Screen {
         System.out.println("Game Over");
         isGameOver = true;
         gameOverTimer = 0;
+
+        loseStage=menuScreen.createGameoverMenu(currentMapName);
+        Gdx.input.setInputProcessor(loseStage);
     }
 
     /**
@@ -1888,7 +1894,7 @@ public class GameScreen implements Screen {
     public void show() {
         gameStage = new Stage(new ScreenViewport());
         pauseStage = menuScreen.createPauseMenu();
-        loseStage=menuScreen.createGameoverMenu();
+        loseStage=menuScreen.createGameoverMenu(currentMapName);
         Gdx.input.setInputProcessor(gameStage);
         hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.mp3"));
         collectSound = Gdx.audio.newSound(Gdx.files.internal("collect.mp3"));

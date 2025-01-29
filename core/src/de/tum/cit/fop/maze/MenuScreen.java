@@ -283,7 +283,7 @@ public class MenuScreen implements Screen {
         return winStage;
     }
 
-    public Stage createGameoverMenu() {
+    public Stage createGameoverMenu(String currentMapName) {
         // Create a stage for the pause menu
         Stage loseStage = new Stage(new ScreenViewport());
 
@@ -304,7 +304,9 @@ public class MenuScreen implements Screen {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));
+                game.gameScreen=new GameScreen(game);
+                game.gameScreen.loadMap(currentMapName);
+                game.setScreen(game.gameScreen);
                 dispose();
 
             }
