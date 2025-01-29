@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.maps.MapObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -386,16 +388,47 @@ public class GameScreen implements Screen {
      * For each "objectX" name, we create an Enemy with type X.
      */
     private void initializeEnemies() {
-        for (int i = 1; i <= 5; i++) {
-            String objectName = "object" + i;
-            RectangleMapObject enemyObject = (RectangleMapObject)
-                    tiledMap.getLayers().get("Objects").getObjects().get(objectName);
-            if (enemyObject != null) {
-                Rectangle rect = enemyObject.getRectangle();
-                enemies.add(new Enemy(rect.x, rect.y, 95f, i));
+        MapObjects mapObjects = tiledMap.getLayers().get("Objects").getObjects();
+
+        for (MapObject mapObject : mapObjects) {
+            // Must be a rectangle object
+            if (!(mapObject instanceof RectangleMapObject)) {
+                continue;
             }
+
+            // Must have a non-null name
+            if (mapObject.getName() == null) {
+                continue;
+            }
+
+            // Must start with "object"
+            if (!mapObject.getName().startsWith("object")) {
+                continue;
+            }
+
+            // e.g. name = "object1" => type = 1
+            int type;
+            try {
+                String name = mapObject.getName(); // e.g. "object5"
+                type = Integer.parseInt(name.substring(6));
+            } catch (NumberFormatException e) {
+                // if substring(6) isn’t a valid integer, skip
+                continue;
+            }
+
+            // We have a valid "objectX" with an integer X => parse rectangle
+            Rectangle rect = ((RectangleMapObject) mapObject).getRectangle();
+            // Adjust these as needed. For example, speed = 95f
+            enemies.add(new Enemy(rect.x, rect.y, 95f, type));
+
+            // Optional: debug print to make sure we found it
+            System.out.println("Found enemy: " + mapObject.getName() +
+                    " at (" + rect.x + ", " + rect.y +
+                    "), type=" + type);
         }
     }
+
+
 
     private List<Vector2> gatherOpenTiles() {
         TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
