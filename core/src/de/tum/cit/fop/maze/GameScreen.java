@@ -325,19 +325,33 @@ public class GameScreen implements Screen {
 
 
     }
+//    private void resetCharacterPosition() {
+//        RectangleMapObject characterObject =
+//                (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
+//        if (characterObject != null) {
+//
+//            // Rectangle rect = characterObject.getRectangle();
+//            // characterX = rect.x;
+//            // characterY = rect.y;
+//
+//            characterX = 87;               // Start at the left corner (X-coordinate)
+//            characterY = mapBounds.height - 130;  // Start near the top corner
+//        } else {
+//            // Fallback if no character object is found
+//            characterX = camera.viewportWidth / 2;
+//            characterY = camera.viewportHeight / 2;
+//        }
+//    }
+
+
     private void resetCharacterPosition() {
         RectangleMapObject characterObject =
                 (RectangleMapObject) tiledMap.getLayers().get("Objects").getObjects().get("character");
         if (characterObject != null) {
-
-            // Rectangle rect = characterObject.getRectangle();
-            // characterX = rect.x;
-            // characterY = rect.y;
-
-            characterX = 87;               // Start at the left corner (X-coordinate)
-            characterY = mapBounds.height - 130;  // Start near the top corner
+            Rectangle rect = characterObject.getRectangle();
+            characterX = rect.x;
+            characterY = rect.y;
         } else {
-            // Fallback if no character object is found
             characterX = camera.viewportWidth / 2;
             characterY = camera.viewportHeight / 2;
         }
@@ -836,6 +850,14 @@ public class GameScreen implements Screen {
             font.getData().setScale(0.4f);
             font.draw(game.getSpriteBatch(), "Coins: " + coinCount, coinsX, coinsY);
             font.draw(game.getSpriteBatch(), "Health: " + characterHealth, healthX, healthY);
+            float keyX = healthX;
+            float keyY = healthY - 25;
+
+            if (keyCollected) {
+                font.draw(game.getSpriteBatch(), "Key: Collected", keyX, keyY);
+            } else {
+                font.draw(game.getSpriteBatch(), "Key: ?", keyX, keyY);
+            }
             font.getData().setScale(1.0f);
         }
 
@@ -855,10 +877,10 @@ public class GameScreen implements Screen {
 
 
 
-        if(keyCollected) {
+
             hud.update(delta, characterX, characterY, portalX, portalY, camera);
             hud.render(); // arrow is drawn pinned to the corner
-        }
+
 
 
 
