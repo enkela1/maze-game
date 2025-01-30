@@ -183,6 +183,25 @@ public class GameScreen implements Screen {
     private boolean isGameWon = false;
     private float gameWinTimer = 0f;
 
+    // Toggles whether instructions should be shown
+    private boolean showInstructions = false;
+
+    // Multi-line instructions text
+    private final String instructionsText =
+            "HOW TO PLAY:\n" +
+                    "  Movement: WASD\n" +
+                    "  Accelerate: SHIFT\n" +
+                    "  Attack: J\n" +
+                    "  Celebrate: F \n" +
+                    "  Get Back From Celebrating: H\n" +
+                    "  Pause: P\n" +
+                    "  Menu: ESC\n" +
+                    "  Toggle Help: I\n\n" +
+                    "OBJECTIVE:\n" +
+                    "  Collect coins, find the key to unlock the portal,\n" +
+                    "  and avoid enemies and hazards!";
+
+
 
 
     private List<Item> items;
@@ -550,6 +569,12 @@ public class GameScreen implements Screen {
             }
         }
 
+        // Check if I is pressed => toggle the instructions
+        if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            showInstructions = !showInstructions;
+        }
+
+
         if (isPaused) {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -738,6 +763,32 @@ public class GameScreen implements Screen {
                     camera.position.y + 300
             );
         }
+
+
+
+        if (showInstructions) {
+            // If you want smaller text: font.getData().setScale(0.5f);
+
+
+            float zoom = camera.zoom;
+            float screenWidth  = camera.viewportWidth  * zoom;
+            float screenHeight = camera.viewportHeight * zoom;
+
+            // We'll offset from the camera's top-left
+            float instructionsX = camera.position.x - screenWidth / 2 + 20;
+            float instructionsY = camera.position.y + screenHeight / 2 - 20;
+
+
+            font.draw(
+                    game.getSpriteBatch(),
+                    instructionsText,
+                    instructionsX,
+                    instructionsY
+            );
+
+
+        }
+
 
         game.getSpriteBatch().end();
 
