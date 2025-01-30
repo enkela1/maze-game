@@ -278,7 +278,6 @@ public class MenuScreen implements Screen {
         loseTable.setFillParent(true);
         loseStage.addActor(loseTable);
 
-
         loseTable.add(new Label("GAME OVER!", game.getSkin(), "title"))
                 .padBottom(50)
                 .row();
