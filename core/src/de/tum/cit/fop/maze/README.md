@@ -21,7 +21,8 @@ Good luck, survivor. The fate of the Aurora and your life lies in your hands.
 │   ├── GameScreen.java    
 │   ├── MenuScreen.java   
 │   ├── MazeRunnerGame.java   
-├   ├── HUD.java           
+├   ├── HUD.java  
+├   ├── GameObject.java           
 ├── assets/                # Resources (images, sounds, maps,etc.)
 ├── desktop/               # Desktop project (Windows/macOS launcher)
 ├── README.md              # This file
@@ -87,5 +88,6 @@ Both macOS and Windows use Desktoplauncher
 - **Fantastic Sound effect**
 
 ## **10. UML Class Diagram**
+![](C:\Users\gina6\Desktop\UML.png)
 
 
