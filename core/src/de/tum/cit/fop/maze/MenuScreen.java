@@ -237,19 +237,6 @@ public class MenuScreen implements Screen {
                 .padBottom(20)
                 .row();
 
-        TextButton returnButton = new TextButton("Return to Menu", game.getSkin());
-        returnButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game, coinCount));
-                game.gameScreen.loadMap(currentMapName);
-            }
-        });
-
-
-        winTable.add(returnButton)
-                .padTop(30)
-                .row();
 
         winStage.addListener(new InputListener() {
             @Override
