@@ -257,6 +257,9 @@ public class GameScreen implements Screen {
 
         initializeItems();
 
+        spawnPortal();
+        isPortalActive = false;
+
         camera.zoom = 0.5f;
         camera.update();
 
@@ -284,6 +287,10 @@ public class GameScreen implements Screen {
 
          resetLevelState();
          camera.zoom=0.5f;
+
+         spawnPortal();
+         isPortalActive = false; //
+
 
 
          if (mapName.equals("input")) {
@@ -1559,9 +1566,8 @@ public class GameScreen implements Screen {
                             item.collected = true;
                             keySound.play();
 
-                            if (!isPortalActive) {
-                                spawnPortal();
-                            }
+                            isPortalActive = true;
+
                         }
 
                         case BLACKHOLE -> {
