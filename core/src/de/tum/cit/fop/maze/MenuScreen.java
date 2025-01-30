@@ -216,7 +216,7 @@ public class MenuScreen implements Screen {
     }
 
 
-    public Stage createWinMenu(int coinCount,String currentMapName) {
+    public Stage createWinMenu(int coinCount) {
 
         Stage winStage = new Stage(new ScreenViewport());
 

@@ -1653,7 +1653,7 @@ public class GameScreen implements Screen {
 
             isGameWon = true;
             victorySound.play();
-            winStage = menuScreen.createWinMenu(coinCount,currentMapName);
+            winStage = menuScreen.createWinMenu(coinCount);
         }
     }
 
