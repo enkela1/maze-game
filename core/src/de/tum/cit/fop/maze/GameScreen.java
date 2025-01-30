@@ -91,6 +91,8 @@ public class GameScreen implements Screen {
 
     private float characterX;
     private float characterY;
+
+
     private float characterSpeed = 80f;
     private boolean isaccelarationActive = false;
     private long accelarationEndTime = 0;
@@ -105,6 +107,7 @@ public class GameScreen implements Screen {
     private static final float FOOT_BOX_WIDTH    = 16f;
     private static final float FOOT_BOX_HEIGHT   = 9f;
 
+    Character character = new Character(80f,100);
 
     private List<Enemy> enemies;
     private float detectionRange = 140f;
@@ -154,8 +157,7 @@ public class GameScreen implements Screen {
 
     private int coinCount = 0;
 
-    private static class Item {
-        float x, y;
+    private static class Item extends GameObject{
         ItemType type;
         boolean collected = false;
         public Item(float x, float y, ItemType type) {
@@ -171,6 +173,7 @@ public class GameScreen implements Screen {
     }
 
     private boolean isPortalActive = false;
+
     private float portalX;
     private float portalY;
     private static final float PORTAL_WIDTH = 64;
@@ -183,6 +186,21 @@ public class GameScreen implements Screen {
     private boolean isGameWon = false;
     private float gameWinTimer = 0f;
 
+    private boolean showInstructions = false;
+
+    private final String instructionsText =
+            "HOW TO PLAY:\n" +
+                    "  Movement: WASD\n" +
+                    "  Accelerate: SHIFT\n" +
+                    "  Attack: J\n" +
+                    "  Celebrate: F \n" +
+                    "  Get Back From Celebrating: H\n" +
+                    "  Pause: P\n" +
+                    "  Menu: ESC\n" +
+                    "  Toggle Help: I\n\n" +
+                    "OBJECTIVE:\n" +
+                    "  Collect coins, find the key to unlock the portal,\n" +
+                    "  and avoid enemies and hazards!";
 
 
     private List<Item> items;
@@ -216,13 +234,13 @@ public class GameScreen implements Screen {
                 layer.getHeight() * layer.getTileHeight()
         );
 
+        Character character = new Character(80f,100);
+
         enemies = new ArrayList<>();
 
         collisionRectangles = new Array<>();
 
         hud = new Hud();
-
-        characterHealth = MAX_HEALTH;
 
         items = new ArrayList<>();
 
@@ -237,6 +255,11 @@ public class GameScreen implements Screen {
         initializeEnemies();
 
         initializeItems();
+
+        spawnPortal();
+        isPortalActive = false;
+
+
 
         camera.zoom = 0.5f;
         camera.update();
@@ -266,6 +289,9 @@ public class GameScreen implements Screen {
          resetLevelState();
          camera.zoom=0.5f;
 
+         spawnPortal();
+         isPortalActive = false;
+
 
          if (mapName.equals("input")) {
              tutorialIsActive = true;
@@ -286,7 +312,7 @@ public class GameScreen implements Screen {
             characterX = rect.x;
             characterY = rect.y;
         } else {
-            characterX = camera.viewportWidth / 2;
+            characterX= camera.viewportWidth / 2;
             characterY = camera.viewportHeight / 2;
         }
     }
@@ -299,7 +325,7 @@ public class GameScreen implements Screen {
         initializeItems();
 
 
-        characterHealth= MAX_HEALTH;
+        character.health= MAX_HEALTH;
         coinCount=0;
         isGameOver = false;
         isGameWon  = false;
@@ -550,6 +576,10 @@ public class GameScreen implements Screen {
             }
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            showInstructions = !showInstructions;
+        }
+
         if (isPaused) {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -717,7 +747,7 @@ public class GameScreen implements Screen {
             float healthX = coinsX; float healthY = coinsY - 25;
             font.getData().setScale(0.4f);
             font.draw(game.getSpriteBatch(), "Coins: " + coinCount, coinsX, coinsY);
-            font.draw(game.getSpriteBatch(), "Health: " + characterHealth, healthX, healthY);
+            font.draw(game.getSpriteBatch(), "Health: " + character.health, healthX, healthY);
             float keyX = healthX;
             float keyY = healthY - 25;
 
@@ -737,6 +767,29 @@ public class GameScreen implements Screen {
                     camera.position.x + 220,
                     camera.position.y + 300
             );
+        }
+
+        if (showInstructions) {
+            // If you want smaller text: font.getData().setScale(0.5f);
+
+
+            float zoom = camera.zoom;
+            float screenWidth  = camera.viewportWidth  * zoom;
+            float screenHeight = camera.viewportHeight * zoom;
+
+            // We'll offset from the camera's top-left
+            float instructionsX = camera.position.x - screenWidth / 2 + 20;
+            float instructionsY = camera.position.y + screenHeight / 2 - 20;
+
+
+            font.draw(
+                    game.getSpriteBatch(),
+                    instructionsText,
+                    instructionsX,
+                    instructionsY
+            );
+
+
         }
 
         game.getSpriteBatch().end();
@@ -804,7 +857,7 @@ public class GameScreen implements Screen {
                 isAttacking = false;
                 attackTimer = 0f;
             } else if ((isaccelarationActive && System.currentTimeMillis() > accelarationEndTime))
-                characterSpeed = 150f;
+                character.speed = 150f;
             isaccelarationActive = false;{
 
             }
@@ -862,7 +915,7 @@ public class GameScreen implements Screen {
         }
 
 
-        float adjustedSpeed = characterSpeed;
+        float adjustedSpeed = character.speed;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
             adjustedSpeed *= SPEED_MULTIPLIER;
@@ -1497,7 +1550,7 @@ public class GameScreen implements Screen {
 
                         }
                         case ACCELARATION -> {
-                            characterSpeed = 200f;
+                            character.speed = 200f;
                             isaccelarationActive = true;
                             accelarationEndTime = System.currentTimeMillis() + 500;
                             item.collected = true;
@@ -1546,9 +1599,9 @@ public class GameScreen implements Screen {
 
     private void reduceHealth(int amount) {
         if (!isCharacterRed && !tutorialIsActive) {
-            characterHealth -= amount;
-            if (characterHealth <= 0) {
-                characterHealth = 0;
+            character.health -= amount;
+            if (character.health <= 0) {
+                character.health = 0;
                 onCharacterDeath();
             }
             isCharacterRed = true;
@@ -1596,7 +1649,7 @@ public class GameScreen implements Screen {
 
             isGameWon = true;
             victorySound.play();
-            winStage = menuScreen.createWinMenu(coinCount,currentMapName);
+            winStage = menuScreen.createWinMenu(coinCount);
         }
     }
 
@@ -1604,9 +1657,9 @@ public class GameScreen implements Screen {
 
 
     private void restoreHealth(int amount) {
-        characterHealth += amount;
-        if (characterHealth > MAX_HEALTH) {
-            characterHealth = MAX_HEALTH;
+        character.health += amount;
+        if (character.health > MAX_HEALTH) {
+            character.health = MAX_HEALTH;
         }
     }
 
@@ -1720,12 +1773,9 @@ public class GameScreen implements Screen {
         return camera;
     }
 
-    private static class Enemy {
-        private float x;
-        private float y;
-        private final float speed;
+    private static class Enemy extends GameObject {
+
         private final int type;
-        private int health;
         private boolean isDead;
 
 
@@ -1755,7 +1805,6 @@ public class GameScreen implements Screen {
             this.x -= speed * delta;
 
         }
-
 
         public float getX() {
             return x;
@@ -1811,6 +1860,15 @@ public class GameScreen implements Screen {
         }
         return false;
     }
+
+    class Character extends GameObject{
+        public Character(float speed, int health){
+            this.speed = 80f;
+            this.health = MAX_HEALTH;
+        }
+    }
+
+
 
 }
 

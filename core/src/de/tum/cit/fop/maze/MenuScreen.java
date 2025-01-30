@@ -216,7 +216,7 @@ public class MenuScreen implements Screen {
     }
 
 
-    public Stage createWinMenu(int coinCount,String currentMapName) {
+    public Stage createWinMenu(int coinCount) {
 
         Stage winStage = new Stage(new ScreenViewport());
 
@@ -235,20 +235,6 @@ public class MenuScreen implements Screen {
 
         winTable.add(new Label("Coins collected: " + coinCount, game.getSkin()))
                 .padBottom(20)
-                .row();
-
-        TextButton returnButton = new TextButton("Return to Menu", game.getSkin());
-        returnButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game, coinCount));
-                game.gameScreen.loadMap(currentMapName);
-            }
-        });
-
-
-        winTable.add(returnButton)
-                .padTop(30)
                 .row();
 
         winStage.addListener(new InputListener() {
