@@ -128,8 +128,6 @@ public class GameScreen implements Screen {
 
 
     private boolean isGameStarted = false;
-
-
     private boolean isPaused = false;
     private boolean isAttacking = false;
     private boolean isPickingUp = false;
@@ -143,8 +141,6 @@ public class GameScreen implements Screen {
 
     private boolean keyCollected = false;
 
-
-
     private Array<Rectangle> collisionRectangles;
 
     private int characterHealth;
@@ -156,19 +152,12 @@ public class GameScreen implements Screen {
     private float redTimer = 0f;
     private static final float RED_DURATION = 0.5f;
 
-
-
-
-
     private int coinCount = 0;
-
-
-
 
     private static class Item {
         float x, y;
         ItemType type;
-        boolean collected = false; // track if already taken
+        boolean collected = false;
         public Item(float x, float y, ItemType type) {
             this.x = x;
             this.y = y;
@@ -652,7 +641,6 @@ public class GameScreen implements Screen {
             game.getSpriteBatch().setColor(Color.WHITE);
 
 
-            // 2) Render enemies
             for (Enemy enemy : enemies) {
                 renderEnemy(enemy);
             }

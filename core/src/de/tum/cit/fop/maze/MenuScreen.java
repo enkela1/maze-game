@@ -37,8 +37,6 @@ public class MenuScreen implements Screen {
         this.game = game;
         this.coinCount = coinCount;
 
-
-
         var camera = new OrthographicCamera();
         camera.zoom = 1f;
         Viewport viewport = new ScreenViewport(new OrthographicCamera());
@@ -57,12 +55,9 @@ public class MenuScreen implements Screen {
     private void setupMainMenu() {
         mainMenuTable = new Table();
         mainMenuTable.setFillParent(true);
-
-
         mainMenuTable.add(new Label("Cosmic Survival:\nThe Aurora’s Crash", game.getSkin(), "title"))
                 .padBottom(80)
                 .row();
-
 
 
         TextButton goToGameButton = new TextButton(
@@ -128,6 +123,7 @@ public class MenuScreen implements Screen {
                 game.selectMap("map_3");
             }
         });
+
         TextButton level4Button = new TextButton("Level 4", game.getSkin());
         mapSelectionTable.add(level4Button).width(300).padBottom(20).row();
         level4Button.addListener(new ChangeListener() {
@@ -136,6 +132,7 @@ public class MenuScreen implements Screen {
                 game.selectMap("map_4");
             }
         });
+
         TextButton level5Button = new TextButton("Level 5", game.getSkin());
         mapSelectionTable.add(level5Button).width(300).padBottom(20).row();
         level5Button.addListener(new ChangeListener() {

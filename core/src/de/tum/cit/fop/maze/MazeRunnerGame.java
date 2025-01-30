@@ -11,20 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import games.spooky.gdx.nativefilechooser.NativeFileChooser;
 
-/**
- * The MazeRunnerGame class represents the core of the Maze Runner game.
- * It manages the screens and global resources like SpriteBatch and Skin.
- */
 public class MazeRunnerGame extends Game {
 
     private MenuScreen menuScreen;
     GameScreen gameScreen;
 
-
     private SpriteBatch spriteBatch;
 
     private Skin skin;
-
 
     private Animation<TextureRegion> characterDownAnimation;
     private Animation<TextureRegion> characterUpAnimation;
@@ -54,7 +48,6 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> characterAttackUpAnimation;
     private Animation<TextureRegion> characterAttackRightAnimation;
     private Animation<TextureRegion> characterAttackLeftAnimation;
-
 
     private Animation<TextureRegion> enemy1DownAnimation;
     private Animation<TextureRegion> enemy1UpAnimation;
@@ -106,11 +99,9 @@ public class MazeRunnerGame extends Game {
     private Animation<TextureRegion> fireAnimation;
     private Animation<TextureRegion> accelarationAnimation;
 
-
     private Animation<TextureRegion> keyAnimation;
 
     private Animation<TextureRegion> portalAnimation;
-
 
     private Animation<TextureRegion> blackholeAnimation;
 
@@ -120,25 +111,16 @@ public class MazeRunnerGame extends Game {
 
 
 
-    /**
-     * Constructor for MazeRunnerGame.
-     *
-     * @param fileChooser The file chooser for the game, typically used in desktop environment.
-     */
     public MazeRunnerGame(NativeFileChooser fileChooser) {
         super();
     }
 
-    /**
-     * Called when the game is created. Initializes the SpriteBatch and Skin.
-     */
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("craft/craftacular-ui.json"));
 
         this.loadObjectsAnimation();
-
 
         this.loadCharacterAnimation();
         this.loadEnemyAnimation();
@@ -153,13 +135,9 @@ public class MazeRunnerGame extends Game {
             gameScreen = new GameScreen(this);
         }
 
-
         goToMenu();
     }
 
-    /**
-     * Switches to the menu screen.
-     */
     public void goToMenu() {
 
         if (menuScreen != null) {
@@ -173,13 +151,9 @@ public class MazeRunnerGame extends Game {
         this.setScreen(new MenuScreen(this, 0));
     }
 
-    /**
-     * Switches to the game screen.
-     */
     public void goToGame() {
         if (gameScreen == null) {
             gameScreen = new GameScreen(this);
-
         }
 
         this.setScreen(gameScreen);
@@ -200,10 +174,6 @@ public class MazeRunnerGame extends Game {
     }
 
 
-    /**
-     * Loads the character animation from the character.png file,
-     * including move/idle/pickup/hold/attack frames.
-     */
     private void loadObjectsAnimation() {
         Texture oSheet = new Texture(Gdx.files.internal("objects.png"));
         Texture bSheet = new Texture(Gdx.files.internal("blackhole.png"));
@@ -217,7 +187,6 @@ public class MazeRunnerGame extends Game {
         Array<TextureRegion> coinFrames = new Array<>();
         Array<TextureRegion> fireFrames = new Array<>();
         Array<TextureRegion> keyFrames = new Array<>();
-
         Array<TextureRegion> blackholeFrames = new Array<>();
 
 
@@ -232,11 +201,13 @@ public class MazeRunnerGame extends Game {
         }
         heartAnimation = new Animation<>(0.3f, heartFrames);
 
+
         for(int col = 0; col < 4; col++) {
             coinFrames.add(new TextureRegion(oSheet, col*frameWidth, 4 * frameWidth, frameWidth, frameHeight));
         }
 
         coinAnimation = new Animation<>(0.3f, coinFrames);
+
 
         for(int col = 5; col < 11; col++) {
             fireFrames.add(new TextureRegion(oSheet, col * frameWidth, 3 * frameHeight, frameWidth, frameHeight));
@@ -244,6 +215,7 @@ public class MazeRunnerGame extends Game {
         }
 
         fireAnimation = new Animation<>(0.1f, fireFrames);
+
 
         for (int col = 15; col < 20; col++) {
             keyFrames.add(new TextureRegion(oSheet, col*frameWidth, 0 * frameWidth, frameWidth, frameHeight));
@@ -254,8 +226,6 @@ public class MazeRunnerGame extends Game {
         keyAnimation = new Animation<>(0.2f, keyFrames);
 
         Array<TextureRegion> portalFrames = new Array<>();
-
-
 
 
         int portalFrameWidth = 512 / 8;
@@ -271,10 +241,6 @@ public class MazeRunnerGame extends Game {
         }
 
         portalAnimation = new Animation<>(0.2f, portalFrames);
-
-
-
-
 
     }
 
@@ -469,9 +435,6 @@ public class MazeRunnerGame extends Game {
         characterAttackLeftAnimation = new Animation<>(0.1f, attackLeftFrames);
     }
 
-    /**
-     * Loads enemy animations (enemy1... enemy5) from mobs.png.
-     */
     private void loadaccelarationAnimation(){
         Texture accelarationSheet = new Texture("basictiles.png");
 
@@ -717,10 +680,6 @@ public class MazeRunnerGame extends Game {
         e5IdleRightFrames.add(new TextureRegion(enemySheet, 144, 6* frameHeight, frameWidth, frameHeight));
         enemy5IdleRightAnimation = new Animation<>(0.1f, e5IdleRightFrames);
     }
-
-    /**
-     * Cleans up resources when the game is disposed.
-     */
     @Override
     public void dispose() {
         getScreen().hide();
@@ -737,7 +696,6 @@ public class MazeRunnerGame extends Game {
         return spriteBatch;
     }
 
-    // Movement
     public Animation<TextureRegion> getCharacterDownAnimation() {
         return characterDownAnimation;
     }
